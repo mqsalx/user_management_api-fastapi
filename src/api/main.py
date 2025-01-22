@@ -1,30 +1,31 @@
-# /app/main.py
+# /src/api/main.py
 
-import os
 
 import uvicorn
-from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from api.routes.user import user_router
 from src.api.middleware.auth.jwt_middleware import JWTMiddleware
-from src.core.exceptions.base.base_exceptions import BaseApplicationException
-from src.infrastructure.database import Base, engine
+from src.api.routes.auth import login_router
+from src.api.routes.user import user_router
+from src.core.configurations.env_configuration import EnvConfiguration
+from core.exceptions.base.base_exception import BaseException
+from src.infrastructure.db.database_configuration import DatabaseConfiguration
 
-load_dotenv()
+# Env variables Setup
+API_HOST = EnvConfiguration().api_host
+API_PORT = EnvConfiguration().api_port
+API_PREFIX = EnvConfiguration().api_prefix
 
-HOST = os.getenv("API_HOST")
-PORT = int(os.getenv("API_PORT"))  # type: ignore
 
 app = FastAPI()
 
 app.add_middleware(JWTMiddleware)
 
 
-@app.exception_handler(BaseApplicationException)
+@app.exception_handler(BaseException)
 async def base_exception_handler(
-    request: Request, exc: BaseApplicationException
+    request: Request, exc: BaseException
 ):
     return JSONResponse(
         status_code=exc.status_code,
@@ -32,9 +33,12 @@ async def base_exception_handler(
     )
 
 
-app.include_router(user_router.router, prefix="/api-v1")
+routers = [(user_router.router, "/users"), (login_router.router, "/login/")]
 
-Base.metadata.create_all(bind=engine)
+for router, prefix in routers:
+    app.include_router(router, prefix=f"/api-{API_PREFIX}{prefix}")
+
+DatabaseConfiguration().create_all()
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=HOST, port=PORT)  # type: ignore
+    uvicorn.run(app, host=API_HOST, port=API_PORT)
