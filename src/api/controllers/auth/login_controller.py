@@ -1,15 +1,23 @@
+# /src/api/controllers/auth/login_controller.py
+
+from fastapi import Depends
+from sqlalchemy.orm import Session
+
+from src.infrastructure.db.database_configuration import DatabaseConfiguration
+from src.core.dtos.auth.login_dto import LoginRequestDTO, LoginResponseDTO
+from src.infrastructure.repositories.auth.login_repository import LoginRepository
 from src.usecases.auth.login_usecase import LoginUseCase
 
 
 class LoginController:
     """
-        Controlador para autenticação de usuários.
+    Controller for user authentication.
     """
 
-    def __init__(self, login_usecase: LoginUseCase):
-        self.login_usecase = login_usecase
+    def __init__(self, db: Session = Depends(DatabaseConfiguration().get_db)):
+        self.__repository = LoginRepository(db)
+        self.__usecase = LoginUseCase(self.__repository)
 
-    def login(self, email: str, password: str) -> dict:
-        """Realiza login e retorna um token JWT."""
-        token = self.login_usecase.authenticate_user(email, password)
-        return {"access_token": token, "token_type": "bearer"}
+    def login(self, data: LoginRequestDTO) -> LoginResponseDTO:
+        token = self.__usecase.authenticate_user(data)
+        return LoginResponseDTO(access_token=token, token_type="bearer")

@@ -1,28 +1,29 @@
-from fastapi import HTTPException, Request
-from fastapi.middleware.base import BaseHTTPMiddleware
+# /src/api/middleware/auth/jwt_middleware.py
 
-from utils.auth.jwt_utils import verify_token
+from fastapi import HTTPException, Request
+from starlette.middleware.base import BaseHTTPMiddleware
+
+from src.utils.auth.jwt_util import verify_token
 
 
 class JWTMiddleware(BaseHTTPMiddleware):
-    """Middleware para verificar o token JWT em todas as requisições."""
+    """
+    Middleware to check the JWT token on all requests.
+    """
 
     async def dispatch(self, request: Request, call_next):
-        # Ignorar rotas públicas
         if request.url.path in ["/api/login", "/docs", "/openapi.json"]:
             return await call_next(request)
 
-        # Obter o token do cabeçalho Authorization
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):
-            raise HTTPException(status_code=401, detail="Token não fornecido")
+            raise HTTPException(status_code=401, detail="Unauthorized!")
 
         token = auth_header.split(" ")[1]
+
         try:
-            verify_token(token)  # Valida o token
+            verify_token(token)
         except ValueError as e:
             raise HTTPException(status_code=401, detail=str(e))
 
-        # Continua para a próxima etapa da requisição
-        return await call_next(request)
         return await call_next(request)
