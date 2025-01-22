@@ -1,7 +1,7 @@
-# /app/exceptions/base/base_exceptions.py
+# /src/core/exceptions/base/base_exceptions.py
 
 
-class BaseApplicationException(Exception):
+class BaseException(Exception):
     """Base class for all application-specific exceptions."""
 
     def __init__(self, message: str, status_code: int = 400):
