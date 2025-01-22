@@ -1,28 +1,28 @@
-# /app/routes/user_router.py
+# /src/api/routes/user/user_router.py
 
-from fastapi import APIRouter, Depends
+from typing import List
 
-from api.controllers.user.user_controller import UserController
-from dtos.user.user_dto import UserCreateDTO
+from fastapi import APIRouter
+
+from src.api.controllers.user.user_controller import UserController
+from src.core.dtos.user.user_dto import UserRequestDTO, UserResponseDTO
 
 router = APIRouter()
 
 
-@router.post("/users/")
+@router.post("", response_model=UserResponseDTO)
 def create_user(
-    user_data: UserCreateDTO,
-    user_controller: UserController = Depends(UserController),
-):
-    return user_controller.create_user(user_data)
+    request_data: UserRequestDTO,
+    controller: UserController,
+) -> UserResponseDTO:
+    return controller.create_user(request_data)
 
 
-@router.get("/users/")
-def get_users(user_controller: UserController = Depends(UserController)):
-    return user_controller.get_users()
+@router.get("", response_model=UserResponseDTO)
+def get_users(controller: UserController) -> List[UserResponseDTO]:
+    return controller.get_users()
 
 
-@router.get("/users/{user_id}")
-def get_user(
-    user_id: int, user_controller: UserController = Depends(UserController)
-):
-    return user_controller.get_user(user_id)
+@router.get("/{user_id}", response_model=UserResponseDTO)
+def get_user(user_id: int, controller: UserController) -> UserResponseDTO:
+    return controller.get_user(user_id)
