@@ -2,7 +2,7 @@
 
 from src.core.entities.user.user_entity import UserEntity
 from src.core.exceptions.base.base_exception import BaseException
-from core.exceptions.usecases.user.user_exception import (
+from src.core.exceptions.usecases.user.user_exception import (
     EmailAlreadyExistsException,
     UserNotFoundException,
 )
@@ -21,16 +21,16 @@ class UserUseCase:
     def __init__(self, repository: UserRepository):
         self.__repository = repository
 
-    def create_user(self, data: UserRequestDTO) -> UserResponseDTO:
+    def create_user(self, request: UserRequestDTO) -> UserResponseDTO:
 
         try:
-            if self.__repository.get_email(data.email):
-                raise EmailAlreadyExistsException(data.email)
+            if self.__repository.get_email(request.email):
+                raise EmailAlreadyExistsException(request.email)
 
             entity = UserEntity(
-                name=data.name,
-                email=data.email,
-                status=data.status,
+                name=request.name,
+                email=request.email,
+                status=request.status,
             )
 
             return self.__repository.create_user(entity)

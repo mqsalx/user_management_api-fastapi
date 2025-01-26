@@ -1,18 +1,28 @@
 # /src/api/routes/auth/login_router.py
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
 
 from src.api.controllers.auth.login_controller import LoginController
+from src.core.configurations.env_configuration import EnvConfiguration
 from src.core.dtos.auth.login_dto import LoginRequestDTO, LoginResponseDTO
+from src.infrastructure.db.database_configuration import DatabaseConfiguration
+
+# Env variables Setup
+API_VERSION = EnvConfiguration().api_version
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl=f"/api-{API_VERSION}/login",
+)
 
 
-@router.post("/login/", response_model=LoginResponseDTO)
+@router.post("", response_model=LoginResponseDTO)
 def login(
-    request_data: LoginRequestDTO,
-    controller: LoginController,
+    request: LoginRequestDTO,
+    db: Session = Depends(DatabaseConfiguration().get_db),
 ) -> LoginResponseDTO:
-    return controller.login(request_data)
+    controller = LoginController(db)
+    return controller.login(request)

@@ -20,14 +20,14 @@ class ConsoleLoggerUtil:
     def log_info(self, message: str):
         color = self.__color["GREEN"]
         reset = self.__color["RESET"]
-        print(f"{color}[INFO]{reset} {message}")
+        print(f"{color}[INFO]{reset}     {message}")
 
     def log_warning(self, message: str):
         color = self.__color["YELLOW"]
         reset = self.__color["RESET"]
-        print(f"{color}[WARNING]{reset} {message}")
+        print(f"{color}[WARNING]{reset}     {message}")
 
     def log_error(self, message: str):
         color = self.__color["RED"]
         reset = self.__color["RESET"]
-        print(f"{color}[ERROR]{reset} {message}")
+        print(f"{color}ERROR{reset}     {message}")

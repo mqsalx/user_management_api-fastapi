@@ -12,17 +12,17 @@ class EnvConfiguration:
     def __init__(self):
 
         # API Setup
-        self.__api_host = str(os.getenv("API_HOST"))
-        self.__api_port = int(os.getenv("API_PORT"))  # type: ignore
-        self.__api_prefix = str(os.getenv("API_PREFIX"))
+        self.__api_host: str = str(os.getenv("API_HOST"))
+        self.__api_port: int = int(os.getenv("API_PORT"))  # type: ignore
+        self.__api_version: str = str(os.getenv("API_VERSION"))
 
         # Database Setup
-        self.__db_url = str(os.getenv("DATABASE_URL"))
+        self.__db_url: str = str(os.getenv("DATABASE_URL"))
 
         # JWT Setup
-        self.__jwt_secret_key = str(os.getenv("SECRET_KEY"))
-        self.__jwt_algorithm = str(os.getenv("JWT_ALGORITHM"))
-        self.__jwt_access_token_expire_minutes = int(
+        self.__jwt_secret_key: str = str(os.getenv("SECRET_KEY"))
+        self.__jwt_algorithm: str = str(os.getenv("JWT_ALGORITHM"))
+        self.__jwt_access_token_expire_minutes: int = int(
             os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES")  # type: ignore
         )
 
@@ -36,8 +36,8 @@ class EnvConfiguration:
         return self.__api_port
 
     @property
-    def api_prefix(self) -> str:
-        return self.__api_prefix
+    def api_version(self) -> str:
+        return self.__api_version
 
     # Database Setup
     @property

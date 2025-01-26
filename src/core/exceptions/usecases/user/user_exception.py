@@ -1,6 +1,6 @@
-# /src/core/exceptions/usecases/user/user_exceptions.py
+# /src/core/exceptions/usecases/user/user_exception.py
 
-from core.exceptions.base.base_exception import BaseException
+from src.core.exceptions.base.base_exception import BaseException
 
 
 class UserNotFoundException(BaseException):

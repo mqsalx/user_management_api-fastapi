@@ -1,6 +1,6 @@
 # /src/core/exceptions/database/base_exceptions.py
 
-from core.exceptions.base.base_exception import BaseException
+from src.core.exceptions.base.base_exception import BaseException
 
 
 class DatabaseConnectionException(BaseException):

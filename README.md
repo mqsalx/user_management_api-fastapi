@@ -62,5 +62,5 @@ black app && isort app && flake8 app
 ## ✅ Running
 
 ```bash
-uvicorn src.api.main:app
+py -m src.api.main
 ```

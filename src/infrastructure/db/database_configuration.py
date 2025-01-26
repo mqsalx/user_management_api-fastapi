@@ -1,42 +1,64 @@
 # /src/infrastructure/database/__init__.py
 
+from typing import Any, Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 
 from src.core.configurations.env_configuration import EnvConfiguration
 
 
 class DatabaseConfiguration:
+    """
+    Class responsible for configuring and providing access to the database connection,
+    sessions, and the declarative base for model definitions.
+    """
 
-    def __init__(self):
-        self.__db_url = EnvConfiguration().db_url
+    __db_url = EnvConfiguration().db_url
+    __engine = create_engine(
+        __db_url, connect_args={"check_same_thread": False}
+    )
+    __sessionLocal = sessionmaker(
+        autocommit=False, autoflush=False, bind=__engine
+    )
+    __base = declarative_base()
 
-        self.__engine = create_engine(
-            self.__db_url, echo=False, pool_pre_ping=True
-        )
+    @classmethod
+    def get_db(cls) -> Generator[Session, None, None]:
+        """
+        Class method that provides a database session.
 
-        self.__session_local = sessionmaker(
-            autocommit=False, autoflush=False, bind=self.__engine
-        )
+        Yields:
+            Session: A database session.
 
-        self.__base = declarative_base()
+        The session is automatically closed after use.
+        """
 
-    @property
-    def engine(self):
-        return self.__engine
-
-    @property
-    def base(self):
-        return self.__base
-
-    def get_db(self):
-        db = self.__session_local()
+        db = cls.__sessionLocal()
         try:
             yield db
         finally:
             db.close()
 
-    def create_all(self):
-        self.__base.metadata.create_all(bind=self.__engine)
+    @classmethod
+    def create_all(cls) -> None:
+        """
+        Class method that creates all database tables based on the defined models.
+
+        Returns:
+            None
+        """
+
+        cls.__base.metadata.create_all(bind=cls.__engine)
+
+    @classmethod
+    def base(cls) -> Any:
+        """
+        Class method that returns the declarative base for model definitions.
+
+        Returns:
+            Any: The declarative base.
+        """
+
+        return cls.__base

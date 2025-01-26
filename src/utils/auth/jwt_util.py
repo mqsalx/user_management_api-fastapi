@@ -19,6 +19,7 @@ def create_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """
     Creates a JWT access token.
     """
+
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -34,6 +35,7 @@ def verify_token(token: str) -> dict:
     """
     Checks and decodes a JWT token.
     """
+
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
         return payload

@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
-from src.core.enums.user.user_enum import UserStatus
+from src.core.enums.user.user_enum import UserStatusEnum
 
 
 class UserEntity(BaseModel):
@@ -13,7 +13,7 @@ class UserEntity(BaseModel):
     id: Optional[int] = None
     name: str = Field(..., description="Nome do usuário")
     email: str = Field(..., description="Email do usuário")
-    status: UserStatus = Field(..., description="Status do usuário")
+    status: UserStatusEnum = Field(..., description="Status do usuário")
 
     @field_validator("name")
     @classmethod
@@ -33,8 +33,8 @@ class UserEntity(BaseModel):
         """
         Valida que o status é permitido.
         """
-        if value not in UserStatus.__members__.values():
+        if value not in UserStatusEnum.__members__.values():
             raise ValueError(
-                f"Status '{value}' não é válido. Use um dos seguintes: {', '.join(UserStatus.__members__.values())}"
+                f"Status '{value}' não é válido. Use um dos seguintes: {', '.join(UserStatusEnum.__members__.values())}"
             )
         return value
