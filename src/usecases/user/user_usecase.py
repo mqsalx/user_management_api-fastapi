@@ -38,14 +38,13 @@ class UserUseCase:
             CONSOLE_LOGGER_ERROR(f"Error creating user: {error}")
             raise
 
+
+    def get_users(self):
+        users = self.__repository.get_users()
+        return {UserResponseDTO.model_validate(users.__dict__) for user in users}
+
     def get_user(self, user_id: int) -> UserResponseDTO:
         user = self.__repository.get_user(user_id)
         if not user:
             raise UserNotFoundException(user_id)
         return UserResponseDTO.model_validate(user.__dict__)
-
-    def get_users(self):
-        users = self.__repository.get_users()
-        return [
-            UserResponseDTO.model_validate(user.__dict__) for user in users
-        ]

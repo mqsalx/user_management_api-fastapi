@@ -2,7 +2,6 @@
 
 from typing import List
 
-from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from src.core.dtos.user.user_dto import UserRequestDTO, UserResponseDTO
@@ -20,8 +19,8 @@ class UserController:
         response_data = self.__usecase.create_user(request_data)
         return UserResponseDTO.model_validate(response_data)
 
+    def get_users(self) -> UserResponseDTO:
+        return self.__usecase.get_users()
+
     def get_user(self, user_id: int) -> UserResponseDTO:
         return self.__usecase.get_user(user_id)
-
-    def get_users(self) -> List[UserResponseDTO]:
-        return self.__usecase.get_users()

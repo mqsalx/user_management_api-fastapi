@@ -19,6 +19,7 @@ class LoginRepository:
         """
         Check if an email already exists in the database.
         """
+
         user = (
             self.db.query(UserModel).filter(UserModel.email == email).first()
         )
@@ -31,6 +32,7 @@ class LoginRepository:
         """
         Verify if the provided password matches the stored password for the given email.
         """
+
         return (
             self.db.query(UserModel)
             .filter(UserModel.password == password)

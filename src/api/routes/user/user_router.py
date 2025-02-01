@@ -22,12 +22,16 @@ def create_user(
 
 
 @router.get("", response_model=UserResponseDTO)
-def get_users() -> List[UserResponseDTO]:
-    controller = UserController()
+def get_users(
+    db: Session = Depends(DatabaseConfiguration().get_db),
+) -> UserResponseDTO:
+    controller = UserController(db)
     return controller.get_users()
 
 
 @router.get("/{user_id}", response_model=UserResponseDTO)
-def get_user(user_id: int) -> UserResponseDTO:
-    controller = UserController()
+def get_user(
+    user_id: int, db: Session = Depends(DatabaseConfiguration().get_db)
+) -> UserResponseDTO:
+    controller = UserController(db)
     return controller.get_user(user_id)

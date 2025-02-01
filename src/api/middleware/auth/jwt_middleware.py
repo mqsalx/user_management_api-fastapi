@@ -1,7 +1,6 @@
 # /src/api/middleware/auth/jwt_middleware.py
 
 
-from math import e
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 from jwt import ExpiredSignatureError, InvalidTokenError
@@ -52,15 +51,11 @@ class JWTMiddleware(BaseHTTPMiddleware):
 
             return self.__json_response(error)
 
-
-    def __json_response(self, exception) -> JSONResponse:
+    def __json_response(self, exc) -> JSONResponse:
         return JSONResponse(
-            status_code=exception.status_code,
-            content=exception.message,
+            status_code=exc.status_code,
+            content={
+                "status_code": str(exc.status_code),
+                "message": exc.detail,
+            },
         )
-
-    # except BaseHTTPException as error:
-
-    #     logger_error(f"Token validation error: {error}")
-
-    #     raise error

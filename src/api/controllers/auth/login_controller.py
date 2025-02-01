@@ -23,8 +23,6 @@ class LoginController:
         self,
         request: LoginRequestDTO,
     ) -> LoginResponseDTO:
-        # self.__repository = LoginRepository(self.__db)
-        # self.__usecase = LoginUseCase(self.__repository)
 
         token = self.__usecase.authenticate_user(request)
         return LoginResponseDTO(access_token=token, token_type="bearer")
