@@ -1,3 +1,5 @@
+# /src/infrastructure/models/user_model.py
+
 from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
@@ -5,12 +7,9 @@ from pydantic import BaseModel, Field, field_validator
 from src.core.enums.user.user_enum import UserStatusEnum
 
 
-class UserEntity(BaseModel):
-    """
-    Valida os dados fornecidos, incluindo o tamanho do nome e o status.
-    """
+class UserModelOLD(BaseModel):
 
-    id: Optional[int] = None
+    id: Optional[str] = None
     name: str = Field(..., description="User name")
     email: str = Field(..., description="User email")
     status: UserStatusEnum = Field(..., description="User status")

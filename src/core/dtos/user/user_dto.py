@@ -19,5 +19,6 @@ class UserResponseDTO(BaseModel):
     name: str
     email: EmailStr
     status: UserStatusEnum
+    created_at: str
 
     model_config = ConfigDict(from_attributes=True)
