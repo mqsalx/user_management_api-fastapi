@@ -4,10 +4,10 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from src.api.controllers.auth.login_controller import LoginController
+from api.controllers.login_controller import LoginController
 from src.core.configurations.env_configuration import EnvConfiguration
 from src.core.dtos.auth.login_dto import LoginRequestDTO, LoginResponseDTO
-from src.infrastructure.db.database_configuration import DatabaseConfiguration
+from src.infrastructure.database.database_configuration import DatabaseConfiguration
 
 # Env variables Setup
 API_VERSION = EnvConfiguration().api_version

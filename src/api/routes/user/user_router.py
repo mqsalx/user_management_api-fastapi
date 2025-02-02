@@ -1,13 +1,14 @@
 # /src/api/routes/user/user_router.py
 
-from typing import List
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.api.controllers.user.user_controller import UserController
+from src.api.controllers.user_controller import UserController
 from src.core.dtos.user.user_dto import UserRequestDTO, UserResponseDTO
-from src.infrastructure.db.database_configuration import DatabaseConfiguration
+from src.infrastructure.database.database_configuration import (
+    DatabaseConfiguration,
+)
 
 router = APIRouter()
 
@@ -22,16 +23,12 @@ def create_user(
 
 
 @router.get("", response_model=UserResponseDTO)
-def get_users(
-    db: Session = Depends(DatabaseConfiguration().get_db),
-) -> UserResponseDTO:
-    controller = UserController(db)
+def get_users() -> UserResponseDTO:
+    controller = UserController()
     return controller.get_users()
 
 
 @router.get("/{user_id}", response_model=UserResponseDTO)
-def get_user(
-    user_id: int, db: Session = Depends(DatabaseConfiguration().get_db)
-) -> UserResponseDTO:
-    controller = UserController(db)
+def get_user(user_id: int) -> UserResponseDTO:
+    controller = UserController()
     return controller.get_user(user_id)
