@@ -17,7 +17,12 @@ class EnvConfiguration:
         self.__api_version: str = str(os.getenv("API_VERSION"))
 
         # Database Setup
-        self.__db_url: str = str(os.getenv("DATABASE_URL"))
+        self.__database_type: str = str(os.getenv("DATABASE_TYPE"))
+        self.__database_name: str = str(os.getenv("DATABASE_NAME"))
+        self.__database_host: str = str(os.getenv("DATABASE_HOST"))
+        self.__database_port: int = int(os.getenv("DATABASE_PORT"))  # type: ignore
+        self.__database_user: str = str(os.getenv("DATABASE_USER"))
+        self.__database_password: str = str(os.getenv("DATABASE_PASSWORD"))
 
         # JWT Setup
         self.__jwt_secret_key: str = str(os.getenv("SECRET_KEY"))
@@ -41,8 +46,28 @@ class EnvConfiguration:
 
     # Database Setup
     @property
-    def db_url(self) -> str:
-        return self.__db_url
+    def database_type(self) -> str:
+        return self.__database_type
+
+    @property
+    def database_name(self) -> str:
+        return self.__database_name
+
+    @property
+    def database_host(self) -> str:
+        return self.__database_host
+
+    @property
+    def database_port(self) -> int:
+        return self.__database_port
+
+    @property
+    def database_user(self) -> str:
+        return self.__database_user
+
+    @property
+    def database_password(self) -> str:
+        return self.__database_password
 
     # JWT Setup
     @property
