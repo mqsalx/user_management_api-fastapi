@@ -2,10 +2,11 @@
 
 from sqlalchemy.orm import Session
 
-from src.infrastructure.models.user.user_model import UserModel
+from infrastructure.models.user_model import UserModel
 
 
 class LoginRepository:
+
     def __init__(self, db: Session):
         self.db = db
 
