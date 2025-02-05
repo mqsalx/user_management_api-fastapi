@@ -10,6 +10,7 @@ from src.core.configurations.env_configuration import EnvConfiguration
 from src.core.exceptions.base.base_exception import BaseException
 from src.core.exceptions.exception_handler import ExceptionHandler
 from src.usecases.scheduler_usecase import Scheduler
+from src.api.middleware.logger_middleware import LoggerMiddleware
 from src.utils.database.database_util import DatabaseUtil
 
 # Env variables Setup
@@ -35,6 +36,7 @@ DatabaseUtil().setup_database()
 
 app.add_exception_handler(BaseException, ExceptionHandler.handler)  # type: ignore
 
+app.add_middleware(LoggerMiddleware)
 # app.add_middleware(JWTMiddleware)
 
 
