@@ -9,13 +9,13 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from src.core.configurations.env_configuration import EnvConfiguration
 from src.core.exceptions.base.base_exception import BaseException
 from src.utils.auth.jwt_util import verify_token
-from src.utils.log.console_logger_util import ConsoleLoggerUtil
+from src.utils.log.logger_util import LoggerUtil
 
 # Env variables Setup
 API_VERSION = EnvConfiguration().api_version
 
 # Log variables Setup
-logger_error = ConsoleLoggerUtil().log_error
+log = LoggerUtil()
 
 
 class JWTMiddleware(BaseHTTPMiddleware):
@@ -47,7 +47,7 @@ class JWTMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
         except Exception as error:
 
-            logger_error(f"Token validation error: {error}")
+            log.error(f"Token validation error: {error}")
 
             return self.__json_response(error)
 

@@ -12,9 +12,9 @@ from src.core.exceptions.usecases.user.user_exception import (
 from src.infrastructure.models.user_model import UserModel
 from src.infrastructure.repository.user_repository import UserRepository
 from src.usecases.user.user_usecase_interface import UserUseCaseInterface
-from src.utils.log.console_logger_util import ConsoleLoggerUtil
+from src.utils.log.logger_util import LoggerUtil
 
-CONSOLE_LOGGER_ERROR = ConsoleLoggerUtil().log_error
+log = LoggerUtil()
 
 
 class UserUseCaseImplements(UserUseCaseInterface):
@@ -48,7 +48,7 @@ class UserUseCaseImplements(UserUseCaseInterface):
             return user_response
 
         except BaseException as error:
-            CONSOLE_LOGGER_ERROR(f"Error creating user: {error}")
+            log.error(f"Error creating user: {error}")
             raise
 
     def get_users(self):

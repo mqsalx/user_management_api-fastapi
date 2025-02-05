@@ -8,9 +8,9 @@ from src.infrastructure.repositories.auth.login_repository import (
     LoginRepository,
 )
 from src.utils.auth.jwt_util import create_token
-from src.utils.log.console_logger_util import ConsoleLoggerUtil
+from src.utils.log.logger_util import LoggerUtil
 
-CONSOLE_LOGGER_ERROR = ConsoleLoggerUtil().log_error
+log = LoggerUtil()
 
 
 class LoginUseCase:
@@ -36,5 +36,5 @@ class LoginUseCase:
             return token
 
         except BaseException as e:
-            CONSOLE_LOGGER_ERROR(f"Error authenticating user: {e}")
+            log.error(f"Error authenticating user: {e}")
             raise
