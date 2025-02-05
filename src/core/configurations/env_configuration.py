@@ -12,9 +12,11 @@ class EnvConfiguration:
     def __init__(self):
 
         # API Setup
+        self.__api_name: str = str(os.getenv("API_NAME"))
         self.__api_host: str = str(os.getenv("API_HOST"))
         self.__api_port: int = int(os.getenv("API_PORT"))  # type: ignore
         self.__api_version: str = str(os.getenv("API_VERSION"))
+        self.__api_log_level: str = str(os.getenv("API_LOG_LEVEL"))
 
         # Database Setup
         self.__database_type: str = str(os.getenv("DATABASE_TYPE"))
@@ -33,6 +35,10 @@ class EnvConfiguration:
 
     # API Setup
     @property
+    def api_name(self) -> str:
+        return self.__api_name
+
+    @property
     def api_host(self) -> str:
         return self.__api_host
 
@@ -43,6 +49,10 @@ class EnvConfiguration:
     @property
     def api_version(self) -> str:
         return self.__api_version
+
+    @property
+    def api_log_level(self) -> str:
+        return self.__api_log_level
 
     # Database Setup
     @property
