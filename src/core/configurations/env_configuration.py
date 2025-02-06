@@ -12,11 +12,13 @@ class EnvConfiguration:
     def __init__(self):
 
         # API Setup
-        self.__api_name: str = str(os.getenv("API_NAME"))
-        self.__api_host: str = str(os.getenv("API_HOST"))
-        self.__api_port: int = int(os.getenv("API_PORT"))  # type: ignore
-        self.__api_version: str = str(os.getenv("API_VERSION"))
-        self.__api_log_level: str = str(os.getenv("API_LOG_LEVEL"))
+        self.__api_name: str = str(
+            os.getenv("API_NAME", "user_management_api")
+        )
+        self.__api_host: str = str(os.getenv("API_HOST", "127.0.0.1"))
+        self.__api_port: int = int(os.getenv("API_PORT", 5000))
+        self.__api_version: str = str(os.getenv("API_VERSION", "v1"))
+        self.__api_log_level: str = str(os.getenv("API_LOG_LEVEL", "DEBUG"))
 
         # Database Setup
         self.__database_type: str = str(os.getenv("DATABASE_TYPE"))
@@ -27,8 +29,8 @@ class EnvConfiguration:
         self.__database_password: str = str(os.getenv("DATABASE_PASSWORD"))
 
         # JWT Setup
-        self.__jwt_secret_key: str = str(os.getenv("SECRET_KEY"))
-        self.__jwt_algorithm: str = str(os.getenv("JWT_ALGORITHM"))
+        self.__jwt_secret_key: str = str(os.getenv("SECRET_KEY", "CHANGE-ME"))
+        self.__jwt_algorithm: str = str(os.getenv("JWT_ALGORITHM", "HS256"))
         self.__jwt_access_token_expire_minutes: int = int(
             os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES")  # type: ignore
         )
