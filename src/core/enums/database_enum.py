@@ -6,3 +6,5 @@ from enum import Enum
 class DatabaseTypeEnum(str, Enum):
 
     POSTGRESQL = "PostgreSQL"
+    MYSQL = "MySQL"
+    SQLITE = "SQLite"

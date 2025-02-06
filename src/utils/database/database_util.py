@@ -21,7 +21,7 @@ class DatabaseUtil:
 
     def check_connection(self) -> None:
 
-        print("\033[33m\nTesting database connection...\033[0m")
+        print("\033[34m\033[1m\nTESTING DATABASE CONNECTION...\033[0m")
 
         checked_database_type = (
             DatabaseConfigurationUtil().check_database_type(
@@ -33,13 +33,13 @@ class DatabaseUtil:
 
             with self.__engine.connect():
                 print(
-                    f"\033[32m\nDatabase -> {checked_database_type} connection successful!\n\033[0m"
+                    f"\033[32m\033[1m\nDatabase -> {checked_database_type} connection successful!\n\033[0m"
                 )
 
         except OperationalError as e:
 
             print(
-                f"\033[31m\nDatabase connection failed!\n\033[0m Error: {str(e)}"
+                f"\033[31m\033[1m\nDatabase connection failed!\n\033[0m Error: {str(e)}"
             )
             raise
 
