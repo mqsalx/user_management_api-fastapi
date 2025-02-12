@@ -14,12 +14,14 @@ from src.usecases.scheduler_usecase import Scheduler
 from src.utils.database.database_util import DatabaseUtil
 from src.utils.dot_env.dot_env_util import DotEnvUtil
 from src.utils.log.logger_util import LoggerUtil
+from src.utils.message_util import MessageUtil
 
 app = FastAPI()
 log = LoggerUtil()
 
 # Env variables Setup
 API_HOST = EnvConfiguration().api_host
+API_NAME = EnvConfiguration().api_name
 API_PORT = EnvConfiguration().api_port
 API_VERSION = EnvConfiguration().api_version
 
@@ -32,21 +34,10 @@ my_scheduler_task = Scheduler()
 
 my_scheduler_task.schedule_function(my_function, 5)
 
-# Check ENV variables
-DotEnvUtil().check_dot_env()
-
-# Check Database Connection
-DatabaseUtil().check_connection()
-
-# Prepare Database
-DatabaseUtil().setup_database()
-
-
 app.add_exception_handler(BaseException, ExceptionHandler.handler)  # type: ignore
 
 app.add_middleware(LoggerMiddleware)
 # app.add_middleware(JWTMiddleware)
-
 
 routers = [(user_router.router, "/users")]
 # routers = [(user_router.router, "/users"), (login_router.router, "/login")]
@@ -56,4 +47,19 @@ for router, prefix in routers:
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=API_HOST, port=API_PORT)
+
+    # On Startup Message
+    MessageUtil().on_startup()
+
+    # Check ENV variables
+    DotEnvUtil().check_dot_env()
+
+    # Check Database Connection
+    DatabaseUtil().check_connection()
+
+    # Prepare Database
+    DatabaseUtil().setup_database()
+    width = 80
+    border = "=" * width
+
+    uvicorn.run(app, host=API_HOST, port=API_PORT, log_config=None)
