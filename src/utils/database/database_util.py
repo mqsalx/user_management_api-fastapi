@@ -21,8 +21,6 @@ class DatabaseUtil:
 
     def check_connection(self) -> None:
 
-        print("\033[34m\033[1m\nTESTING DATABASE CONNECTION...\033[0m")
-
         checked_database_type = (
             DatabaseConfigurationUtil().check_database_type(
                 self.__database_type

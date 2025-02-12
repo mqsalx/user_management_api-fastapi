@@ -47,8 +47,8 @@ class LoggerUtil:
         _log_file = os.path.join(_log_dir, _log_file_name)
 
         # Console format and message format
-        _date_format = "%d-%m-%Y|%H:%M:%S"
-        _stream_format = "%(asctime)s - %(name)s - %(log_color)s%(levelname)s%(reset)s - %(message)s"
+        _date_format = "%d-%m-%Y | %H:%M:%S"
+        _stream_format = "%(asctime)s - %(log_color)s%(levelname)s%(reset)s - %(message)s"
         _log_colors = {
             "DEBUG": "blue",
             "INFO": "green",
@@ -82,6 +82,13 @@ class LoggerUtil:
             self.__logger.setLevel(_level)
             self.__logger.addHandler(_file_handler)
             self.__logger.addHandler(_stream_handler)
+
+            logging.getLogger("uvicorn.access").disabled = True
+            logging.getLogger("uvicorn.error").disabled = True
+            logging.getLogger("uvicorn").disabled = True
+            logging.getLogger("uvicorn").propagate = False
+            logging.getLogger("apscheduler").disabled = True
+            logging.getLogger("apscheduler").propagate = False
 
     def info(self, message: str) -> None:
         """
