@@ -1,25 +1,28 @@
 # /src/utils/response/response_util.py
 
 from http import HTTPStatus
-from typing import Dict
+from typing import Dict, Optional, Union
 
 from fastapi.responses import JSONResponse
 
 
 class ResponseUtil:
-
     def json_response(
-        self, status_code: int, message: str, data: Dict[str, str]
+        self,
+        status_code: int,
+        message: Optional[str] = None,
+        data: Optional[Dict[str, str]] = None,
     ) -> JSONResponse:
 
-        response = JSONResponse(
-            status_code=status_code,
-            content={
-                "status_code": str(status_code),
-                "status_name": HTTPStatus(status_code).phrase,
-                "message": message,
-                "data": data,
-            },
-        )
+        response_content: Dict[str, Union[str, Dict[str, str]]] = {
+            "status_code": str(status_code),
+            "status_name": HTTPStatus(status_code).phrase,
+        }
 
-        return response
+        if message is not None:
+            response_content["message"] = message
+
+        if data is not None:
+            response_content["data"] = data
+
+        return JSONResponse(status_code=status_code, content=response_content)
