@@ -1,4 +1,4 @@
-# /src/utils/auth/jwt_utils.py
+# /src/utils/jwt_utils.py
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional

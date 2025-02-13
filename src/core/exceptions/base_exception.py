@@ -1,4 +1,4 @@
-# /src/core/exceptions/base/base_exception.py
+# /src/core/exceptions/base_exception.py
 
 from fastapi import HTTPException, status
 

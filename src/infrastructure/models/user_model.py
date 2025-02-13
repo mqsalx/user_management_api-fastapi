@@ -2,7 +2,7 @@
 
 from sqlalchemy import Column, Enum, Integer, String
 
-from src.core.enums.user.user_enum import UserStatusEnum
+from src.core.enums.user_enum import UserStatusEnum
 from src.infrastructure.database.database_configuration import (
     DatabaseConfiguration,
 )

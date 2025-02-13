@@ -1,4 +1,4 @@
-# /src/utils/log/console_logger_util.py
+# /src/utils/console_logger_util.py
 
 import logging
 import os

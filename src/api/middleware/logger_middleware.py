@@ -6,7 +6,7 @@ from http import HTTPStatus
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
 
-from src.utils.log.logger_util import LoggerUtil
+from src.utils.logger_util import LoggerUtil
 
 log = LoggerUtil()
 

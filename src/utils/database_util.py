@@ -1,4 +1,4 @@
-# /src/utils/database/database_util.py
+# /src/utils/database_util.py
 
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError

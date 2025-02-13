@@ -1,4 +1,4 @@
-# /src/api/routes/auth/login_router.py
+# /src/api/routes/login_router.py
 
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer
@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from api.controllers.login_controller import LoginController
 from src.core.configurations.env_configuration import EnvConfiguration
-from src.core.dtos.auth.login_dto import LoginRequestDTO, LoginResponseDTO
+from core.dtos.login_dto import LoginRequestDTO, LoginResponseDTO
 from src.infrastructure.database.database_configuration import DatabaseConfiguration
 
 # Env variables Setup

@@ -1,8 +1,8 @@
-# /src/core/exceptions/api/middleware/jwt_middleware_exception.py
+# /src/core/exceptions/j_middleware_exception.py
 
 from fastapi import status
 
-from src.core.exceptions.base.base_exception import BaseException
+from src.core.exceptions.base_exception import BaseException
 
 
 class UnauthorizedToken(BaseException):

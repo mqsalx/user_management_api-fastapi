@@ -1,8 +1,8 @@
-# /src/core/exceptions/database/base_exceptions.py
+# /src/core/exceptions/base_exceptions.py
 
 from fastapi import status
 
-from src.core.exceptions.base.base_exception import BaseException
+from src.core.exceptions.base_exception import BaseException
 
 
 class DatabaseConnectionException(BaseException):

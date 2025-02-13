@@ -1,4 +1,4 @@
-# /src/core/enums/base/base_exceptions.py
+# /src/core/enums/user_enum.py
 
 from enum import Enum
 

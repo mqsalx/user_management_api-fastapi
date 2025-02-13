@@ -1,14 +1,14 @@
 # /src/usecases/auth/login_usecase.py
 
-from src.core.dtos.auth.login_dto import LoginRequestDTO, LoginResponseDTO
-from src.core.exceptions.usecases.auth.login_exception import (
+from core.dtos.login_dto import LoginRequestDTO, LoginResponseDTO
+from core.exceptions.login_exception import (
     InvalidCredentialsException,
 )
-from src.infrastructure.repositories.auth.login_repository import (
+from src.infrastructure.repository.login_repository import (
     LoginRepository,
 )
-from src.utils.auth.jwt_util import create_token
-from src.utils.log.logger_util import LoggerUtil
+from utils.jwt_util import create_token
+from utils.logger_util import LoggerUtil
 
 log = LoggerUtil()
 

@@ -3,7 +3,7 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from src.core.dtos.auth.login_dto import LoginRequestDTO, LoginResponseDTO
+from src.core.dtos.login_dto import LoginRequestDTO, LoginResponseDTO
 from src.infrastructure.database.database_configuration import (
     DatabaseConfiguration,
 )

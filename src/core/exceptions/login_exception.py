@@ -1,8 +1,8 @@
-# /src/core/exceptions/usecases/auth/login_exception.py
+# /src/core/exceptions/login_exception.py
 
 from fastapi import status
 
-from src.core.exceptions.base.base_exception import BaseException
+from src.core.exceptions.base_exception import BaseException
 
 
 class InvalidCredentialsException(BaseException):

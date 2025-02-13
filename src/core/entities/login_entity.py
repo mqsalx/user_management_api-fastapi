@@ -1,4 +1,4 @@
-# /src/core/entities/auth/login_entity.py
+# /src/core/entities/login_entity.py
 
 
 class Login:

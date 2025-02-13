@@ -1,4 +1,4 @@
-# /src/utils/dot_env/dot_env_util.py
+# /src/utils/dot_env_util.py
 
 
 from dotenv import find_dotenv

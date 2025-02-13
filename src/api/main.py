@@ -6,14 +6,14 @@ import uvicorn
 from fastapi import FastAPI
 
 from src.api.middleware.logger_middleware import LoggerMiddleware
-from src.api.routes.user import user_router
+from src.api.routes import user_router
 from src.core.configurations.env_configuration import EnvConfiguration
-from src.core.exceptions.base.base_exception import BaseException
+from src.core.exceptions.base_exception import BaseException
 from src.core.exceptions.exception_handler import ExceptionHandler
 from src.usecases.scheduler_usecase import Scheduler
-from src.utils.database.database_util import DatabaseUtil
-from src.utils.dot_env.dot_env_util import DotEnvUtil
-from src.utils.log.logger_util import LoggerUtil
+from src.utils.database_util import DatabaseUtil
+from src.utils.dot_env_util import DotEnvUtil
+from src.utils.logger_util import LoggerUtil
 from src.utils.message_util import MessageUtil
 
 app = FastAPI()

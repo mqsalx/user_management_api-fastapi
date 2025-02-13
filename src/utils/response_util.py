@@ -1,4 +1,4 @@
-# /src/utils/response/response_util.py
+# /src/utils/response_util.py
 
 from http import HTTPStatus
 from typing import Dict, Optional, Union

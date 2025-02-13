@@ -1,5 +1,4 @@
-# /src/dtos/user/login_dto.py
-
+# /src/core/dtos/login_dto.py
 
 from pydantic import BaseModel, ConfigDict
 
@@ -17,6 +16,7 @@ class LoginResponseDTO(BaseModel):
     token_type: str
 
     model_config = ConfigDict(from_attributes=True)
+
 
 # class LoginResponseDTO(BaseModel):
 
