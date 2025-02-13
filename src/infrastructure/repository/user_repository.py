@@ -11,15 +11,10 @@ class UserRepository:
     def __init__(self, db: Session):
         self.__database = db
 
-    def create_user(self, user_data: dict) -> UserModel:
+    def create_user(self, **kwargs) -> UserModel:
         try:
 
-            user = UserModel(
-                name=user_data["name"],
-                email=user_data["email"],
-                status=user_data.get("status", "ACTIVE"),
-                created_at=user_data["created_at"],
-            )
+            user = UserModel(**kwargs)
 
             self.__database.add(user)
 
@@ -30,19 +25,35 @@ class UserRepository:
             return user
 
         except Exception as error:
+            self.__database.rollback()
             print(error)
             raise
 
-    # def get_user_by_id(self, user_id):
-    #     return self.__dao.find_by_id(user_id)
+    def get_user(self, user_id: int) -> UserModel | None:
+        return self.__database.query(UserModel).get(user_id)
 
-    # def get_all_users(self):
-    #     return self.__dao.find_all()
+    def get_users(self) -> list | None:
+        return self.__database.query(UserModel).all()
 
-    # def update_user(self, user):
-    #     self.__dao.update(user)
+    def delete_user(self, user: UserModel) -> None:
+        try:
 
-    # def delete_user(self, user_id):
-    #     self.__dao.delete(user_id)
-    #     self.__dao.delete(user_id)
-    #     self.__dao.delete(user_id)
+            self.__database.delete(user)
+
+            self.__database.commit()
+
+        except Exception as error:
+            self.__database.rollback()
+            print(error)
+            raise
+
+    def get_user_email(self, email: str) -> UserModel:
+        return (
+            self.__database.query(UserModel)
+            .filter(UserModel.email == email)
+            .first()
+        )
+
+    @property
+    def database(self) -> Session:
+        return self.__database

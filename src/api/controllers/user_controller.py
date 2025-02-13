@@ -1,38 +1,68 @@
 # /src/api/controllers/user/user_controller.py
 
 
+from typing import Optional
+
 from fastapi import Depends, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-from src.core.dtos.user.user_dto import UserRequestDTO, UserResponseDTO
+from src.core.dtos.user_dto import UserRequestDTO, UserResponseDTO
 from src.infrastructure.database.database_configuration import (
     DatabaseConfiguration,
 )
-from src.usecases.user.user_usecase_implements import UserUseCaseImplements
-from src.utils.response.response_util import ResponseUtil
+from src.usecases.user.create_user_use_case import CreateUserUseCase
+from src.usecases.user.delete_user_use_case import DeleteUserUseCase
+from src.usecases.user.get_user_use_case import GetUserUseCase
+from src.utils.response_util import ResponseUtil
 
 response_json = ResponseUtil().json_response
 
 
 class UserController:
+
     def __init__(self, db: Session = Depends(DatabaseConfiguration().get_db)):
-        self.__usecase = UserUseCaseImplements(db)
+        self.__use_case_create = CreateUserUseCase(db).create
+        self.__use_case_delete = DeleteUserUseCase(db).delete
+        self.__use_case_get = GetUserUseCase(db).get
 
-    def create_user(self, request: UserRequestDTO) -> JSONResponse:
+    def create_user_handler(self, request: UserRequestDTO) -> JSONResponse:
 
-        response = self.__usecase.create_user(request)
+        response = self.__use_case_create(request)
 
-        message = "User created"
+        message = "User created!"
 
         return response_json(
             status_code=status.HTTP_201_CREATED,
             message=message,
-            data=UserResponseDTO.model_validate(response).model_dump(),
+            data=UserResponseDTO(root=response).model_dump(),
         )
 
-    def get_users(self) -> UserResponseDTO:
-        return self.__usecase.get_users()
+    def delete_user_handler(self, user_id: int) -> JSONResponse:
 
-    def get_user(self, user_id: int) -> UserResponseDTO:
-        return self.__usecase.get_user(user_id)
+        self.__use_case_delete(user_id)
+
+        message = "User deleted!"
+
+        return response_json(status_code=status.HTTP_200_OK, message=message)
+
+    def get_user_handler(self, user_id: Optional[int] = None) -> JSONResponse:
+
+        response = self.__use_case_get(user_id)
+
+        if isinstance(response, list) and not response:
+            return ResponseUtil().json_response(
+                status_code=status.HTTP_204_NO_CONTENT
+            )
+
+        message = (
+            "Users retrieved!"
+            if isinstance(response, list)
+            else "User retrieved!"
+        )
+
+        return ResponseUtil().json_response(
+            status_code=status.HTTP_200_OK,
+            message=message,
+            data=UserResponseDTO(root=response).model_dump(),
+        )
