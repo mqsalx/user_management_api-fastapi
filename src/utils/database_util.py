@@ -5,7 +5,6 @@ from sqlalchemy.exc import OperationalError
 
 from src.core.configurations.env_configuration import EnvConfiguration
 from src.infrastructure.database.database_configuration import (
-    DatabaseConfiguration,
     DatabaseConfigurationUtil,
 )
 
