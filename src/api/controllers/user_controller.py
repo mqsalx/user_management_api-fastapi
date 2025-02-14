@@ -1,4 +1,4 @@
-# /src/api/controllers/user/user_controller.py
+# /src/api/controllers/user_controller.py
 
 
 from typing import Optional

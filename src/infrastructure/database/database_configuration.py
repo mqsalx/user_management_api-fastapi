@@ -17,16 +17,16 @@ class DatabaseConfiguration:
     sessions, and the declarative base for model definitions.
     """
 
-    __db_url = DatabaseConfigurationUtil().create_url()
-    __engine = create_engine(__db_url)
-    __sessionLocal = sessionmaker(
-        autocommit=False, autoflush=False, bind=__engine
+    _db_url = DatabaseConfigurationUtil().get_url()
+    _engine = create_engine(_db_url)
+    _sessionLocal = sessionmaker(
+        autocommit=False, autoflush=False, bind=_engine
     )
-    __base = declarative_base()
+    _base = declarative_base()
 
     @classmethod
     def get_db(cls) -> Generator[Session, None, None]:
-        db = cls.__sessionLocal()
+        db = cls._sessionLocal()
         try:
             yield db
         finally:
@@ -39,7 +39,7 @@ class DatabaseConfiguration:
         Returns:
             None
         """
-        cls.__base.metadata.create_all(bind=cls.__engine)
+        cls._base.metadata.create_all(bind=cls._engine)
 
     @classmethod
     def base(cls) -> Any:
@@ -48,4 +48,4 @@ class DatabaseConfiguration:
         Returns:
             Any: The declarative base.
         """
-        return cls.__base
+        return cls._base

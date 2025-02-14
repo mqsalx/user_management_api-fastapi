@@ -1,4 +1,4 @@
-# /src/api/controllers/auth/login_controller.py
+# /src/api/controllers/login_controller.py
 
 from fastapi import Depends
 from sqlalchemy.orm import Session

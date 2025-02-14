@@ -1,4 +1,4 @@
-# /src/api/middleware/auth/jwt_middleware.py
+# /src/api/middleware/jwt_middleware.py
 
 
 from fastapi import HTTPException, Request

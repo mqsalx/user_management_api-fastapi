@@ -17,7 +17,7 @@ class DatabaseConfigurationUtil:
         self.__db_password = EnvConfiguration().database_password
         self.__db_type_default = DatabaseTypeEnum.SQLITE.value.upper()
 
-    def create_url(self) -> str:
+    def get_url(self) -> str:
         try:
             _db_type = self.__db_type
             _db_url = None

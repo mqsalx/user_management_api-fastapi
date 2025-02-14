@@ -14,7 +14,7 @@ class DatabaseUtil:
 
     def __init__(self):
 
-        _db_url = DatabaseConfigurationUtil().create_url()
+        _db_url = DatabaseConfigurationUtil().get_url()
 
         self.__database_type = EnvConfiguration().database_type
         self.__engine = create_engine(_db_url)
@@ -40,6 +40,3 @@ class DatabaseUtil:
                 f"\033[31m\033[1m\nDatabase connection failed!\n\033[0m Error: {str(e)}"
             )
             raise
-
-    def setup_database(self):
-        DatabaseConfiguration.create_all()

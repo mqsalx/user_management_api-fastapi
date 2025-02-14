@@ -57,8 +57,6 @@ if __name__ == "__main__":
     # Check Database Connection
     DatabaseUtil().check_connection()
 
-    # Prepare Database
-    DatabaseUtil().setup_database()
     width = 80
     border = "=" * width
 
