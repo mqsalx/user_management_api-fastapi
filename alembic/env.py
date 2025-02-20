@@ -2,69 +2,46 @@ import importlib
 import os
 import pkgutil
 from logging.config import fileConfig
-
 from sqlalchemy import engine_from_config, pool
-
 from alembic import context
-from src.infrastructure.database.database_configuration import (
-    DatabaseConfiguration,
-)
-from src.infrastructure.database.database_configuration_util import (
-    DatabaseConfigurationUtil,
-)
+from src.infrastructure.models.user_model import UserModel
+from src.infrastructure.database.database_configuration import DatabaseConfiguration
+from src.infrastructure.database.database_configuration_util import DatabaseConfigurationUtil
+from src.utils.database_util import DatabaseUtil
 
+# Define the database URL
 DATABASE_URL = DatabaseConfigurationUtil().get_url()
-DatabaseConfiguration.base()
 
-# Absolute path to the Models folder
-models_package = "src.infrastructure.models"
-
-try:
-    models_path = os.path.dirname(
-        importlib.import_module(models_package).__file__
-    )
-except AttributeError:
-    raise ImportError(
-        f"It was not possible to find the packet {models_package}. Check that the 'Models' folder contains a '__init__.py'."
-    )
-
-for _, module_name, _ in pkgutil.iter_modules([models_path]):
-    importlib.import_module(f"{models_package}.{module_name}")
-
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
+# Alembic configuration
 config = context.config
-
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
+# Retrieve metadata from SQLAlchemy models
 target_metadata = DatabaseConfiguration.base().metadata
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
+# Dynamically load models
+models_package = "src.infrastructure.models"
+
+try:
+    models_path = os.path.dirname(importlib.import_module(models_package).__file__)
+except AttributeError:
+    raise ImportError(
+        f"Could not find the package {models_package}. Ensure the 'models' folder contains an '__init__.py' file."
+    )
+
+for _, module_name, _ in pkgutil.iter_modules([models_path]):
+    importlib.import_module(f"{models_package}.{module_name}")
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode.
+    """
+    Run migrations in 'offline' mode.
 
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
-
-    Calls to context.execute() here emit the given string to the
-    script output.
-
+    This configures the context with just a database URL and no connection engine.
+    Calls to context.execute() emit the given SQL statements as raw strings.
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
@@ -79,11 +56,11 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
+    """
+    Run migrations in 'online' mode.
 
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-
+    This method creates an engine and associates a connection with the Alembic context.
+    The migration process runs within a transaction.
     """
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
@@ -99,7 +76,24 @@ def run_migrations_online() -> None:
         with context.begin_transaction():
             context.run_migrations()
 
+    print("✅ Migrations completed successfully! Now creating admin user...")
 
+    from sqlalchemy import inspect
+    from src.infrastructure.database.database_configuration import DatabaseConfiguration
+
+    engine = DatabaseConfiguration._engine
+    inspector = inspect(engine)
+
+    if UserModel.__tablename__ in inspector.get_table_names():
+        try:
+            DatabaseUtil.create_admin_user()
+        except Exception as e:
+            print(f"⚠️ Error creating admin user: {e}")
+    else:
+        print("⚠️ Skipping admin user creation. 'users' table does not exist.")
+
+
+# Determine whether to run in offline or online mode
 if context.is_offline_mode():
     run_migrations_offline()
 else:
