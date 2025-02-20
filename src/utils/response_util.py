@@ -1,7 +1,7 @@
 # /src/utils/response_util.py
 
 from http import HTTPStatus
-from typing import Dict, Optional, Union
+from typing import Dict, Union
 
 from fastapi.responses import JSONResponse
 
@@ -10,8 +10,8 @@ class ResponseUtil:
     def json_response(
         self,
         status_code: int,
-        message: Optional[str] = None,
-        data: Optional[Dict[str, str]] = None,
+        message: str | None = None,
+        data: Dict[str, str] | None = None,
     ) -> JSONResponse:
 
         response_content: Dict[str, Union[str, Dict[str, str]]] = {

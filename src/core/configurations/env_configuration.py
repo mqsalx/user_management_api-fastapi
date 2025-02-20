@@ -19,6 +19,12 @@ class EnvConfiguration:
         self.__api_port: int = int(os.getenv("API_PORT", 5000))
         self.__api_version: str = str(os.getenv("API_VERSION", "v1"))
         self.__api_log_level: str = str(os.getenv("API_LOG_LEVEL", "DEBUG"))
+        self.__api_user_administrator: str = str(
+            os.getenv("API_USER_ADMINISTRATOR")
+        )
+        self.__api_password_administrator: str = str(
+            os.getenv("API_PASSWORD_ADMINISTRATOR")
+        )
 
         # Database Setup
         self.__database_type: str = str(os.getenv("DATABASE_TYPE"))
@@ -55,6 +61,14 @@ class EnvConfiguration:
     @property
     def api_log_level(self) -> str:
         return self.__api_log_level
+
+    @property
+    def api_user_administrator(self) -> str:
+        return self.__api_user_administrator
+
+    @property
+    def api_password_administrator(self) -> str:
+        return self.__api_password_administrator
 
     # Database Setup
     @property
