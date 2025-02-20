@@ -7,9 +7,9 @@ from jwt import ExpiredSignatureError, InvalidTokenError
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from src.core.configurations.env_configuration import EnvConfiguration
-from core.exceptions.base_exception import BaseException
-from utils.jwt_util import verify_token
-from utils.logger_util import LoggerUtil
+from src.core.exceptions.base_exception import BaseException
+from src.utils.jwt_util import verify_token
+from src.utils.logger_util import LoggerUtil
 
 # Env variables Setup
 API_VERSION = EnvConfiguration().api_version

@@ -2,7 +2,8 @@
 
 from sqlalchemy.orm import Session
 
-from infrastructure.models.user_model import UserModel
+from src.infrastructure.models.user_model import UserModel
+from src.utils.any_utils import AnyUtils
 
 
 class LoginRepository:
@@ -11,12 +12,18 @@ class LoginRepository:
         self.db = db
 
     def get_user(self, user_id: int) -> UserModel:
-        return self.db.query(UserModel).filter(UserModel.id == user_id).first()
+        return (
+            self.db.query(UserModel)
+            .filter(
+                UserModel.user_id == user_id,
+            )
+            .first()
+        )
 
     def get_users(self):
         return self.db.query(UserModel).all()
 
-    def verify_email(self, email: str) -> bool:
+    def verify_email(self, email: str) -> UserModel | None:
         """
         Check if an email already exists in the database.
         """
@@ -27,16 +34,11 @@ class LoginRepository:
 
         if user:
             return user
-        return False
+        return None
 
-    def verify_password(self, password: str) -> bool:
+    def verify_password(self, request_password: str, saved_password: str) -> bool:
         """
         Verify if the provided password matches the stored password for the given email.
         """
 
-        return (
-            self.db.query(UserModel)
-            .filter(UserModel.password == password)
-            .first()
-            is not None
-        )
+        return AnyUtils.check_password_hash(request_password, saved_password)

@@ -1,7 +1,6 @@
 # /src/utils/jwt_utils.py
 
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 import jwt
 
@@ -15,7 +14,7 @@ JWT_SECRET_KEY = EnvConfiguration().jwt_secret_key
 JWT_ALGORITHM = EnvConfiguration().jwt_algorithm
 
 
-def create_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+def create_token(data: dict, expires_delta: timedelta | None = None) -> str:
     """
     Creates a JWT access token.
     """

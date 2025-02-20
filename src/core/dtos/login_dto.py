@@ -1,6 +1,7 @@
 # /src/core/dtos/login_dto.py
 
-from pydantic import BaseModel, ConfigDict
+
+from pydantic import BaseModel, ConfigDict, RootModel
 
 
 class LoginRequestDTO(BaseModel):
@@ -10,12 +11,8 @@ class LoginRequestDTO(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class LoginResponseDTO(BaseModel):
-
-    access_token: str
-    token_type: str
-
-    model_config = ConfigDict(from_attributes=True)
+class LoginResponseDTO(RootModel):
+    root: dict[str, str]
 
 
 # class LoginResponseDTO(BaseModel):
