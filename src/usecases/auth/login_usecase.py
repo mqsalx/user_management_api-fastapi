@@ -3,7 +3,9 @@
 from typing import Dict
 
 from src.core.dtos.login_dto import LoginRequestDTO
-from src.core.exceptions.login_exception import InvalidCredentialsException
+from src.core.exceptions.login_exception import (
+    InvalidCredentialsException,
+)
 from src.infrastructure.repository.login_repository import LoginRepository
 from src.utils.jwt_util import create_token
 from src.utils.logger_util import LoggerUtil

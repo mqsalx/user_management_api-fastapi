@@ -1,6 +1,7 @@
 # /src/api/routes/login_router.py
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
@@ -23,6 +24,6 @@ oauth2_scheme = OAuth2PasswordBearer(
 def login(
     request: LoginRequestDTO,
     db: Session = Depends(DatabaseConfiguration().get_db),
-) -> LoginResponseDTO:
+) -> JSONResponse:
     controller = LoginController(db)
     return controller.login(request)
