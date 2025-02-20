@@ -13,25 +13,25 @@ from src.utils.logger_util import LoggerUtil
 log = LoggerUtil()
 
 
-class DeleteUserUseCase:
+class RemoveUserUseCase:
 
     def __init__(self, db: Session):
         self.__repository = UserRepository(db)
 
-    def delete(self, user_id: int) -> None:
+    def remove(self, user_id: str) -> None:
 
         try:
 
             self.__check_user_id(user_id)
 
-            user = self.__repository.get_user(user_id)
+            user = self.__repository.find_user(user_id)
 
             if not user:
                 raise UserNotFoundException(
                     f"User with ID {user_id} is invalid or incorrect!"
                 )
 
-            self.__repository.delete_user(user)
+            self.__repository.remove_user(user)
             self.__repository.database.commit()
 
             log.info(f"User deleted: id: {user_id}, name: {user.name}")
@@ -40,7 +40,7 @@ class DeleteUserUseCase:
             log.error(f"Error in DeleteUserUseCase: {error}")
             raise
 
-    def __check_user_id(self, user_id: int) -> None:
+    def __check_user_id(self, user_id: str) -> None:
         if not user_id:
             raise UserNotFoundException(
                 "User ID is required in the Query Params!"

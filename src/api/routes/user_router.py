@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from src.api.controllers.user_controller import UserController
-from src.core.dtos.user_dto import UserRequestDTO
+from src.core.dtos.user_dto import CreateUserRequestDTO, UpdateUserRequestDTO
 from src.infrastructure.database.database_configuration import (
     DatabaseConfiguration,
 )
@@ -16,27 +16,37 @@ router = APIRouter()
 
 @router.post("", response_model=None)
 def create_user_router(
-    request: UserRequestDTO,
+    request: CreateUserRequestDTO,
     db: Session = Depends(DatabaseConfiguration().get_db),
 ) -> JSONResponse:
     controller = UserController(db)
-    return controller.create_user_handler(request)
+    return controller.create_user_controller(request)
 
 
 @router.delete("", response_model=None)
-def delete_user_router(
-    user_id: int = Query(None, description="User ID to delete"),
+def remove_user_router(
+    user_id: str = Query(None, description="User ID to delete"),
     db: Session = Depends(DatabaseConfiguration().get_db),
 ) -> JSONResponse:
     controller = UserController(db)
-    return controller.delete_user_handler(user_id)
+    return controller.remove_user_controller(user_id)
 
 
 @router.get("", response_model=None)
-def get_user(
-    user_id: int | None = Query(None, description="User ID (optional)"),
+def find_user_router(
+    user_id: str | None = Query(None, description="User ID (optional)"),
     db: Session = Depends(DatabaseConfiguration().get_db),
 ) -> JSONResponse:
 
     controller = UserController(db)
-    return controller.get_user_handler(user_id)
+    return controller.find_user_controller(user_id)
+
+
+@router.patch("/{user_id}", response_model=None)
+def update_user_router(
+    user_id: str,
+    request: UpdateUserRequestDTO,
+    db: Session = Depends(DatabaseConfiguration().get_db),
+) -> JSONResponse:
+    controller = UserController(db)
+    return controller.update_user_controller(user_id, request)

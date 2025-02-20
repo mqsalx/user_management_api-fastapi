@@ -1,4 +1,4 @@
-# /src/core/enums/user_enum.py
+# /src/core/enums/user_status_enum.py
 
 from enum import Enum
 

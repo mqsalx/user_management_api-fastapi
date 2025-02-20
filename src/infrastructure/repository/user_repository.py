@@ -3,6 +3,7 @@
 
 from sqlalchemy.orm import Session
 
+from src.core.enums.user_role_enum import UserRoleEnum
 from src.infrastructure.models.user_model import UserModel
 
 
@@ -29,13 +30,24 @@ class UserRepository:
             print(error)
             raise
 
-    def get_user(self, user_id: int) -> UserModel | None:
-        return self.__database.query(UserModel).get(user_id)
+    def find_user(self, user_id: str) -> UserModel | None:
+        return (
+            self.__database.query(UserModel)
+            .filter(
+                UserModel.user_id == user_id,
+                UserModel.role != UserRoleEnum.SUPER_ADMINISTRATOR,
+            )
+            .first()
+        )
 
-    def get_users(self) -> list | None:
-        return self.__database.query(UserModel).all()
+    def find_users(self) -> list[UserModel] | None:
+        return (
+            self.database.query(UserModel)
+            .filter(UserModel.role != UserRoleEnum.SUPER_ADMINISTRATOR)
+            .all()
+        )
 
-    def delete_user(self, user: UserModel) -> None:
+    def remove_user(self, user: UserModel) -> None:
         try:
 
             self.__database.delete(user)
@@ -47,7 +59,7 @@ class UserRepository:
             print(error)
             raise
 
-    def get_user_email(self, email: str) -> UserModel:
+    def find_user_email(self, email: str) -> UserModel:
         return (
             self.__database.query(UserModel)
             .filter(UserModel.email == email)
