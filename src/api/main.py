@@ -3,20 +3,19 @@
 import time
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
 
-from src.api.middleware.jwt_middleware import JWTMiddleware
-from src.api.middleware.logger_middleware import LoggerMiddleware
-from src.api.routes import user_router
+from src.api.routes import login_router, user_router
 from src.core.configurations.env_configuration import EnvConfiguration
-from src.core.exceptions.base_exception import BaseException
 from src.core.exceptions.exception_handler import ExceptionHandler
+from src.core.middleware.jwt_middleware import JWTMiddleware
+from src.core.middleware.logger_middleware import LoggerMiddleware
 from src.usecases.scheduler_usecase import Scheduler
 from src.utils.database_util import DatabaseUtil
 from src.utils.dot_env_util import DotEnvUtil
 from src.utils.logger_util import LoggerUtil
 from src.utils.message_util import MessageUtil
-from src.api.routes import login_router
 
 app = FastAPI()
 log = LoggerUtil()
@@ -34,14 +33,14 @@ def my_function():
 
 my_scheduler_task = Scheduler()
 
-my_scheduler_task.schedule_function(my_function, 5)
+# my_scheduler_task.schedule_function(my_function, 5)
 
-app.add_exception_handler(BaseException, ExceptionHandler.handler)  # type: ignore
+app.add_exception_handler(HTTPException, ExceptionHandler.http_exception_handler)  # type: ignore
+app.add_exception_handler(RequestValidationError, ExceptionHandler.json_decode_error_handler)  # type: ignore
 
 app.add_middleware(LoggerMiddleware)
 app.add_middleware(JWTMiddleware)
 
-routers = [(user_router.router, "/users")]
 routers = [(user_router.router, "/users"), (login_router.router, "/login")]
 
 for router, prefix in routers:

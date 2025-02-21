@@ -7,7 +7,7 @@ from src.core.exceptions.login_exception import (
     InvalidCredentialsException,
 )
 from src.infrastructure.repository.login_repository import LoginRepository
-from src.utils.jwt_util import create_token
+from src.utils.jwt_util import JWTUtil
 from src.utils.logger_util import LoggerUtil
 
 log = LoggerUtil()
@@ -37,7 +37,7 @@ class LoginUseCase:
                 raise InvalidCredentialsException("Invalid credentials!")
 
             token_data = {"sub": user.email}
-            token = create_token(token_data)
+            token = JWTUtil.create_token(token_data)
             return self.__response(token)
 
         except BaseException as e:

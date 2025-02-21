@@ -83,12 +83,13 @@ class LoggerUtil:
             self.__logger.addHandler(_file_handler)
             self.__logger.addHandler(_stream_handler)
 
-            logging.getLogger("uvicorn.access").disabled = True
-            logging.getLogger("uvicorn.error").disabled = True
-            logging.getLogger("uvicorn").disabled = True
-            logging.getLogger("uvicorn").propagate = False
-            logging.getLogger("apscheduler").disabled = True
-            logging.getLogger("apscheduler").propagate = False
+            if _level != "DEBUG":
+                logging.getLogger("uvicorn.access").disabled = True
+                logging.getLogger("uvicorn.error").disabled = True
+                logging.getLogger("uvicorn").disabled = True
+                logging.getLogger("uvicorn").propagate = False
+                logging.getLogger("apscheduler").disabled = True
+                logging.getLogger("apscheduler").propagate = False
 
     def info(self, message: str) -> None:
         """
