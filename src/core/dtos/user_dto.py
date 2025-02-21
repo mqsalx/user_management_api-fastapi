@@ -5,10 +5,11 @@ from typing import Dict, List, Union
 
 from pydantic import BaseModel, EmailStr, RootModel
 
+from src.core.dtos.base_dto import BaseDTO
 from src.core.enums.user_status_enum import UserStatusEnum
 
 
-class CreateUserRequestDTO(BaseModel):
+class CreateUserRequestDTO(BaseDTO):
     name: str
     email: EmailStr
     status: UserStatusEnum = UserStatusEnum.ACTIVE
