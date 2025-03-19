@@ -5,6 +5,9 @@ from sqlalchemy.orm import Session
 
 from src.core.enums.user_role_enum import UserRoleEnum
 from src.infrastructure.models.user_model import UserModel
+from src.utils.logger_util import LoggerUtil
+
+log = LoggerUtil()
 
 
 class UserRepository:
@@ -27,7 +30,7 @@ class UserRepository:
 
         except Exception as error:
             self.__database.rollback()
-            print(error)
+            log.error(f"Error creating user: {error}")
             raise
 
     def find_user(self, user_id: str) -> UserModel | None:
@@ -35,7 +38,7 @@ class UserRepository:
             self.__database.query(UserModel)
             .filter(
                 UserModel.user_id == user_id,
-                UserModel.role != UserRoleEnum.SUPER_ADMINISTRATOR,
+                UserModel.role_id != UserRoleEnum.SUPER_ADMINISTRATOR,
             )
             .first()
         )
@@ -43,7 +46,7 @@ class UserRepository:
     def find_users(self) -> list[UserModel] | None:
         return (
             self.database.query(UserModel)
-            .filter(UserModel.role != UserRoleEnum.SUPER_ADMINISTRATOR)
+            .filter(UserModel.role_id != UserRoleEnum.SUPER_ADMINISTRATOR)
             .all()
         )
 
@@ -56,7 +59,7 @@ class UserRepository:
 
         except Exception as error:
             self.__database.rollback()
-            print(error)
+            log.error(f"Error removing user: {error}")
             raise
 
     def find_user_email(self, email: str) -> UserModel:

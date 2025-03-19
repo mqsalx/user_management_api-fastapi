@@ -39,7 +39,7 @@ class FindUserUseCase:
                 return self.__response(user)
 
         except Exception as error:
-            log.error(f"Error in GetUserUseCase: {error}")
+            log.error(f"Error in FindUserUseCase: {error}")
             raise
 
     def __response(self, user: UserModel) -> Dict[str, str]:
