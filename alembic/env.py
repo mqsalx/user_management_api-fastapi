@@ -2,12 +2,19 @@ import importlib
 import os
 import pkgutil
 from logging.config import fileConfig
+
 from sqlalchemy import engine_from_config, pool
+
 from alembic import context
+from src.infrastructure.database.database_configuration import (
+    DatabaseConfiguration,
+)
+from src.infrastructure.database.database_configuration_util import (
+    DatabaseConfigurationUtil,
+)
+from src.infrastructure.models.permission_model import PermissionModel
+from src.infrastructure.models.role_model import RoleModel
 from src.infrastructure.models.user_model import UserModel
-from src.infrastructure.database.database_configuration import DatabaseConfiguration
-from src.infrastructure.database.database_configuration_util import DatabaseConfigurationUtil
-from src.utils.database_util import DatabaseUtil
 
 # Define the database URL
 DATABASE_URL = DatabaseConfigurationUtil().get_url()
@@ -26,7 +33,9 @@ target_metadata = DatabaseConfiguration.base().metadata
 models_package = "src.infrastructure.models"
 
 try:
-    models_path = os.path.dirname(importlib.import_module(models_package).__file__)
+    models_path = os.path.dirname(
+        importlib.import_module(models_package).__file__
+    )
 except AttributeError:
     raise ImportError(
         f"Could not find the package {models_package}. Ensure the 'models' folder contains an '__init__.py' file."
@@ -76,21 +85,56 @@ def run_migrations_online() -> None:
         with context.begin_transaction():
             context.run_migrations()
 
-    print("✅ Migrations completed successfully! Now creating admin user...")
+    print("Migrations completed successfully!")
 
     from sqlalchemy import inspect
-    from src.infrastructure.database.database_configuration import DatabaseConfiguration
+
+    from src.infrastructure.database.database_configuration import (
+        DatabaseConfiguration,
+    )
 
     engine = DatabaseConfiguration._engine
     inspector = inspect(engine)
 
+    if PermissionModel.__tablename__ in inspector.get_table_names():
+        try:
+            print("Creating permissions...")
+            PermissionModel.create_permissions()
+            print("Permissions created successfully!")
+        except Exception as e:
+            print(f"Error creating permissions: {e}")
+    else:
+        print(
+            f"Skipping permission creation. {PermissionModel.__tablename__} table does not exist."
+        )
+
+    if RoleModel.__tablename__ in inspector.get_table_names():
+        try:
+            print("Creating roles...")
+            RoleModel.create_roles()
+            print("Roles created successfully!")
+
+            print("Assigning permissions to administrator role...")
+            RoleModel.assign_permissions_to_administrator()
+            print("Permissions assigned to administrator role successfully!")
+        except Exception as e:
+            print(f"Error creating roles: {e}")
+    else:
+        print(
+            f"Skipping roles creation. {RoleModel.__tablename__} table does not exist."
+        )
+
     if UserModel.__tablename__ in inspector.get_table_names():
         try:
-            DatabaseUtil.create_admin_user()
+            print("Creating admin user...")
+            UserModel.create_administrator_user()
+            print("Admin user created successfully!")
         except Exception as e:
             print(f"⚠️ Error creating admin user: {e}")
     else:
-        print("⚠️ Skipping admin user creation. 'users' table does not exist.")
+        print(
+            f"Skipping admin user creation. {UserModel.__tablename__} table does not exist."
+        )
 
 
 # Determine whether to run in offline or online mode
