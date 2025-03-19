@@ -1,6 +1,7 @@
 # /src/utils/any_utils.py
 
 from datetime import datetime
+import random
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -20,8 +21,10 @@ class AnyUtils:
     def generate_unique_id() -> str:
 
         now = datetime.now()
-        unique_id = now.strftime("%y%m%d%H%M%S")
-        return unique_id
+        sorted_value = random.randint(0, 0xFFFF)
+        hex_value = f"{sorted_value:04X}"
+        date_time_now = now.strftime("%y%m%d%H%M%S")
+        return date_time_now + hex_value
 
     @staticmethod
     def generate_password_hash(password: str) -> str:
