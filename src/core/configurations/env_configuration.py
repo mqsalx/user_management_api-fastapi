@@ -12,6 +12,9 @@ class EnvConfiguration:
     def __init__(self):
 
         # API Setup
+        __api_role_permissions: str = str(os.getenv("API_ROLE_PERMISSIONS"))
+        __api_user_roles: str = str(os.getenv("API_USER_ROLES"))
+
         self.__api_name: str = str(
             os.getenv("API_NAME", "user_management_api")
         )
@@ -24,6 +27,20 @@ class EnvConfiguration:
         )
         self.__api_password_administrator: str = str(
             os.getenv("API_PASSWORD_ADMINISTRATOR")
+        )
+        self.__api_role_permissions: list = list(
+            [
+                permission.strip()
+                for permission in __api_role_permissions.split(",")
+                if permission.strip()
+            ]
+        )
+        self.__api_user_roles: list = list(
+            [
+                role.strip()
+                for role in __api_user_roles.split(",")
+                if role.strip()
+            ]
         )
 
         # Database Setup
@@ -69,6 +86,14 @@ class EnvConfiguration:
     @property
     def api_password_administrator(self) -> str:
         return self.__api_password_administrator
+
+    @property
+    def api_role_permissions(self) -> list:
+        return self.__api_role_permissions
+
+    @property
+    def api_user_roles(self) -> list:
+        return self.__api_user_roles
 
     # Database Setup
     @property
