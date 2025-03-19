@@ -25,7 +25,7 @@ def create_user_router(
 
 @router.delete("", response_model=None)
 def remove_user_router(
-    user_id: str = Query(None, description="User ID to delete"),
+    user_id: str = Query(None, description="User ID to delete."),
     db: Session = Depends(DatabaseConfiguration().get_db),
 ) -> JSONResponse:
     controller = UserController(db)
@@ -34,7 +34,7 @@ def remove_user_router(
 
 @router.get("", response_model=None)
 def find_user_router(
-    user_id: str | None = Query(None, description="User ID (optional)"),
+    user_id: str | None = Query(None, description="User ID (optional) to find."),
     db: Session = Depends(DatabaseConfiguration().get_db),
 ) -> JSONResponse:
 

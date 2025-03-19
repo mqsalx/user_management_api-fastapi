@@ -34,7 +34,6 @@ class LoginController:
 
         message = "Token generated!"
 
-        # return LoginResponseDTO(access_token=token, token_type="bearer")
         return response_json(
             status_code=status.HTTP_200_OK,
             message=message,

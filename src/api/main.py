@@ -9,7 +9,7 @@ from fastapi.exceptions import RequestValidationError
 from src.api.routes import login_router, user_router
 from src.core.configurations.env_configuration import EnvConfiguration
 from src.core.exceptions.exception_handler import ExceptionHandler
-from src.core.middleware.jwt_middleware import JWTMiddleware
+from src.core.middleware.auth_middleware import AuthMiddleware
 from src.core.middleware.logger_middleware import LoggerMiddleware
 from src.usecases.scheduler_usecase import Scheduler
 from src.utils.database_util import DatabaseUtil
@@ -39,7 +39,7 @@ app.add_exception_handler(HTTPException, ExceptionHandler.http_exception_handler
 app.add_exception_handler(RequestValidationError, ExceptionHandler.json_decode_error_handler)  # type: ignore
 
 app.add_middleware(LoggerMiddleware)
-app.add_middleware(JWTMiddleware)
+app.add_middleware(AuthMiddleware)
 
 routers = [(user_router.router, "/users"), (login_router.router, "/login")]
 

@@ -1,4 +1,4 @@
-# /src/api/middleware/logger_middleware.py
+# /src/core/middleware/logger_middleware.py
 
 import time
 from http import HTTPStatus
@@ -15,10 +15,9 @@ class LoggerMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request, call_next) -> Response:
         """
-        # TODO: define docstrings
         """
         start_time = time.time()
-        host = request.client.host if request.client else 'unknown'
+        host = request.client.host if request.client else "unknown"
         method = request.method
         url = str(request.url)
 
