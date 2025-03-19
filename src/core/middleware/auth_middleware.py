@@ -1,3 +1,5 @@
+# /src/core/middleware/jwt_middleware.py
+
 from fastapi import HTTPException, Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -14,7 +16,7 @@ json_response = ResponseUtil().json_response
 log = LoggerUtil()
 
 
-class JWTMiddleware(BaseHTTPMiddleware):
+class AuthMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
         try:
@@ -40,6 +42,8 @@ class JWTMiddleware(BaseHTTPMiddleware):
             token = auth_header.split(" ")[1]
 
             JWTUtil.verify_token(token)
+
+            request.state.token = token
 
             response = await call_next(request)
 

@@ -12,7 +12,7 @@ class ExceptionHandler:
     @staticmethod
     async def http_exception_handler(
         request: Request, exc: HTTPException
-    ) -> JSONResponse:
+    ) -> JSONResponse | None:
         """Handles generic HTTP exceptions in FastAPI."""
         return JSONResponse(
             status_code=exc.status_code,
@@ -27,7 +27,7 @@ class ExceptionHandler:
     async def json_decode_error_handler(
         request: Request,
         exc: RequestValidationError,
-    ) -> JSONResponse:
+    ) -> JSONResponse | None:
 
         for error in exc.errors():
             if error["type"] == "json_invalid":
@@ -40,13 +40,3 @@ class ExceptionHandler:
                         "message": "Invalid JSON format. Ensure the request body is correctly formatted."
                     },
                 )
-
-        return JSONResponse(
-            status_code=422,
-            content={
-                "status_code": "422",
-                "status_name": HTTPStatus(422).phrase,
-                "message": "Validation error in request body.",
-                "details": exc.errors(),
-            },
-        )
