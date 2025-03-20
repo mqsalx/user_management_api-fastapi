@@ -38,6 +38,9 @@ class DatabaseConfiguration:
         This method creates a new database session, yields it for use,
         and ensures proper cleanup by closing the session afterward.
 
+        Args:
+            None
+
         Yields:
             Generator[Session, None, None]: A database session.
 

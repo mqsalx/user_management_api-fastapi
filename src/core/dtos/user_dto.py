@@ -46,13 +46,7 @@ class UpdateUserRequestDTO(BaseDTO):
 
     This class is responsible for validating and structuring user update requests.
 
-    Class Attributes:
-        name (str, optional): The full name of the user.
-        email (EmailStr, optional): The user's email address (must be a valid email format).
-        status (UserStatusEnum, optional): The user's account status (default: ACTIVE).
-        password (str, optional): The user's password.
-
-    Instance Attributes:
+    Class Args:
         None
     """
 
@@ -86,12 +80,8 @@ class UserResponseDTO(RootModel):
     This class structures responses for user-related API calls, returning user details
     as a dictionary or a list of dictionaries.
 
-    Class Attributes:
-        None
-
-    Instance Attributes:
-        root (Union[Dict[str, str], List[Dict[str, str]]]): The response body,
-            which may contain a single user's data or a list of users.
+    Class Args:
+        None.
     """
 
     root: Union[Dict[str, str], List[Dict[str, str]]]
