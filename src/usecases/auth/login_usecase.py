@@ -14,12 +14,44 @@ log = LoggerUtil()
 
 
 class LoginUseCase:
+    """
+    Class responsible for handling the authentication use case.
+
+    This class manages user authentication by verifying credentials
+    and generating JWT tokens.
+
+    Class Args:
+        login_repository (LoginRepository): The repository responsible for querying user data.
+    """
+
     def __init__(self, login_repository: LoginRepository):
+        """
+        Constructor method for LoginUseCase.
+
+        Initializes the use case with a repository instance.
+
+        Args:
+            login_repository (LoginRepository): The repository instance for user authentication.
+        """
+
         self.__repository = login_repository
 
     def authenticate_user(self, request: LoginRequestDTO) -> Dict[str, str]:
         """
-        Authenticates a user and returns a JWT token.
+        Public method responsible for authenticating a user and returning a JWT token.
+
+        This method verifies the user's email and password. If authentication is successful,
+        it generates a JWT token containing user details.
+
+        Args:
+            request (LoginRequestDTO): The DTO containing the user's email and password.
+
+        Returns:
+            Dict[str, str]: A dictionary containing the access token and token type.
+
+        Raises:
+            InvalidCredentialsException: If the email or password is incorrect.
+            BaseException: If an unexpected error occurs during authentication.
         """
 
         try:
@@ -51,7 +83,13 @@ class LoginUseCase:
 
     def __verify_email(self, email: str) -> UserModel | None:
         """
-        Check if an email already exists in the database.
+        Private method responsible for checking if an email exists in the database.
+
+        Args:
+            email (str): The email address to check.
+
+        Returns:
+            UserModel | None: The user instance if found, otherwise None.
         """
 
         user = self.__repository.get_user_by_email(email)
@@ -64,12 +102,29 @@ class LoginUseCase:
         self, request_password: str, saved_password: str
     ) -> bool:
         """
-        Verify if the provided password matches the stored password for the given email.
+        Private method responsible for verifying if the provided password matches the stored password.
+
+        Args:
+            request_password (str): The password provided in the login request.
+            saved_password (str): The hashed password stored in the database.
+
+        Returns:
+            bool: True if the passwords match, otherwise False.
         """
 
         return AnyUtils.check_password_hash(request_password, saved_password)
 
     def __response(self, token: str) -> Dict[str, str]:
+        """
+        Private method responsible for formatting the authentication response.
+
+        Args:
+            token (str): The generated JWT access token.
+
+        Returns:
+            Dict[str, str]: A dictionary containing the access token and token type.
+        """
+
         return {
             "access_token": token,
             "token_type": "bearer",

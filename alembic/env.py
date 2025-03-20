@@ -4,7 +4,6 @@ import pkgutil
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
-
 from alembic import context
 from src.infrastructure.database.database_configuration import (
     DatabaseConfiguration,
@@ -34,7 +33,7 @@ models_package = "src.infrastructure.models"
 
 try:
     models_path = os.path.dirname(
-        importlib.import_module(models_package).__file__
+        importlib.import_module(models_package).__file__  # type: ignore
     )
 except AttributeError:
     raise ImportError(
@@ -47,10 +46,15 @@ for _, module_name, _ in pkgutil.iter_modules([models_path]):
 
 def run_migrations_offline() -> None:
     """
-    Run migrations in 'offline' mode.
+    Standalone Function responsible for running migrations in 'offline' mode.
 
-    This configures the context with just a database URL and no connection engine.
-    Calls to context.execute() emit the given SQL statements as raw strings.
+    In this mode, Alembic generates SQL statements without requiring a database connection.
+
+    Args:
+        None
+
+    Returns:
+        None
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
@@ -66,10 +70,19 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """
-    Run migrations in 'online' mode.
+    Standalone Function responsible for running migrations in 'online' mode.
 
-    This method creates an engine and associates a connection with the Alembic context.
-    The migration process runs within a transaction.
+    This method creates a database engine, establishes a connection, and
+    runs the migration process within a transaction.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Raises:
+        Exception: If an error occurs during migration or table creation.
     """
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
@@ -89,18 +102,18 @@ def run_migrations_online() -> None:
 
     from sqlalchemy import inspect
 
-    from src.infrastructure.database.database_configuration import (
-        DatabaseConfiguration,
-    )
-
     engine = DatabaseConfiguration._engine
     inspector = inspect(engine)
 
+    # Validate and create permissions
     if PermissionModel.__tablename__ in inspector.get_table_names():
         try:
             print("Creating permissions...")
+
             PermissionModel.create_permissions()
+
             print("Permissions created successfully!")
+
         except Exception as e:
             print(f"Error creating permissions: {e}")
     else:
@@ -108,14 +121,19 @@ def run_migrations_online() -> None:
             f"Skipping permission creation. {PermissionModel.__tablename__} table does not exist."
         )
 
+    # Validate and create roles
     if RoleModel.__tablename__ in inspector.get_table_names():
         try:
             print("Creating roles...")
+
             RoleModel.create_roles()
+
             print("Roles created successfully!")
 
             print("Assigning permissions to administrator role...")
+
             RoleModel.assign_permissions_to_administrator()
+
             print("Permissions assigned to administrator role successfully!")
         except Exception as e:
             print(f"Error creating roles: {e}")
@@ -124,13 +142,16 @@ def run_migrations_online() -> None:
             f"Skipping roles creation. {RoleModel.__tablename__} table does not exist."
         )
 
+    # Validate and create admin user
     if UserModel.__tablename__ in inspector.get_table_names():
         try:
             print("Creating admin user...")
+
             UserModel.create_administrator_user()
+
             print("Admin user created successfully!")
         except Exception as e:
-            print(f"⚠️ Error creating admin user: {e}")
+            print(f"Error creating admin user: {e}")
     else:
         print(
             f"Skipping admin user creation. {UserModel.__tablename__} table does not exist."

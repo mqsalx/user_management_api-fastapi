@@ -18,6 +18,18 @@ Base = DatabaseConfiguration.base()
 
 
 class RoleModel(Base):
+    """
+    Class responsible for defining the database model for roles.
+
+    This model represents the `roles` table and manages role-related relationships
+    and data operations.
+
+    Table Name:
+        roles
+
+    Class Args:
+        None
+    """
 
     __tablename__ = "roles"
 
@@ -34,8 +46,18 @@ class RoleModel(Base):
     @classmethod
     def create_roles(cls) -> None:
         """
+        Class method responsible for creating new roles.
 
+        This method retrieves roles from the environment configuration and inserts
+        them into the database if they do not already exist.
+
+        Returns:
+            None
+
+        Raises:
+            Exception: If an error occurs during database operations.
         """
+
         db: Session = next(DatabaseConfiguration.get_db())
         __roles = EnvConfiguration().api_user_roles
 
@@ -67,7 +89,22 @@ class RoleModel(Base):
 
     @classmethod
     def assign_permissions_to_administrator(cls):
-        """ """
+        """
+        Class method responsible for assigning all permissions to the 'Administrator' role.
+
+        This method retrieves the 'Administrator' role from the database and assigns
+        all available permissions to it.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            Exception: If an unexpected error occurs while assigning permissions.
+        """
+
         db: Session = next(DatabaseConfiguration.get_db())
         try:
             administrator_role = (

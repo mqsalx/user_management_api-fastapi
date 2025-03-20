@@ -10,21 +10,23 @@ from src.core.configurations.env_configuration import EnvConfiguration
 
 class LoggerUtil:
     """
-    Utility class to configure and manage the application logging.
+    Class responsible for configuring and managing the application logging.
 
-    This class allows configuring a logger with different log levels,
-    including a colored console logger and a file logger. The log level
-    can be set using an environment variable, and the logger will be set up
-    to write logs both to the console and to a log file.
+    This class sets up a logger that writes logs to both a console (with colors)
+    and a log file. The log level can be determined from an environment variable.
+
+    Class Args:
+        None
     """
 
     def __init__(self):
         """
-        Constructor method to initialize the application logger.
+        Constructor method for LoggerUtil.
 
-        This method configures the logger to write logs to both a file and
-        the console. The log level is determined by the 'LOG_LEVEL' environment
-        variable or a default value of 'INFO'.
+        Initializes and configures the logger with file and console handlers.
+
+        Args:
+            None
         """
 
         self.__api_name = EnvConfiguration().api_name
@@ -93,7 +95,7 @@ class LoggerUtil:
 
     def info(self, message: str) -> None:
         """
-        Public method to log a message with the 'INFO' level.
+        Public method responsible for logging an 'INFO' level message.
 
         Args:
             message (str): The message to be logged.
@@ -101,11 +103,12 @@ class LoggerUtil:
         Returns:
             None
         """
+
         self.__logger.info(message)
 
     def error(self, message: str) -> None:
         """
-        Public method to log a message with the 'ERROR' level.
+        Public method responsible for logging an 'ERROR' level message.
 
         Args:
             message (str): The message to be logged.
@@ -113,11 +116,12 @@ class LoggerUtil:
         Returns:
             None
         """
+
         self.__logger.error(message)
 
     def debug(self, message: str) -> None:
         """
-        Public method to log a message with the 'DEBUG' level.
+        Public method responsible for logging a 'DEBUG' level message.
 
         Args:
             message (str): The message to be logged.
@@ -125,11 +129,12 @@ class LoggerUtil:
         Returns:
             None
         """
+
         self.__logger.debug(message)
 
     def warning(self, message: str) -> None:
         """
-        Public method to log a message with the 'WARNING' level.
+        Public method responsible for logging a 'WARNING' level message.
 
         Args:
             message (str): The message to be logged.
@@ -137,18 +142,21 @@ class LoggerUtil:
         Returns:
             None
         """
+
         self.__logger.warning(message)
 
     def __get_log_level_variable(self) -> str:
         """
-        Private method to get the log level from the 'api_log_level' configuration variable.
+        Private method responsible for obtaining the log level from the configuration.
 
-        This method validates the 'api_log_level' value and returns a default log level
-        ('INFO') if the value is missing or invalid. It also prints messages to the console
-        if the value is invalid or absent.
+        This method retrieves the log level from the `api_log_level` variable.
+        If the value is missing or invalid, it defaults to 'INFO'.
+
+        Args:
+            None
 
         Returns:
-            str: A valid log level or the default value if invalid or missing.
+            str: The log level ('DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL').
         """
 
         default_level = "INFO"

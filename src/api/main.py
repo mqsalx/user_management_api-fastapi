@@ -1,5 +1,13 @@
 # /src/api/main.py
 
+"""
+Main module responsible for initializing and running the FastAPI application.
+
+This module sets up the API, middleware, exception handlers, and scheduled tasks.
+It also checks environment variables and the database connection before starting
+the server.
+"""
+
 import time
 
 import uvicorn
@@ -7,6 +15,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 
 from src.api.routes import login_router, user_router
+from src.api.routes import system_router
 from src.core.configurations.env_configuration import EnvConfiguration
 from src.core.exceptions.exception_handler import ExceptionHandler
 from src.core.middleware.auth_middleware import AuthMiddleware
@@ -28,6 +37,18 @@ API_VERSION = EnvConfiguration().api_version
 
 
 def my_function():
+    """
+    Standalone function responsible for testing scheduled tasks.
+
+    This function logs a test message with the current timestamp.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+
     log.info(f"Testing... {time.strftime("%Y-%m-%d %H:%M:%S")}")
 
 
@@ -46,8 +67,15 @@ routers = [(user_router.router, "/users"), (login_router.router, "/login")]
 for router, prefix in routers:
     app.include_router(router, prefix=f"/api-{API_VERSION}{prefix}")
 
+app.include_router(system_router.router, prefix="/api/system")
 
 if __name__ == "__main__":
+    """
+    Application startup sequence.
+
+    This section ensures that essential configurations are checked before
+    running the FastAPI server.
+    """
 
     # On Startup Message
     MessageUtil().on_startup()

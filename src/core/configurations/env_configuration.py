@@ -8,8 +8,26 @@ load_dotenv()
 
 
 class EnvConfiguration:
+    """
+    Class responsible for loading environment variables for API, database, and JWT settings.
+
+    This class centralizes environment configurations, ensuring that all required variables
+    are retrieved from the system environment and providing structured access through properties.
+
+    Class Args:
+        None
+    """
 
     def __init__(self):
+        """
+        Constructor method that initializes the environment configurations.
+
+        Loads required environment variables and assigns them to class attributes.
+        If a variable is not found, a default value may be used where applicable.
+
+        Args:
+            None
+        """
 
         # API Setup
         __api_role_permissions: str = str(os.getenv("API_ROLE_PERMISSIONS"))
@@ -61,74 +79,254 @@ class EnvConfiguration:
     # API Setup
     @property
     def api_name(self) -> str:
+        """
+        Property method responsible for returning the API name.
+
+        Args:
+            None
+
+        Returns:
+            str: API name.
+        """
+
         return self.__api_name
 
     @property
     def api_host(self) -> str:
+        """
+        Property method responsible for returning the API host address.
+
+        Args:
+            None
+
+        Returns:
+            str: API host.
+        """
+
         return self.__api_host
 
     @property
     def api_port(self) -> int:
+        """
+        Property method responsible for returning the API port number.
+
+        Args:
+            None
+
+        Returns:
+            int: API port.
+        """
+
         return self.__api_port
 
     @property
     def api_version(self) -> str:
+        """
+        Property method responsible for returning the API version.
+
+        Args:
+            None
+
+        Returns:
+            str: API version.
+        """
+
         return self.__api_version
 
     @property
     def api_log_level(self) -> str:
+        """
+        Property method responsible for returning the logging level for the API.
+
+        Args:
+            None
+
+        Returns:
+            str: API log level.
+        """
+
         return self.__api_log_level
 
     @property
     def api_user_administrator(self) -> str:
+        """
+        Property method responsible for returning the administrator username.
+
+        Args:
+            None
+
+        Returns:
+            str: Administrator username.
+        """
+
         return self.__api_user_administrator
 
     @property
     def api_password_administrator(self) -> str:
+        """
+        Property method responsible for returning the administrator password.
+
+        Args:
+            None
+
+        Returns:
+            str: Administrator password.
+        """
+
         return self.__api_password_administrator
 
     @property
     def api_role_permissions(self) -> list:
+        """
+        Property method responsible for returning the list of API role permissions.
+
+        Args:
+            None
+
+        Returns:
+            list: List of API role permissions.
+        """
+
         return self.__api_role_permissions
 
     @property
     def api_user_roles(self) -> list:
+        """
+        Property method responsible for returning the list of user roles.
+
+        Args:
+            None
+
+        Returns:
+            list: List of user roles.
+        """
+
         return self.__api_user_roles
 
     # Database Setup
     @property
     def database_type(self) -> str:
+        """
+        Property method responsible for returning the database type.
+
+        Args:
+            None
+
+        Returns:
+            str: Database type.
+        """
+
         return self.__database_type
 
     @property
     def database_name(self) -> str:
+        """
+        Property method responsible for returning the database name.
+
+        Args:
+            None
+
+        Returns:
+            str: Database name.
+        """
+
         return self.__database_name
 
     @property
     def database_host(self) -> str:
+        """
+        Property method responsible for returning the database host address.
+
+        Args:
+            None
+
+        Returns:
+            str: Database host.
+        """
+
         return self.__database_host
 
     @property
     def database_port(self) -> int:
+        """
+        Property method responsible for returning the database port number.
+
+        Args:
+            None
+
+        Returns:
+            int: Database port.
+        """
+
         return self.__database_port
 
     @property
     def database_user(self) -> str:
+        """
+        Property method responsible for returning the database username.
+
+        Args:
+            None
+
+        Returns:
+            str: Database username.
+        """
+
         return self.__database_user
 
     @property
     def database_password(self) -> str:
+        """
+        Property method responsible for returning the database password.
+
+        Args:
+            None
+
+        Returns:
+            str: Database password.
+        """
+
         return self.__database_password
 
     # JWT Setup
     @property
     def jwt_secret_key(self) -> str:
+        """
+        Property method responsible for returning the JWT secret key.
+
+        Args:
+            None
+
+        Returns:
+            str: JWT secret key.
+        """
+
         return self.__jwt_secret_key
 
     @property
     def jwt_algorithm(self) -> str:
+        """
+        Property method responsible for returning the JWT encryption algorithm.
+
+        Args:
+            None
+
+        Returns:
+            str: JWT encryption algorithm.
+        """
+
         return self.__jwt_algorithm
 
     @property
     def jwt_access_token_expire_minutes(self) -> int:
+        """
+        Property method responsible for returning the JWT token expiration time in minutes.
+
+        Args:
+            None
+
+        Returns:
+            int: JWT token expiration time.
+        """
+
         return self.__jwt_access_token_expire_minutes

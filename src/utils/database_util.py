@@ -9,18 +9,44 @@ from src.infrastructure.database.database_configuration import (
 
 class DatabaseUtil:
     """
-    Utility class for database operations, including admin user creation.
+    Class responsible for handling database utility operations.
+
+    This class provides methods for checking database connections
+    and managing administrative operations.
+
+    Class Args:
+        None
     """
 
     def __init__(self):
+        """
+        Constructor method for DatabaseUtil.
+
+        Initializes the database utility by obtaining the database connection URL
+        and setting up the database engine.
+
+        Args:
+            None
+        """
+
         _db_url = DatabaseConfigurationUtil().get_url()
         self.__database_type = EnvConfiguration().database_type
         self.__engine = create_engine(_db_url)
 
     def check_connection(self) -> None:
         """
-        Check if the database connection is successful.
+        Public method responsible for verifying the database connection.
+
+        This method attempts to establish a connection with the database
+        and prints a success or failure message.
+
+        Returns:
+            None
+
+        Raises:
+            OperationalError: If the database connection fails.
         """
+
         checked_database_type = (
             DatabaseConfigurationUtil().check_database_type(
                 self.__database_type

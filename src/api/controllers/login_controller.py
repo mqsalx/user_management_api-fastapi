@@ -17,19 +17,40 @@ response_json = ResponseUtil().json_response
 
 class LoginController:
     """
-    Controller for user authentication.
+    Class Controller responsible for handling user authentication requests.
+
+    This class provides an endpoint to authenticate users, validate credentials,
+    and return an access token upon successful authentication.
+
+    Class Args:
+        db (Session): The database session used for executing queries.
     """
 
     def __init__(self, db: Session = Depends(DatabaseConfiguration.get_db)):
+        """
+        Constructor method that initializes the LoginController with database dependencies.
+
+        Args:
+            db (Session): Database session dependency, injected via FastAPI's Depends.
+        """
         self.__db = db
         self.__repository = LoginRepository(self.__db)
         self.__usecase = LoginUseCase(self.__repository)
 
-    def login(
-        self,
-        request: LoginRequestDTO,
-    ) -> JSONResponse:
+    def login(self, request: LoginRequestDTO) -> JSONResponse:
+        """
+        Public method that authenticates a user based on the provided credentials.
 
+        Args:
+            request (LoginRequestDTO): Data Transfer Object (DTO) containing
+                the user's login credentials (e.g., email and password).
+
+        Returns:
+            JSONResponse: A JSON response containing an authentication token if successful.
+
+        Raises:
+            HTTPException: If authentication fails due to invalid credentials.
+        """
         response = self.__usecase.authenticate_user(request)
 
         message = "Token generated!"

@@ -16,15 +16,47 @@ log = LoggerUtil()
 
 class UpdateUserUseCase:
     """
-    Updates an existing user only with the provided fields.
+    Class responsible for handling the user update use case.
+
+    This class updates an existing user with only the provided fields.
+
+    Class Args:
+        db (Session): The database session required for executing queries.
     """
 
     def __init__(self, db: Session):
+        """
+        Constructor method for UpdateUserUseCase.
+
+        Initializes the use case with a database session and a repository instance.
+
+        Args:
+            db (Session): The database session used to execute queries.
+        """
+
         self.__repository = UserRepository(db)
 
     def update(
         self, user_id: str, request: UpdateUserRequestDTO
     ) -> dict[str, str]:
+        """
+        Public method responsible for updating a user.
+
+        This method updates only the fields provided in the request DTO.
+        If the user ID is invalid or does not exist, an exception is raised.
+
+        Args:
+            user_id (str): The unique identifier of the user to update.
+            request (UpdateUserRequestDTO): The DTO containing the fields to update.
+
+        Returns:
+            Dict[str, str]: A dictionary containing the updated user details.
+
+        Raises:
+            UserNotFoundException: If the user ID is invalid or not found.
+            Exception: If an unexpected error occurs during the update process.
+        """
+
         try:
             if not user_id:
                 raise UserNotFoundException(
@@ -55,6 +87,16 @@ class UpdateUserUseCase:
             raise error
 
     def __response(self, user: UserModel) -> Dict[str, str]:
+        """
+        Private method responsible for formatting the updated user response.
+
+        Args:
+            user (UserModel): The updated user instance.
+
+        Returns:
+            Dict[str, str]: A dictionary containing the user ID, name, and email.
+        """
+
         return {
             "user_id": str(user.user_id),
             "name": str(user.name),

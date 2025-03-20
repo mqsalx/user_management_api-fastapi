@@ -10,6 +10,13 @@ from src.infrastructure.database.database_configuration import (
 Base = DatabaseConfiguration.base()
 
 
+"""
+Table responsible for defining the many-to-many relationship between roles and permissions.
+
+This table acts as a bridge between the `roles` and `permissions` tables,
+allowing multiple roles to have multiple permissions.
+"""
+
 role_permission = Table(
     "role_permissions",
     Base.metadata,

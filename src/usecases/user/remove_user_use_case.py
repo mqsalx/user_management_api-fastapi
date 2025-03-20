@@ -14,12 +14,41 @@ log = LoggerUtil()
 
 
 class RemoveUserUseCase:
+    """
+    Class responsible for handling the user removal use case.
+
+    This class manages the process of deleting a user from the system.
+
+    Class Args:
+        db (Session): The database session required for executing queries.
+    """
 
     def __init__(self, db: Session):
+        """
+        Constructor method for RemoveUserUseCase.
+
+        Initializes the use case with a database session and a repository instance.
+
+        Args:
+            db (Session): The database session used to execute queries.
+        """
+
         self.__repository = UserRepository(db)
 
     def remove(self, user_id: str) -> None:
+        """
+        Public method responsible for deleting a user.
 
+        This method verifies the user ID, checks if the user exists,
+        and removes the user from the database.
+
+        Args:
+            user_id (str): The unique identifier of the user to be removed.
+
+        Raises:
+            UserNotFoundException: If the user does not exist.
+            BaseException: If an unexpected error occurs during deletion.
+        """
         try:
 
             self.__check_user_id(user_id)
@@ -41,6 +70,18 @@ class RemoveUserUseCase:
             raise
 
     def __check_user_id(self, user_id: str) -> None:
+        """
+        Private method responsible for validating the user ID.
+
+        This method checks if a user ID is provided before attempting deletion.
+
+        Args:
+            user_id (str): The user ID to validate.
+
+        Raises:
+            UserNotFoundException: If the user ID is missing.
+        """
+
         if not user_id:
             raise UserNotFoundException(
                 "User ID is required in the Query Params!"

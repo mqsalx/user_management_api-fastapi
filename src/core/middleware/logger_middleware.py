@@ -12,10 +12,36 @@ log = LoggerUtil()
 
 
 class LoggerMiddleware(BaseHTTPMiddleware):
+    """
+    Class responsible for handling request logging middleware.
+
+    This middleware logs all incoming requests, including details such as the client host,
+    HTTP method, request URL, status code, and response time.
+
+    If an error occurs during request processing, the middleware logs the error details.
+
+    Class Args:
+        None
+    """
 
     async def dispatch(self, request, call_next) -> Response:
         """
+        Public asynchronous method responsible for logging HTTP requests and responses.
+
+        This method logs the details of each request, including the processing time and status code.
+        If an error occurs, it logs the error message before raising the exception.
+
+        Args:
+            request (Request): The incoming HTTP request.
+            call_next: The next middleware or route handler in the pipeline.
+
+        Returns:
+            Response: The processed response after logging.
+
+        Raises:
+            Exception: If an error occurs while processing the request.
         """
+
         start_time = time.time()
         host = request.client.host if request.client else "unknown"
         method = request.method

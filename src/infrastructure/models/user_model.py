@@ -1,6 +1,5 @@
 # /src/infrastructure/models/user_model.py
 
-from math import log
 from sqlalchemy import Column, Enum, ForeignKey, String
 from sqlalchemy.orm import Session, relationship
 
@@ -20,6 +19,15 @@ Base = DatabaseConfiguration.base()
 
 
 class UserModel(Base):
+    """
+    Class responsible for defining the database model for users.
+
+    This model represents the `users` table and manages user-related relationships
+    and data operations.
+
+    Class Args:
+        None
+    """
 
     __api_name = EnvConfiguration().api_name
     __api_user_administrator = EnvConfiguration().api_user_administrator
@@ -53,12 +61,32 @@ class UserModel(Base):
         onupdate=AnyUtils.generate_formatted_datetime,
     )
 
-    role_id = Column(String, ForeignKey("roles.role_id"), nullable=False, default=UserRoleEnum.DEFAULT.value)
+    role_id = Column(
+        String,
+        ForeignKey("roles.role_id"),
+        nullable=False,
+        default=UserRoleEnum.DEFAULT.value,
+    )
 
     role = relationship(RoleModel, backref="users")
 
     @classmethod
     def create_administrator_user(cls) -> None:
+        """
+        Class method responsible for creating an administrator user.
+
+        This method checks if an administrator user already exists in the database.
+        If not, it creates a new administrator account with the `super_administrator` role.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            Exception: If an error occurs while creating the administrator user.
+        """
 
         from src.infrastructure.models.role_model import RoleModel
 
@@ -101,11 +129,13 @@ class UserModel(Base):
                 log.info("User Administrator created successfully.")
 
             else:
-                log.info("Administrator user already exists, ignoring creation.")
+                log.info(
+                    "Administrator user already exists, ignoring creation."
+                )
 
         except Exception as error:
             db.rollback()
-            log.error(f"Error creating admin user: {error}
+            log.error(f"Error creating admin user: {error}")
 
         finally:
             db.close()

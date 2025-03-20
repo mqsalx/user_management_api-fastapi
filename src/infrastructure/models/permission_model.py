@@ -18,6 +18,15 @@ Base = DatabaseConfiguration.base()
 
 
 class PermissionModel(Base):
+    """
+    Class responsible for defining the database model for permissions.
+
+    This model represents the `permissions` table and manages permission-related
+    relationships and data operations.
+
+    Class Args:
+        None
+    """
 
     __tablename__ = "permissions"
 
@@ -32,7 +41,22 @@ class PermissionModel(Base):
 
     @classmethod
     def create_permissions(cls) -> None:
-        """ """
+        """
+        Class method responsible for creating new permissions.
+
+        This method retrieves permissions from the environment configuration and
+        inserts them into the database if they do not already exist.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            Exception: If an error occurs during database operations.
+        """
+
         db: Session = next(DatabaseConfiguration.get_db())
 
         __permissions = EnvConfiguration().api_role_permissions

@@ -13,8 +13,14 @@ from src.infrastructure.database.database_configuration_util import (
 
 class DatabaseConfiguration:
     """
-    Class responsible for configuring and providing access to the database connection,
-    sessions, and the declarative base for model definitions.
+    Class responsible for configuring and providing access to the database connection.
+
+    This class initializes the database engine, session factory, and declarative base
+    for defining database models. It also provides methods for retrieving database
+    sessions and managing table creation.
+
+    Class Args:
+        None
     """
 
     _db_url = DatabaseConfigurationUtil().get_url()
@@ -26,6 +32,19 @@ class DatabaseConfiguration:
 
     @classmethod
     def get_db(cls) -> Generator[Session, None, None]:
+        """
+        Class method responsible for providing a database session.
+
+        This method creates a new database session, yields it for use,
+        and ensures proper cleanup by closing the session afterward.
+
+        Yields:
+            Generator[Session, None, None]: A database session.
+
+        Raises:
+            Exception: If an error occurs while managing the session.
+        """
+
         db = cls._sessionLocal()
         try:
             yield db
@@ -35,17 +54,32 @@ class DatabaseConfiguration:
     @classmethod
     def create_all(cls) -> None:
         """
-        Class method that creates all database tables based on the defined models.
+        Class method responsible for creating all database tables.
+
+        This method initializes the database schema based on the defined models.
+
+        Args:
+            None
+
         Returns:
             None
         """
+
         cls._base.metadata.create_all(bind=cls._engine)
 
     @classmethod
     def base(cls) -> Any:
         """
-        Class method that returns the declarative base for model definitions.
+        Class method responsible for returning the declarative base.
+
+        This method provides access to the declarative base used for defining
+        database models.
+
+        Args:
+            None
+
         Returns:
-            Any: The declarative base.
+            Any: The declarative base instance.
         """
+
         return cls._base

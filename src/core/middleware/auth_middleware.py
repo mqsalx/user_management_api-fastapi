@@ -17,8 +17,38 @@ log = LoggerUtil()
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
+    """
+    Class responsible for handling authentication middleware.
+
+    This middleware intercepts incoming requests to enforce authentication by verifying
+    JWT tokens. Requests to public paths are allowed without authentication.
+
+    If a request does not contain a valid JWT token in the `Authorization` header,
+    an HTTP 401 Unauthorized error is returned.
+
+    Class Args:
+        None
+    """
 
     async def dispatch(self, request: Request, call_next):
+        """
+        Public asynchronous method responsible for processing incoming requests.
+
+        This method verifies if a request requires authentication and checks
+        the validity of the JWT token.
+
+        Args:
+            request (Request): The incoming HTTP request to be processed.
+            call_next: The next middleware or route handler in the pipeline.
+
+        Returns:
+            Response: The processed response after authentication.
+
+        Raises:
+            HTTPException: If the authentication token is missing or invalid.
+            Exception: If an unexpected error occurs during processing.
+        """
+
         try:
 
             PUBLIC_PATHS = [

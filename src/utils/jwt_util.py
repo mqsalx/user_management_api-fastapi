@@ -25,13 +25,31 @@ JWT_ALGORITHM = EnvConfiguration().jwt_algorithm
 
 
 class JWTUtil:
+    """
+    Class responsible for handling JSON Web Token (JWT) operations.
+
+    This class provides methods for creating, verifying, and decoding JWT tokens.
+
+    Class Args:
+        None
+    """
 
     @staticmethod
     def create_token(
         data: dict, expires_delta: timedelta | None = None
     ) -> str:
         """
-        Creates a JWT access token.
+        Static method responsible for creating a JWT access token.
+
+        This method encodes user-related data into a JWT token with an expiration time.
+
+        Args:
+            data (dict): The payload to be encoded in the token.
+            expires_delta (timedelta | None, optional): The time until the token expires.
+                Defaults to `JWT_ACCESS_TOKEN_EXPIRE_MINUTES`.
+
+        Returns:
+            str: The generated JWT token.
         """
 
         to_encode = data.copy()
@@ -47,8 +65,21 @@ class JWTUtil:
     @staticmethod
     def verify_token(token: str) -> dict:
         """
-        Checks and decodes a JWT token.
+        Static method responsible for verifying and decoding a JWT token.
+
+        This method decodes a JWT token, ensuring its validity and integrity.
+
+        Args:
+            token (str): The JWT token to be verified.
+
+        Returns:
+            dict: The decoded token payload.
+
+        Raises:
+            UnauthorizedToken: If the token is expired, invalid, or has an incorrect signature.
+            HTTPException: If an unexpected error occurs during verification.
         """
+
         try:
             payload = jwt.decode(
                 token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM]
