@@ -20,14 +20,6 @@ def list_routes(request: Request) -> Dict[str, List[Dict[str, str]]]:
 
     Returns:
         Dict[str, List[Dict[str, str]]]: A dictionary containing a list of available routes.
-
-        Example:
-            {
-                "available_routes": [
-                    {"path": "/users", "methods": "GET, POST", "name": "get_users"},
-                    {"path": "/login", "methods": "POST", "name": "user_login"}
-                ]
-            }
     """
     app = request.app
     routes = []
