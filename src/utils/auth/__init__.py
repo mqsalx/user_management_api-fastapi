@@ -3,6 +3,7 @@
 # flake8: noqa: E501
 
 from datetime import datetime, timedelta, timezone
+from typing import Any
 
 import jwt
 from fastapi import HTTPException
@@ -20,9 +21,7 @@ from src.utils.logger import LoggerUtil
 log = LoggerUtil()
 
 # Env variables Setup
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES = (
-    EnvConfig().jwt_access_token_expire_minutes
-)
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES = EnvConfig().jwt_access_token_expire_minutes
 JWT_SECRET_KEY = EnvConfig().jwt_secret_key
 JWT_ALGORITHM = EnvConfig().jwt_algorithm
 
@@ -66,7 +65,7 @@ class AuthUtil:
         return encoded_jwt
 
     @staticmethod
-    def verify_token(token: str) -> dict:
+    def verify_token(token: str)-> Any:
         """
         Static method responsible for verifying and decoding a JWT token.
 
@@ -84,8 +83,8 @@ class AuthUtil:
         """
 
         try:
-            payload = jwt.decode(
-                token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM]
+            payload: Any = jwt.decode(
+                jwt=token, key=JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM]
             )
             return payload
         except ExpiredSignatureError:

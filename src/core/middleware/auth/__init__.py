@@ -13,7 +13,7 @@ from src.utils import (
 )
 
 # Env variables Setup
-API_VERSION = EnvConfig().api_version
+API_VERSION: str = EnvConfig().api_version
 
 # Utils Setup
 json_response = ResponseUtil().json_response
@@ -56,13 +56,13 @@ class AuthMiddleware(BaseHTTPMiddleware):
         try:
 
             PUBLIC_PATHS = [
-                f"/api-{API_VERSION}/login",
+                f"/api-{API_VERSION}/auth",
                 f"/api-{API_VERSION}/register",
                 "/docs",
                 "/openapi.json",
             ]
 
-            if any(request.url.path.startswith(path) for path in PUBLIC_PATHS):
+            if request.url.path in PUBLIC_PATHS:
                 response = await call_next(request)
                 return response
 

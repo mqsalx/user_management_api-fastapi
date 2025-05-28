@@ -69,7 +69,7 @@ app.add_exception_handler(RequestValidationError, ExceptionHandler.json_decode_e
 app.add_middleware(LoggerMiddleware)
 app.add_middleware(AuthMiddleware)
 
-routers = [(user_router, "/users"), (auth_router, "/login")]
+routers = [(user_router, "/users"), (auth_router, "/auth")]
 
 for router, prefix in routers:
     app.include_router(router, prefix=f"/api-{API_VERSION}{prefix}")

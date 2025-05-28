@@ -10,6 +10,7 @@ from fastapi.routing import APIRoute
 from src.presentation.routes.auth import auth_router
 from src.presentation.routes.user import user_router
 
+
 api_router = APIRouter()
 
 
