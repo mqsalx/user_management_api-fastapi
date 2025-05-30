@@ -2,7 +2,7 @@
 
 # flake8: noqa: E501
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -10,6 +10,7 @@ from src.core.configurations import DatabaseConfig
 from src.presentation.controllers import UserController
 from src.domain.dtos import (
     CreateUserRequestDTO,
+    FindUserByUserIdDTO,
     UpdateUserRequestDTO
 )
 
@@ -43,9 +44,9 @@ def create_user_router(
     return controller.create_user_controller(request)
 
 
-@user_router.delete("", response_model=None)
+@user_router.delete("/{user_id}", response_model=None)
 def remove_user_router(
-    user_id: str = Query(None, description="User ID to delete."),
+    user_id: str,
     session_db: Session = Depends(DatabaseConfig().get_db),
 ) -> JSONResponse:
     """
@@ -69,10 +70,8 @@ def remove_user_router(
 
 
 @user_router.get("", response_model=None)
-def find_user_router(
-    user_id: str | None = Query(
-        None, description="User ID (optional) to find."
-    ),
+def get_users_or_get_by_user_id_router(
+    query_params: FindUserByUserIdDTO = Depends(),
     session_db: Session = Depends(DatabaseConfig().get_db),
 ) -> JSONResponse:
     """
@@ -81,8 +80,9 @@ def find_user_router(
     If a `user_id` is provided, it retrieves a specific user. Otherwise, it returns all users.
 
     Args:
-        user_id (str, optional): Unique identifier of the user to retrieve.
-            If not provided, retrieves all users.
+        query_params:
+            user_id (str, optional): Unique identifier of the user to retrieve.
+                If not provided, retrieves all users.
         session_db (Session): Database session dependency, injected via FastAPI's Depends.
 
     Returns:
@@ -93,7 +93,7 @@ def find_user_router(
     """
 
     controller = UserController(session_db)
-    return controller.find_user_controller(user_id)
+    return controller.find_user_controller(query_params)
 
 
 @user_router.patch("/{user_id}", response_model=None)

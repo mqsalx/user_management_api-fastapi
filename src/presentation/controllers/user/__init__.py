@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from src.domain.dtos import (
     CreateUserRequestDTO,
+    FindUserByUserIdDTO,
     UpdateUserRequestDTO,
     UserResponseDTO,
 )
@@ -85,18 +86,20 @@ class UserController:
 
         return response_json(status_code=status.HTTP_200_OK, message=message)
 
-    def find_user_controller(self, user_id: str | None = None) -> JSONResponse:
+    def find_user_controller(self, query_params: FindUserByUserIdDTO | None = None) -> JSONResponse:
         """
         Public method that retrieves user(s) based on the provided user ID.
 
         Args:
-            user_id (str, optional): Unique identifier of the user to retrieve.
-                If not provided, retrieves all users.
+            query_params:
+                user_id (str, optional): Unique identifier of the user to retrieve.
+                    If not provided, retrieves all users.
 
         Returns:
             JSONResponse: A JSON response containing the requested user data.
         """
 
+        user_id: str | None = query_params.user_id if query_params else None
         response = self.__use_case_find(user_id)
 
         if isinstance(response, list) and not response:

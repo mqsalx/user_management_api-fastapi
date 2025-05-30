@@ -21,7 +21,7 @@ from src.core.configurations import (
     EnvConfig,
     SchedulerConfig
 )
-from src.core.exceptions import ExceptionHandler
+from src.core.handlers.exception import ExceptionHandler
 from src.core.middleware import (
     AuthMiddleware,
     LoggerMiddleware
@@ -95,5 +95,4 @@ if __name__ == "__main__":
 
     width = 80
     border = "=" * width
-
-    uvicorn.run(app, host=API_HOST, port=API_PORT, log_config=None)
+    uvicorn.run(app, host=API_HOST, port=API_PORT, log_level="debug")
