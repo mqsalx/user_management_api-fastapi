@@ -95,3 +95,35 @@ class MissingRequiredFieldsException(BaseException):
         """
 
         super().__init__(message, status_code)
+
+
+class InvalidValueInFieldException(BaseException):
+    """
+    Class responsible for handling exceptions when a field is present but contains an invalid value.
+
+    This exception is typically used in scenarios where fields are provided
+    (e.g., via query parameters or request body) but their values do not meet
+    semantic validation rules, such as being blank, only whitespace, or not matching
+    the expected format.
+
+    Class Args:
+        message (str): The error message describing the validation failure.
+        status_code (int): The HTTP status code associated with the exception (default: 422 Unprocessable Entity).
+    """
+
+    def __init__(
+        self,
+        message: str,
+        status_code: int = status.HTTP_422_UNPROCESSABLE_ENTITY,
+    ) -> None:
+        """
+        Constructor method for MissingRequiredFieldsException.
+
+        Initializes the exception with a message and an optional status code.
+
+        Args:
+            message (str): The error message describing the exception.
+            status_code (int, optional): The HTTP status code to return (default: 422 Unprocessable Entity).
+        """
+
+        super().__init__(message, status_code)
