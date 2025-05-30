@@ -49,15 +49,13 @@ class LoggerMiddleware(BaseHTTPMiddleware):
         method = request.method
         url = str(request.url)
 
-        log.info(f"Incoming Request: {host} - {method} {url} HTTP/1.1")
-
         try:
             response = await call_next(request)
             process_time = (time.time() - start_time) * 1000
             status_code = response.status_code
             status_name = HTTPStatus(status_code).phrase
 
-            log_message = f"{host} - {method} {url} HTTP/1.1 {status_code} {status_name} - {process_time:.2f}ms"
+            log_message = f"{host} - {method} - {status_code} - {status_name}  - {url} - {process_time:.2f}ms"
 
             if status_code >= 400:
                 log.error(log_message)
