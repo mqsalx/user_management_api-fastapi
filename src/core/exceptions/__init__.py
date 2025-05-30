@@ -6,5 +6,4 @@ from src.core.exceptions.auth import *
 from src.core.exceptions.base import BaseException
 from src.core.exceptions.database import *
 from src.core.exceptions.dtos import *
-from src.core.exceptions.handlers.exception import *
 from src.core.exceptions.use_cases.users import *

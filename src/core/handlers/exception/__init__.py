@@ -1,4 +1,4 @@
-# /src/core/exceptions/handlers/exception/__init__.py
+# /src/core/handlers/exception/__init__.py
 
 # flake8: noqa: E501
 
@@ -65,15 +65,43 @@ class ExceptionHandler:
         Returns:
             JSONResponse | None: A JSON response containing the error details.
         """
+        status_code = None
+        message = None
 
         for error in exc.errors():
-            if error["type"] == "json_invalid":
+            error_type = error.get("type")
+            loc = error.get("loc", [])
+            input_value = error.get("input", None)
+            msg = error.get("msg", "Invalid input")
+
+            # Origin (ex: 'query', 'body', 'path')
+            source = loc[0] if loc else "unknown"
+
+            # Field (ex: 'user_id')
+            field = loc[1] if len(loc) > 1 else "unknown"
+
+            if error_type == "json_invalid":
                 status_code = status.HTTP_400_BAD_REQUEST
-                return JSONResponse(
-                    status_code=status_code,
-                    content={
-                        "status_code": str(status_code),
-                        "status_name": HTTPStatus(status_code).phrase,
-                        "message": "Invalid JSON format. Ensure the request body is correctly formatted.",
-                    },
+                message = "Invalid JSON format. Ensure the request body is correctly formatted."
+                break
+
+            elif error_type == "missing":
+                status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+                message = (
+                    f"The field '{field}' from '{source}' is required and was not provided."
                 )
+                break
+
+        # fallback for other errors not explicitly dealt with
+        if not status_code:
+            status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+            message = "Validation failed for one or more fields."
+
+        return JSONResponse(
+            status_code=status_code,
+            content={
+                "status_code": str(status_code),
+                "status_name": HTTPStatus(status_code).phrase,
+                "message": message,
+            },
+        )

@@ -79,12 +79,11 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
             request.state.token = token
 
-            response = await call_next(request)
-
-            if response is None:
-                return json_response(500, "Internal server error")
-
-            return response
+            try:
+                return await call_next(request)
+            except Exception as e:
+                log.error(f"Error in downstream handler: {str(e)}")
+                return json_response(500, "Internal Server Error")
 
         except HTTPException as error:
             log.error(f"Token validation error: {error.detail}")
