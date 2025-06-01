@@ -52,7 +52,9 @@ class LoggerConfig:
 
         # Console format and message format
         _date_format = "%d-%m-%Y | %H:%M:%S"
-        _stream_format = "%(asctime)s - %(log_color)s%(levelname)s%(reset)s - %(message)s"
+        _stream_format = (
+            "%(asctime)s - %(log_color)s%(levelname)s%(reset)s - %(message)s"
+        )
         _log_colors = {
             "DEBUG": "blue",
             "INFO": "green",
@@ -88,12 +90,14 @@ class LoggerConfig:
             self.__logger.addHandler(_stream_handler)
 
             if _level != "DEBUG":
-                logging.getLogger("uvicorn.access").disabled = True
-                logging.getLogger("uvicorn.error").disabled = True
-                logging.getLogger("uvicorn").disabled = True
-                logging.getLogger("uvicorn").propagate = False
-                logging.getLogger("apscheduler").disabled = True
+                logging.getLogger("apscheduler").handlers = []
                 logging.getLogger("apscheduler").propagate = False
+                logging.getLogger("uvicorn.error").handlers = []
+                logging.getLogger("uvicorn.error").propagate = False
+                logging.getLogger("uvicorn.access").handlers = []
+                logging.getLogger("uvicorn.access").propagate = False
+                logging.getLogger("uvicorn.asgi").handlers = []
+                logging.getLogger("uvicorn.asgi").propagate = True
 
     def __get_log_level_variable(self) -> str:
         """
@@ -114,21 +118,25 @@ class LoggerConfig:
 
         YELLOW = "\033[33m"
         RESET = "\033[0m"
+        MAGENTA = "\033[35m"
 
         if not obtained_log_level:
             print(
-                f"{YELLOW}Empty or invalid ‘LOG_LEVEL’ value found. Using default value '{default_level}'!{RESET}"
+                f"{YELLOW}LOG_LEVEL -> Empty or invalid ‘LOG_LEVEL’ value found. Using default value '{default_level}'!{RESET}"
             )
             return default_level
 
         if obtained_log_level not in self.__valid_log_levels:
             print(
-                f"{YELLOW}Invalid value for 'LOG_LEVEL' found: {self.__api_log_level}! Using the default value '{default_level}{RESET}!"
+                f"{YELLOW}LOG_LEVEL -> Invalid value for 'LOG_LEVEL' found: {self.__api_log_level}! Using the default value '{default_level}!{RESET}"
             )
             return default_level
 
-        return obtained_log_level
+        print(
+            f"{MAGENTA}LOG_LEVEL -> Loaded from .env, setting to {obtained_log_level}.{RESET}"
+        )
 
+        return obtained_log_level
 
     @property
     def logger(self) -> logging.Logger:

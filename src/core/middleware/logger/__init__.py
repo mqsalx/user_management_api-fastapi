@@ -55,7 +55,7 @@ class LoggerMiddleware(BaseHTTPMiddleware):
             status_code = response.status_code
             status_name = HTTPStatus(status_code).phrase
 
-            log_message = f"{host} - {method} - {status_code} - {status_name}  - {url} - {process_time:.2f}ms"
+            log_message = f"{host} - {method} - {status_code} - {status_name} - {url} - {process_time:.2f}ms"
 
             if status_code >= 400:
                 log.error(log_message)
