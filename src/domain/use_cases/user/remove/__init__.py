@@ -2,13 +2,22 @@
 
 # flake8: noqa: E501
 
+# PY
 from sqlalchemy.orm import Session
 
+# Core
 from src.core.exceptions import (
     BaseException,
     UserNotFoundException
 )
-from src.data.repository import UserRepository
+
+# Data
+from src.data.repositories import UserRepository
+
+# Domain
+from src.domain.dtos.request.path.user import RemoveUserByUserIdReqPathDTO
+
+# utils
 from src.utils import LoggerUtil
 
 log = LoggerUtil()
@@ -36,7 +45,7 @@ class RemoveUserUseCase:
 
         self.__user_repository = UserRepository(session_db)
 
-    def remove(self, user_id: str) -> None:
+    def remove(self, request_path: RemoveUserByUserIdReqPathDTO) -> None:
         """
         Public method responsible for deleting a user.
 
@@ -51,6 +60,7 @@ class RemoveUserUseCase:
             BaseException: If an unexpected error occurs during deletion.
         """
         try:
+            user_id = request_path.user_id
 
             self.__check_user_id(user_id)
 

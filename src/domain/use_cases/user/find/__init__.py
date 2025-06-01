@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from src.core.exceptions import UserNotFoundException
 from src.data.models import UserModel
-from src.data.repository import UserRepository
+from src.data.repositories import UserRepository
 from src.utils import LoggerUtil
 
 log = LoggerUtil()

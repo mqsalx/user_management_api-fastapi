@@ -7,7 +7,7 @@ from typing import Dict
 from src.domain.dtos.auth import AuthRequestDTO
 from src.core.exceptions import InvalidCredentialsException
 from src.data.models import UserModel
-from src.data.repository import AuthRepository
+from src.data.repositories import AuthRepository
 from src.utils import (
     AuthUtil,
     LoggerUtil

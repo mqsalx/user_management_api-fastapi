@@ -2,17 +2,24 @@
 
 # flake8: noqa: E501
 
+# PY
 from typing import Dict
-
 from sqlalchemy.orm import Session
 
+# Core
 from src.core.exceptions import (
     BaseException,
     EmailAlreadyExistsException
 )
+
+# Data
 from src.data.models import UserModel
-from src.data.repository import UserRepository
-from src.domain.dtos import CreateUserRequestDTO
+from src.data.repositories import UserRepository
+
+# Domain
+from src.domain.dtos import CreateUserReqBodyDTO
+
+# Utils
 from src.utils import (
     AuthUtil,
     LoggerUtil
@@ -44,7 +51,7 @@ class CreateUserUseCase:
 
         self.__user_repository = UserRepository(session_db)
 
-    def create(self, request: CreateUserRequestDTO) -> dict[str, str]:
+    def create(self, request_body: CreateUserReqBodyDTO) -> dict[str, str]:
         """
         Public method responsible for creating a new user.
 
@@ -52,7 +59,7 @@ class CreateUserUseCase:
         persists the user in the database, and returns a response DTO.
 
         Args:
-            request (CreateUserRequestDTO): The DTO containing user details.
+            request_body (CreateUserReqBodyDTO): The DTO containing user details.
 
         Returns:
             Dict[str, str]: A dictionary containing the created user's details.
@@ -64,14 +71,14 @@ class CreateUserUseCase:
 
         try:
 
-            self.__check_user_email(request.email)
+            self.__check_user_email(request_body.email)
 
             user = self.__user_repository.create_user(
-                name=request.name,
-                email=request.email,
-                status=request.status,
+                name=request_body.name,
+                email=request_body.email,
+                status=request_body.status,
                 password=AuthUtil.generate_password_hash(
-                    request.password,
+                    request_body.password,
                 ),
             )
 
