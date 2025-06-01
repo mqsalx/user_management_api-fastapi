@@ -51,7 +51,7 @@ def authorization(
     return controller(request)
 
 
-@auth_router.get(path="/check", response_model=None)
+@auth_router.get(path="/me", response_model=None)
 def check(request: Request) -> JSONResponse | None:
     """
     Endpoint that verifies if the current authentication token is valid.

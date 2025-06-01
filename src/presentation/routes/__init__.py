@@ -1,41 +1,59 @@
 # /src/presentation/routes/__init__.py
 
-# flake8: noqa: E501, F401
 
-from typing import Dict, List
+# PY
+from typing import Any, List
 
 from fastapi import APIRouter, Request
 from fastapi.routing import APIRoute
 
+# Core
+from src.core.configurations.environment import EnvConfig
+
+# Presentation
 from src.presentation.routes.auth import auth_router
 from src.presentation.routes.user import user_router
 
 
-api_router = APIRouter()
+class ApiRouter:
 
+    def __init__(self) -> None:
 
-@api_router.get("/routes", tags=["System"], response_model=None)
-def list_routes(request: Request) -> Dict[str, List[Dict[str, str]]]:
-    """
-    Standalone Function responsible for listing all available API endpoints.
+        self.__router = APIRouter()
+        self.__api_version: str = EnvConfig().api_version
 
-    This function retrieves all registered routes in the FastAPI application, including
-    their paths, HTTP methods, and names.
+        routers = [
+            (user_router, "/users"),
+            (auth_router, "/auth"),
+        ]
 
-    Args:
-        request (Request): The FastAPI request object.
-
-    Returns:
-        Dict[str, List[Dict[str, str]]]: A dictionary containing a list of available routes.
-    """
-    app = request.app
-    routes = []
-
-    for route in app.routes:
-        if isinstance(route, APIRoute):
-            methods = ", ".join(route.methods)
-            routes.append(
-                {"path": route.path, "methods": methods, "name": route.name}
+        for router, prefix in routers:
+            self.__router.include_router(
+                router=router,
+                prefix=f"/{self.__api_version}{prefix}"
             )
 
-    return {"available_routes": routes}
+        self.__router.get("", tags=["Api"])(self.__call__)
+
+    def __call__(self, request: Request) -> List[Any]:
+        """
+        Endpoint that lists all available API endpoints.
+        """
+        app = request.app
+        routes = []
+
+        for route in app.routes:
+            if isinstance(route, APIRoute):
+                methods = ", ".join(route.methods)
+                if route.path != "/api":
+                    routes.append({
+                        "endpoint": route.path,
+                        "method": methods,
+                        # "description": route.summary,
+                    })
+
+        return sorted(routes, key=lambda r: r["endpoint"])
+
+    @property
+    def router(self) -> APIRouter:
+        return self.__router
