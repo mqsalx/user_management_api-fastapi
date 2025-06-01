@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from src.core.configurations import DatabaseConfig
-from src.data.repository import AuthRepository
+from src.data.repositories import AuthRepository
 from src.domain.dtos import AuthRequestDTO, AuthResponseDTO
 from src.domain.use_cases.auth import AuthUseCase
 from src.utils import ResponseUtil
