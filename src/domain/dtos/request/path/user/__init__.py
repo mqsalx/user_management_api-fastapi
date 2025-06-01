@@ -2,24 +2,14 @@
 
 # flake8: noqa: E501
 
-from typing import Dict, List, Union
-
-from pydantic import (
-    ConfigDict,
-    EmailStr,
-    RootModel,
-    field_validator
-)
-
-# Core
-from src.core.exceptions.dtos import InvalidValueInFieldException
-
 # Domain
+from pydantic import EmailStr, field_validator
+
+from src.domain.enums.user import UserStatusEnum
 from src.domain.dtos.base import BaseDTO
-from src.domain.enums import UserStatusEnum
 
 
-class CreateUserReqBodyDTO(BaseDTO):
+class RemoveUserByUserIdReqPathDTO(BaseDTO):
     """
     Class responsible for the Data Transfer Object (DTO) for user creation.
 
@@ -31,28 +21,10 @@ class CreateUserReqBodyDTO(BaseDTO):
         None
     """
 
-    name: str
-    email: EmailStr
-    status: UserStatusEnum = UserStatusEnum.ACTIVE
-    password: str
-
-    @field_validator("status", mode="before")
-    @classmethod
-    def validate_status(cls, value, info) -> str:
-        """
-        Class method that validates if the given value is a valid UserStatusEnum member.
-
-        Args:
-            value: The value to be validated.
-            info: Field metadata provided by Pydantic.
-
-        Returns:
-            str: The validated status value.
-        """
-        return cls.validate_enum(value, info, UserStatusEnum)
+    user_id: str
 
 
-class UpdateUserRequestDTO(BaseDTO):
+class UpdateUserReqPathDTO(BaseDTO):
     """
     Class responsible for the Data Transfer Object (DTO) for user update.
 
