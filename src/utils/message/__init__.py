@@ -31,7 +31,7 @@ class MessageUtil:
         self.__api_port = EnvConfig().api_port
         self.__api_version = EnvConfig().api_version
 
-    def on_startup(self):
+    def on_startup(self) -> None:
         """
         Public method responsible for displaying API startup messages.
 
@@ -48,7 +48,7 @@ class MessageUtil:
         width = 80
         border = "=" * width
 
-        def center_text(text):
+        def center_text(text: str) -> str:
             """
             Helper function to center text within the formatted message.
 

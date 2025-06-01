@@ -10,13 +10,14 @@ It also checks environment variables and the database connection before starting
 the server.
 """
 
+# PY
 import time
 
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 
-from src.presentation.routes import api_router, auth_router, user_router
+# Core
 from src.core.configurations import (
     EnvConfig,
     SchedulerConfig
@@ -26,6 +27,11 @@ from src.core.middleware import (
     AuthMiddleware,
     LoggerMiddleware
 )
+
+# Presentation
+from src.presentation.routes import ApiRouter
+
+# Utils
 from src.utils import (
     DatabaseUtil,
     DotEnvUtil,
@@ -33,7 +39,6 @@ from src.utils import (
     MessageUtil
 )
 
-app = FastAPI()
 log = LoggerUtil()
 
 # Env variables Setup
@@ -41,6 +46,12 @@ API_HOST = EnvConfig().api_host
 API_NAME = EnvConfig().api_name
 API_PORT = EnvConfig().api_port
 API_VERSION = EnvConfig().api_version
+
+app = FastAPI(
+    title=API_NAME,
+    version=API_VERSION,
+    description=f"{API_NAME} API documentation!"
+)
 
 
 def my_function():
@@ -69,12 +80,9 @@ app.add_exception_handler(RequestValidationError, ExceptionHandler.json_decode_e
 app.add_middleware(LoggerMiddleware)
 app.add_middleware(AuthMiddleware)
 
-routers = [(user_router, "/users"), (auth_router, "/auth")]
+api_router: APIRouter = ApiRouter().router
 
-for router, prefix in routers:
-    app.include_router(router, prefix=f"/api-{API_VERSION}{prefix}")
-
-app.include_router(api_router, prefix="/api/system")
+app.include_router(api_router, prefix=f"/api")
 
 if __name__ == "__main__":
     """
@@ -95,4 +103,9 @@ if __name__ == "__main__":
 
     width = 80
     border = "=" * width
-    uvicorn.run(app, host=API_HOST, port=API_PORT, log_level="debug")
+
+    uvicorn.run(
+        app,
+        host=API_HOST,
+        port=API_PORT,
+    )
