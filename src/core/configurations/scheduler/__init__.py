@@ -29,7 +29,7 @@ class SchedulerConfig:
         self.__scheduler = BackgroundScheduler()
         self.__scheduler.start()
 
-    def schedule_function(self, func, interval_seconds):
+    def init(self, func, interval_seconds):
         """
         Public method responsible for scheduling a function to run at regular intervals.
 
@@ -59,3 +59,5 @@ class SchedulerConfig:
         """
 
         self.__scheduler.shutdown()
+
+scheduler_config = SchedulerConfig()

@@ -2,18 +2,28 @@
 
 # flake8: noqa: E501
 
+# PY
+import uuid
+
 from sqlalchemy import Column, Enum, ForeignKey, String
 from sqlalchemy.orm import Session, relationship
 
-from src.domain.enums import (
-    UserRoleEnum,
-    UserStatusEnum
-)
+# Core
 from src.core.configurations import (
     EnvConfig,
     DatabaseConfig
 )
+
+# Domain
+from src.domain.enums import (
+    UserRoleEnum,
+    UserStatusEnum
+)
+
+# Data
 from src.data.models import RoleModel
+
+# Utils
 from src.utils import (
     AuthUtil,
     GenUtil,
@@ -44,9 +54,9 @@ class UserModel(Base):
     _unique_id = GenUtil.generate_unique_id()
     _custom_id = f"{_prefix_id}{_unique_id}"
 
-    id = Column(String, nullable=False, default=_unique_id)
+    id = Column(String, nullable=False, default=lambda: str(uuid.uuid4()))
     user_id = Column(
-        String, primary_key=True, nullable=False, default=_custom_id
+        String, primary_key=True, nullable=False, default=lambda: str(uuid.uuid4())
     )
     name = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
@@ -116,7 +126,7 @@ class UserModel(Base):
                     return
 
                 new_user = cls(
-                    user_id=cls._custom_id,
+                    user_id=str(uuid.uuid4()),
                     name=cls.__api_user_administrator,
                     email=f"{cls.__api_user_administrator.lower()}@{cls.__api_name}.com",
                     password=AuthUtil.generate_password_hash(

@@ -5,28 +5,15 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
 from alembic import context
-from src.infrastructure.database.database_configuration import (
-    DatabaseConfiguration,
+from src.core.configurations.database import (
+    DatabaseConfig,
 )
-from src.infrastructure.database.database_configuration_util import (
-    DatabaseConfigurationUtil,
+from src.core.configurations.database.utils import (
+    DatabaseConfigUtil,
 )
-from src.infrastructure.models.permission_model import PermissionModel
-from src.infrastructure.models.role_model import RoleModel
-from src.infrastructure.models.user_model import UserModel
-
-# Define the database URL
-DATABASE_URL = DatabaseConfigurationUtil().get_url()
-
-# Alembic configuration
-config = context.config
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
-
-config.set_main_option("sqlalchemy.url", DATABASE_URL)
-
-# Retrieve metadata from SQLAlchemy models
-target_metadata = DatabaseConfiguration.base().metadata
+from src.data.models.permission import PermissionModel
+from src.data.models.role import RoleModel
+from src.data.models.user import UserModel
 
 # Dynamically load models
 models_package = "src.infrastructure.models"
@@ -43,6 +30,18 @@ except AttributeError:
 for _, module_name, _ in pkgutil.iter_modules([models_path]):
     importlib.import_module(f"{models_package}.{module_name}")
 
+# Define the database URL
+DATABASE_URL = DatabaseConfigUtil().get_url()
+
+# Alembic configuration
+config = context.config
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
+
+# Retrieve metadata from SQLAlchemy models
+target_metadata = DatabaseConfig.base().metadata
 
 def run_migrations_offline() -> None:
     """

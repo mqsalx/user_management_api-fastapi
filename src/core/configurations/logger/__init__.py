@@ -10,6 +10,26 @@ from colorlog import ColoredFormatter
 from src.core.configurations import EnvConfig
 
 
+class FlushingStreamHandler(logging.StreamHandler):
+    """
+    Custom stream handler that forces a flush after every log emission.
+
+    This handler ensures that all log records are immediately written
+    to the output stream (such as stdout), avoiding delays caused by buffering.
+    It is especially useful in asynchronous or background task scenarios
+    where log messages may not appear promptly without an explicit flush.
+    """
+    def emit(self, record):
+        """
+        Emit a log record and flush the output stream immediately.
+
+        Args:
+            record (LogRecord): The log record to be written.
+        """
+        super().emit(record)
+        self.flush()
+
+
 class LoggerConfig:
     """
     Class responsible for configuring and managing the application logging.
@@ -82,7 +102,7 @@ class LoggerConfig:
             _file_handler = logging.FileHandler(_log_file)
             _file_handler.setFormatter(_file_formatter)
 
-            _stream_handler = logging.StreamHandler()
+            _stream_handler = FlushingStreamHandler()
             _stream_handler.setFormatter(_stream_formatter)
 
             self.__logger.setLevel(_level)

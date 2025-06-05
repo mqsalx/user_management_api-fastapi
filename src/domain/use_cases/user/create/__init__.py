@@ -3,6 +3,7 @@
 # flake8: noqa: E501
 
 # PY
+import time
 from typing import Dict
 
 # Core
@@ -53,16 +54,16 @@ class CreateUserUseCase:
 
     def __call__(
         self,
-        request: CreateUserReqBodyDTO
+        body: CreateUserReqBodyDTO
     ):
         """
         Public method responsible for creating a new user.
 
-        This method validates the request, checks if the email is already in use,
+        This method validates the body, checks if the email is already in use,
         persists the user in the database, and returns a response DTO.
 
         Args:
-            request_body (CreateUserReqBodyDTO): The DTO containing user details.
+            body (CreateUserReqBodyDTO): The DTO containing user details.
 
         Returns:
             Dict[str, str]: A dictionary containing the created user's details.
@@ -73,14 +74,16 @@ class CreateUserUseCase:
         """
 
         try:
-
-            self.__check_user_email(request.email)
+            time.sleep(60)
+            print("OK")
+            print("Creating..")
+            self.__check_user_email(body.email)
 
             user = self.__repository.create_user(
-                name=request.name,
-                email=request.email,
-                status=request.status,
-                password=AuthUtil.generate_password_hash(request.password,),
+                name=body.name,
+                email=body.email,
+                status=body.status,
+                password=AuthUtil.generate_password_hash(body.password,),
             )
 
             return self.__response(user)

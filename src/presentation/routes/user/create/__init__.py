@@ -2,7 +2,7 @@
 
 # flake8: noqa: E501
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -32,7 +32,8 @@ class CreateUserRouter:
     def __call__(
         self,
         session_db: Session = Depends(DatabaseConfig().get_db),
-        body: CreateUserReqBodyDTO = None
+        body: CreateUserReqBodyDTO = None,
+        background_tasks: BackgroundTasks = None
     ) -> JSONResponse:
         """
         Endpoint that handles user creation.
@@ -41,4 +42,4 @@ class CreateUserRouter:
             a confirmation message upon successful user creation.
         """
         controller = CreateUserController(session_db)
-        return controller(body)
+        return controller(body, background_tasks)

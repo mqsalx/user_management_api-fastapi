@@ -2,9 +2,12 @@
 
 # flake8: noqa: E501
 
+from src.core.configurations.scheduler import scheduler_config
+import asyncio
+
 # PY
 from typing import Callable
-from fastapi import status
+from fastapi import BackgroundTasks, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -51,7 +54,8 @@ class CreateUserController:
 
     def __call__(
         self,
-        body: CreateUserReqBodyDTO
+        body: CreateUserReqBodyDTO,
+        background_tasks: BackgroundTasks
     ) -> JSONResponse:
         """
         Public method that creates a new user.
@@ -64,11 +68,19 @@ class CreateUserController:
             JSONResponse: A JSON response containing the created user's data.
         """
 
-        response = self.__use_case(body)
-        message = "User created!"
+        background_tasks.add_task(self.__use_case, body)
+
+        # asyncio.create_task(self.__use_case(body))
+
+        message = "Creating user!"
+        # message = "User created!"
 
         return response_json(
-            status_code=status.HTTP_201_CREATED,
-            message=message,
-            data=UserResponseDTO(root=response).model_dump(),
+            status_code=status.HTTP_202_ACCEPTED,
+            message=message
         )
+        # return response_json(
+        #     status_code=status.HTTP_201_CREATED,
+        #     message=message,
+        #     data=UserResponseDTO(root=use_case_response).model_dump(),
+        # )
