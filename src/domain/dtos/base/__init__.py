@@ -13,10 +13,7 @@ from src.core.exceptions.dtos import (
     OnlyAcceptsValuesException,
 )
 
-from src.utils import LoggerUtil
-
-log = LoggerUtil()
-
+from src.utils import log
 
 class BaseDTO(BaseModel):
     """

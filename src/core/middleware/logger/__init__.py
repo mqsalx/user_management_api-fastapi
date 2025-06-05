@@ -8,10 +8,7 @@ from http import HTTPStatus
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
 
-from src.utils import LoggerUtil
-
-log = LoggerUtil()
-
+from src.utils import log
 
 class LoggerMiddleware(BaseHTTPMiddleware):
     """

@@ -6,10 +6,7 @@ from sqlalchemy.orm import Session
 
 from src.domain.enums import UserRoleEnum
 from src.data.models import UserModel
-from src.utils import LoggerUtil
-
-log = LoggerUtil()
-
+from src.utils import log
 
 class UserRepository:
     """
@@ -21,7 +18,11 @@ class UserRepository:
         session_db (Session): The database session used for executing queries.
     """
 
-    def __init__(self, session_db: Session):
+    def __init__(
+        self,
+        model: UserModel,
+        session_db: Session
+    ) -> None:
         """
         Constructor method for UserRepository.
 
@@ -31,7 +32,8 @@ class UserRepository:
             session_db (Session): The database session used to execute queries.
         """
 
-        self.__session_db = session_db
+        self.__model: UserModel = model
+        self.__session_db: Session = session_db
 
     def create_user(self, **kwargs) -> UserModel:
         """
@@ -52,7 +54,7 @@ class UserRepository:
 
         try:
 
-            user = UserModel(**kwargs)
+            user = self.__model(**kwargs)
 
             self.__session_db.add(user)
 
@@ -67,7 +69,7 @@ class UserRepository:
             log.error(f"Error creating user: {error}")
             raise
 
-    def find_user(self, user_id: str) -> UserModel | None:
+    def find_user(self, user_id: str):
         """
         Public method responsible for retrieving a user by their user ID.
 
@@ -83,8 +85,8 @@ class UserRepository:
         return (
             self.__session_db.query(UserModel)
             .filter(
-                UserModel.user_id == user_id,
-                UserModel.role_id != UserRoleEnum.SUPER_ADMINISTRATOR,
+                self.__model.user_id == user_id,
+                self.__model.role_id != UserRoleEnum.SUPER_ADMINISTRATOR,
             )
             .first()
         )

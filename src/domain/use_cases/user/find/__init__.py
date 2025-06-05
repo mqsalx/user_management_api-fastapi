@@ -2,16 +2,21 @@
 
 # flake8: noqa: E501
 
+# PY
 from typing import Dict, List, Union
 
-from sqlalchemy.orm import Session
-
+# Core
 from src.core.exceptions import UserNotFoundException
+
+# Data
 from src.data.models import UserModel
 from src.data.repositories import UserRepository
-from src.utils import LoggerUtil
 
-log = LoggerUtil()
+# Domain
+from src.domain.dtos.request import FindUserByUserIdQueryDTO
+
+# Utils
+from src.utils import log
 
 
 class FindUserUseCase:
@@ -24,7 +29,10 @@ class FindUserUseCase:
         db (Session): The database session required for executing queries.
     """
 
-    def __init__(self, db: Session):
+    def __init__(
+        self,
+        repository: UserRepository
+    ):
         """
         Constructor method for FindUserUseCase.
 
@@ -33,10 +41,11 @@ class FindUserUseCase:
         Args:
             db (Session): The database session used to execute queries.
         """
-        self.__repository = UserRepository(db)
+        self.__repository: UserRepository = repository
 
-    def find(
-        self, user_id: str | None = None
+    def __call__(
+        self,
+        query: FindUserByUserIdQueryDTO
     ) -> Union[Dict[str, str], List[Dict[str, str]]]:
         """
         Public method responsible for searching for a user.
@@ -57,6 +66,7 @@ class FindUserUseCase:
         """
 
         try:
+            user_id = query.user_id
             if user_id is None:
                 users = self.__repository.find_users()
 

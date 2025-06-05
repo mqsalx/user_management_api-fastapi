@@ -18,9 +18,7 @@ from src.data.repositories import UserRepository
 from src.domain.dtos.request.path.user import RemoveUserByUserIdReqPathDTO
 
 # utils
-from src.utils import LoggerUtil
-
-log = LoggerUtil()
+from src.utils import log
 
 
 class RemoveUserUseCase:
@@ -33,7 +31,10 @@ class RemoveUserUseCase:
         session_db (Session): The database session required for executing queries.
     """
 
-    def __init__(self, session_db: Session):
+    def __init__(
+        self,
+        repository: UserRepository
+    ) -> None:
         """
         Constructor method for RemoveUserUseCase.
 
@@ -43,9 +44,11 @@ class RemoveUserUseCase:
             session_db (Session): The database session used to execute queries.
         """
 
-        self.__user_repository = UserRepository(session_db)
+        self.__user_repository: UserRepository = repository
 
-    def remove(self, request_path: RemoveUserByUserIdReqPathDTO) -> None:
+    def __call__(self,
+        path: RemoveUserByUserIdReqPathDTO
+    ):
         """
         Public method responsible for deleting a user.
 
@@ -60,9 +63,7 @@ class RemoveUserUseCase:
             BaseException: If an unexpected error occurs during deletion.
         """
         try:
-            user_id = request_path.user_id
-
-            self.__check_user_id(user_id)
+            user_id = path.user_id
 
             user = self.__user_repository.find_user(user_id)
 
@@ -72,28 +73,13 @@ class RemoveUserUseCase:
                 )
 
             self.__user_repository.remove_user(user)
-            self.__user_repository.database.commit()
 
-            log.info(f"User deleted: id: {user_id}, name: {user.name}")
+            user = self.__user_repository.find_user(user_id)
+
+            if not user:
+                log.info(f"User deleted: id: {user_id}")
+                return True
 
         except BaseException as error:
             log.error(f"Error in DeleteUserUseCase: {error}")
             raise
-
-    def __check_user_id(self, user_id: str) -> None:
-        """
-        Private method responsible for validating the user ID.
-
-        This method checks if a user ID is provided before attempting deletion.
-
-        Args:
-            user_id (str): The user ID to validate.
-
-        Raises:
-            UserNotFoundException: If the user ID is missing.
-        """
-
-        if not user_id:
-            raise UserNotFoundException(
-                "User ID is required in the Query Params!"
-            )

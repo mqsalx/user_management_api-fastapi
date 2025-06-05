@@ -13,10 +13,9 @@ from src.data.models import PermissionModel
 from src.data.models.role_permission import role_permission
 from src.utils import (
     GenUtil,
-    LoggerUtil
+    log
 )
 
-log = LoggerUtil()
 
 Base = DatabaseConfig.base()
 

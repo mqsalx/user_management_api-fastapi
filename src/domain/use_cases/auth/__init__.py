@@ -10,10 +10,9 @@ from src.data.models import UserModel
 from src.data.repositories import AuthRepository
 from src.utils import (
     AuthUtil,
-    LoggerUtil
+    log
 )
 
-log = LoggerUtil()
 
 
 class AuthUseCase:

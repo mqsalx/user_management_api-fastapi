@@ -2,20 +2,26 @@
 
 # flake8: noqa: E501
 
+# PY
 from typing import Dict
 
-from sqlalchemy.orm import Session
-
-from src.domain.dtos import UpdateUserRequestDTO
+# Core
 from src.core.exceptions import (
     BaseException,
     UserNotFoundException
 )
+
+# Data
 from src.data.models import UserModel
 from src.data.repositories import UserRepository
-from src.utils import LoggerUtil
 
-log = LoggerUtil()
+# Domain
+from src.domain.dtos.request import (
+    UpdateUserReqBodyDTO,
+    UpdateUserReqPathDTO
+)
+
+from src.utils import log
 
 
 class UpdateUserUseCase:
@@ -28,7 +34,7 @@ class UpdateUserUseCase:
         session_db (Session): The database session required for executing queries.
     """
 
-    def __init__(self, session_db: Session):
+    def __init__(self, repository: UserRepository) -> None:
         """
         Constructor method for UpdateUserUseCase.
 
@@ -38,10 +44,12 @@ class UpdateUserUseCase:
             session_db (Session): The database session used to execute queries.
         """
 
-        self.__user_repository = UserRepository(session_db)
+        self.__user_repository: UserRepository = repository
 
-    def update(
-        self, user_id: str, request: UpdateUserRequestDTO
+    def __call__(
+        self,
+        path: UpdateUserReqPathDTO,
+        body: UpdateUserReqBodyDTO
     ) -> dict[str, str]:
         """
         Public method responsible for updating a user.
@@ -62,6 +70,8 @@ class UpdateUserUseCase:
         """
 
         try:
+            user_id = path.user_id
+
             if not user_id:
                 raise UserNotFoundException(
                     f"User with ID {user_id} is invalid or incorrect!"
@@ -74,7 +84,7 @@ class UpdateUserUseCase:
                     f"User with ID {user_id} is invalid or incorrect!"
                 )
 
-            update_data = request.model_dump(exclude_unset=True)
+            update_data = body.model_dump(exclude_unset=True)
 
             for field, value in update_data.items():
                 if hasattr(user, field):

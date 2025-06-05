@@ -78,3 +78,5 @@ class LoggerUtil:
         """
 
         self.__logger.warning(message)
+
+log = LoggerUtil()

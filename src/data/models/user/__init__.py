@@ -17,10 +17,9 @@ from src.data.models import RoleModel
 from src.utils import (
     AuthUtil,
     GenUtil,
-    LoggerUtil
+    log
 )
 
-log = LoggerUtil()
 
 Base = DatabaseConfig.base()
 
@@ -31,9 +30,6 @@ class UserModel(Base):
 
     This model represents the `users` table and manages user-related relationships
     and data operations.
-
-    Class Args:
-        None
     """
 
     __api_name = EnvConfig().api_name

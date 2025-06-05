@@ -13,7 +13,7 @@ from src.core.configurations import DatabaseConfig
 from src.domain.dtos.request.path.user import RemoveUserByUserIdReqPathDTO
 
 # Presentation
-from src.presentation.controllers import UserController
+from src.presentation.controllers.user.remove import RemoveUserController
 
 
 class RemoveUserRouter:
@@ -32,18 +32,12 @@ class RemoveUserRouter:
         self,
         path: RemoveUserByUserIdReqPathDTO = Depends(),
         session_db: Session = Depends(DatabaseConfig().get_db),
-    ) -> JSONResponse:
+    ):
         """
         Endpoint that handles user creation.
 
         This method processes user registration requests and returns a confirmation
         message upon successful user creation.
         """
-        controller = UserController(session_db)
-        return controller.remove_user_controller(path)
-
-    @property
-    def router(self) -> APIRouter:
-        """
-        """
-        return  self.__router
+        controller = RemoveUserController(session_db)
+        return controller(path)

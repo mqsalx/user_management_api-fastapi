@@ -4,7 +4,6 @@
 
 # PY
 from typing import Dict
-from sqlalchemy.orm import Session
 
 # Core
 from src.core.exceptions import (
@@ -22,10 +21,8 @@ from src.domain.dtos import CreateUserReqBodyDTO
 # Utils
 from src.utils import (
     AuthUtil,
-    LoggerUtil
+    log
 )
-
-log = LoggerUtil()
 
 
 class CreateUserUseCase:
@@ -36,10 +33,13 @@ class CreateUserUseCase:
     DTO into an entity and returning a response DTO.
 
     Class Args:
-        session_db (Session): The database session required for executing queries.
+        repository (UserRepository): The database session required for executing queries.
     """
 
-    def __init__(self, session_db: Session):
+    def __init__(
+        self,
+        repository: UserRepository
+    ) -> None:
         """
         Constructor method for CreateUserUseCase.
 
@@ -49,9 +49,12 @@ class CreateUserUseCase:
             session_db (Session): The database session used to execute queries.
         """
 
-        self.__user_repository = UserRepository(session_db)
+        self.__repository: UserRepository = repository
 
-    def create(self, request_body: CreateUserReqBodyDTO) -> dict[str, str]:
+    def __call__(
+        self,
+        request: CreateUserReqBodyDTO
+    ):
         """
         Public method responsible for creating a new user.
 
@@ -71,21 +74,19 @@ class CreateUserUseCase:
 
         try:
 
-            self.__check_user_email(request_body.email)
+            self.__check_user_email(request.email)
 
-            user = self.__user_repository.create_user(
-                name=request_body.name,
-                email=request_body.email,
-                status=request_body.status,
-                password=AuthUtil.generate_password_hash(
-                    request_body.password,
-                ),
+            user = self.__repository.create_user(
+                name=request.name,
+                email=request.email,
+                status=request.status,
+                password=AuthUtil.generate_password_hash(request.password,),
             )
 
             return self.__response(user)
 
         except (Exception, BaseException) as error:
-            self.__user_repository.database.rollback()
+            self.__repository.database.rollback()
             log.error(f"Error during the user creation process: {error}")
             raise error
 
@@ -102,7 +103,7 @@ class CreateUserUseCase:
             EmailAlreadyExistsException: If the email is already registered.
         """
 
-        if self.__user_repository.find_user_email(user_email):
+        if self.__repository.find_user_email(user_email):
             raise EmailAlreadyExistsException(
                 f"User with email {user_email} already exists!"
             )

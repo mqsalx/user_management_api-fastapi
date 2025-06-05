@@ -8,7 +8,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from src.core.configurations.environment import EnvConfig
 from src.utils import (
     AuthUtil,
-    LoggerUtil,
+    log,
     ResponseUtil
 )
 
@@ -17,7 +17,6 @@ API_VERSION: str = EnvConfig().api_version
 
 # Utils Setup
 json_response = ResponseUtil().json_response
-log = LoggerUtil()
 
 
 class AuthMiddleware(BaseHTTPMiddleware):

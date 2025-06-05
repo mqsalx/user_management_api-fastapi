@@ -12,10 +12,9 @@ from src.core.configurations import (
 from src.data.models.role_permission import role_permission
 from src.utils import (
     GenUtil,
-    LoggerUtil
+    log
 )
 
-log = LoggerUtil()
 
 Base = DatabaseConfig.base()
 

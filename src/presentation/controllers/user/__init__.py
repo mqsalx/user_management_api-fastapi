@@ -3,6 +3,7 @@
 # flake8: noqa: E501
 
 # PY
+from typing import Callable
 from fastapi import Depends, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
@@ -29,7 +30,7 @@ from src.domain.use_cases.user import (
 # Utils
 from src.utils import ResponseUtil
 
-response_json = ResponseUtil().json_response
+response_json: Callable[..., JSONResponse] = ResponseUtil().json_response
 
 
 class UserController:

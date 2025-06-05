@@ -51,7 +51,7 @@ class DatabaseConfig:
             Exception: If an error occurs while managing the session.
         """
 
-        db = cls._session_local()
+        db: Session = cls._session_local()
         try:
             yield db
         finally:

@@ -35,11 +35,9 @@ from src.presentation.routes import ApiRouter
 from src.utils import (
     DatabaseUtil,
     DotEnvUtil,
-    LoggerUtil,
+    log,
     MessageUtil
 )
-
-log = LoggerUtil()
 
 # Env variables Setup
 API_HOST = EnvConfig().api_host

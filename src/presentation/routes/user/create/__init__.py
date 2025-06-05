@@ -13,8 +13,7 @@ from src.core.configurations import DatabaseConfig
 from src.domain.dtos.request.body.user import CreateUserReqBodyDTO
 
 # Presentation
-from src.presentation.controllers import UserController
-
+from src.presentation.controllers.user.create import CreateUserController
 
 
 class CreateUserRouter:
@@ -26,25 +25,20 @@ class CreateUserRouter:
         self.__router: APIRouter = user_router
 
         self.__router.post(
-            path=""
+            path="",
+            description=""
         )(self.__call__)
 
     def __call__(
         self,
-        request: CreateUserReqBodyDTO,
         session_db: Session = Depends(DatabaseConfig().get_db),
+        body: CreateUserReqBodyDTO = None
     ) -> JSONResponse:
         """
         Endpoint that handles user creation.
 
-        This method processes user registration requests and returns a confirmation
-        message upon successful user creation.
+        This method processes user registration requests and returns
+            a confirmation message upon successful user creation.
         """
-        controller = UserController(session_db)
-        return controller.create_user_controller(request)
-
-    @property
-    def router(self) -> APIRouter:
-        """
-        """
-        return  self.__router
+        controller = CreateUserController(session_db)
+        return controller(body)

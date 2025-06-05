@@ -3,9 +3,7 @@
 # flake8: noqa: E501
 
 # Domain
-from pydantic import EmailStr, field_validator
-
-from src.domain.enums.user import UserStatusEnum
+from fastapi import Path
 from src.domain.dtos.base import BaseDTO
 
 
@@ -14,11 +12,6 @@ class RemoveUserByUserIdReqPathDTO(BaseDTO):
     Class responsible for the Data Transfer Object (DTO) for user creation.
 
     This class is responsible for validating and structuring user creation requests.
-
-    Validation mode: 'create'.
-
-    Class Args:
-        None
     """
 
     user_id: str
@@ -29,31 +22,19 @@ class UpdateUserReqPathDTO(BaseDTO):
     Class responsible for the Data Transfer Object (DTO) for user update.
 
     This class is responsible for validating and structuring user update requests.
-
-    Validation mode: 'update'.
-
-    Class Args:
-        None
     """
 
-    __validation_mode__ = "update"
+    user_id: str
 
-    name: str | None = None
-    email: EmailStr | None = None
-    status: UserStatusEnum | None = None
-    password: str | None = None
-
-    @field_validator("status", mode="before")
-    @classmethod
-    def validate_status(cls, value, info) -> str:
+    @staticmethod
+    def validate_path(user_id: str = Path(...)) -> "RemoveUserByUserIdReqPathDTO":
         """
-        Class method that validates if the given value is a valid UserStatusEnum member.
+        Static method to create an instance of RemoveUserByUserIdReqPathDTO from a FastAPI path parameter.
 
         Args:
-            value: The value to be validated.
-            info: Field metadata provided by Pydantic.
+            user_id (str): The user ID extracted from the path.
 
         Returns:
-            str: The validated status value.
+            RemoveUserByUserIdReqPathDTO: A validated DTO instance containing the user_id.
         """
-        return cls.validate_enum(value, info, UserStatusEnum)
+        return RemoveUserByUserIdReqPathDTO(user_id=user_id)
