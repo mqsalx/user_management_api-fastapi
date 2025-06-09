@@ -1,10 +1,15 @@
-# /src/data/repository/auth/__init__.py
+# /src/data/repositories/auth/__init__.py
 
 # flake8: noqa: E501
 
+# PY
 from sqlalchemy.orm import Session
 
-from src.data.models import UserModel
+# Data
+from src.data.models import SessionAuthModel
+
+# Utils
+from src.utils import log
 
 
 class AuthRepository:
@@ -18,7 +23,11 @@ class AuthRepository:
         session_db (Session): The database session used for executing queries.
     """
 
-    def __init__(self, session_db: Session):
+    def __init__(
+        self,
+        model: SessionAuthModel,
+        session_db: Session
+    ):
         """
         Constructor method for AuthRepository.
 
@@ -28,21 +37,64 @@ class AuthRepository:
             session_db (Session): The database session used to execute queries.
         """
 
-        self.__session_db = session_db
+        self.__model: SessionAuthModel = model
+        self.__session_db: Session = session_db
 
-    def get_user_by_email(self, email: str) -> UserModel | None:
+
+    def create_session(self, **kwargs):
         """
-        Public method responsible for retrieving a user by their email.
+        Public method responsible for creating a new user in the database.
 
-        This method queries the database to find a user with the specified email address.
+        This method creates a new `UserModel` instance, persists it in the database,
+        and returns the newly created user.
 
         Args:
-            email (str): The email address of the user to retrieve.
+            **kwargs: Arbitrary keyword arguments containing user attributes.
 
         Returns:
-            UserModel | None: The user matching the email if found, otherwise None.
+            UserModel: The newly created user.
+
+        Raises:
+            Exception: If an error occurs while inserting the user into the database.
         """
 
-        return (
-            self.__session_db.query(UserModel).filter(UserModel.email == email).first()
-        )
+        try:
+
+            user = self.__model(**kwargs)
+
+            self.__session_db.add(user)
+
+            self.__session_db.commit()
+
+            self.__session_db.refresh(user)
+
+            return user
+
+        except Exception as error:
+            self.__session_db.rollback()
+            log.error(f"Error creating session: {error}")
+            raise
+
+    def find_session_by_jti(self, jti: str) -> SessionAuthModel | None:
+        """
+        """
+        return self.__session_db.query(SessionAuthModel).filter_by(jti=jti).first()
+
+    def find_active_sessions_by_user_id(self, user_id: str) -> list[SessionAuthModel]:
+        """
+        """
+
+        return self.__session_db.query(SessionAuthModel).filter_by(
+            user_id=user_id,
+            is_active=True
+        ).all()
+
+    def deactivate_session(self, session: SessionAuthModel, update_data: dict) -> None:
+        """
+        """
+        for field, value in update_data.items():
+            if hasattr(session, field):
+                setattr(session, field, value)
+
+        self.__session_db.add(session)
+        self.__session_db.commit()

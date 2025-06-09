@@ -21,14 +21,14 @@ from src.domain.enums import (
 )
 
 # Data
-from src.data.models import RoleModel
+from src.data.models.auth.session import SessionAuthModel
+from src.data.models.role import RoleModel
 
 # Utils
-from src.utils import (
-    AuthUtil,
-    GenUtil,
-    log
-)
+from src.utils.auth import AuthUtil
+from src.utils.generator import GenUtil
+from src.utils.logger import log
+
 
 
 Base = DatabaseConfig.base()
@@ -54,18 +54,24 @@ class UserModel(Base):
     _unique_id = GenUtil.generate_unique_id()
     _custom_id = f"{_prefix_id}{_unique_id}"
 
-    id = Column(String, nullable=False, default=lambda: str(uuid.uuid4()))
     user_id = Column(
-        String, primary_key=True, nullable=False, default=lambda: str(uuid.uuid4())
+        String,
+        primary_key=True,
+        nullable=False,
+        default=lambda: str(uuid.uuid4())
     )
     name = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
     status = Column(
-        Enum(UserStatusEnum), default=UserStatusEnum.ACTIVE, nullable=False
+        Enum(UserStatusEnum),
+        default=UserStatusEnum.ACTIVE,
+        nullable=False
     )
     created_at = Column(
-        String, nullable=False, default=GenUtil.generate_formatted_datetime
+        String,
+        nullable=False,
+        default=GenUtil.generate_formatted_datetime
     )
     updated_at = Column(
         String,
@@ -81,8 +87,16 @@ class UserModel(Base):
         default=UserRoleEnum.DEFAULT.value,
     )
 
-    role = relationship(RoleModel, backref="users")
+    role = relationship(
+        RoleModel,
+        backref="users"
+    )
 
+    sessions_auth = relationship(
+    SessionAuthModel,
+    backref="users",
+    cascade="all, delete-orphan"
+)
     @classmethod
     def create_administrator_user(cls) -> None:
         """
