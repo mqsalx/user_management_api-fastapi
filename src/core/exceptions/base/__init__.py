@@ -5,7 +5,7 @@
 from fastapi import HTTPException, status
 
 
-class BaseException(HTTPException):
+class BaseHTTPException(HTTPException):
     """
     Class responsible for the base exception used in the application.
 
