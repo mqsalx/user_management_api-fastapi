@@ -7,7 +7,7 @@ from typing import Dict
 
 # Core
 from src.core.exceptions import (
-    BaseException,
+    BaseHTTPException,
     UserNotFoundException
 )
 
@@ -16,7 +16,7 @@ from src.data.models import UserModel
 from src.data.repositories import UserRepository
 
 # Domain
-from src.domain.dtos.request import (
+from src.domain.dtos import (
     UpdateUserReqBodyDTO,
     UpdateUserReqPathDTO
 )
@@ -95,7 +95,10 @@ class UpdateUserUseCase:
 
             return self.__response(user)
 
-        except (Exception, BaseException) as error:
+        except (
+            Exception,
+            BaseHTTPException
+        ) as error:
             self.__user_repository.database.rollback()
             log.error(f"Error during the user update process: {error}")
             raise error

@@ -8,7 +8,7 @@ from typing import Dict
 
 # Core
 from src.core.exceptions import (
-    BaseException,
+    BaseHTTPException,
     EmailAlreadyExistsException
 )
 
@@ -88,7 +88,7 @@ class CreateUserUseCase:
 
             return self.__response(user)
 
-        except (Exception, BaseException) as error:
+        except (Exception, BaseHTTPException) as error:
             self.__repository.database.rollback()
             log.error(f"Error during the user creation process: {error}")
             raise error
