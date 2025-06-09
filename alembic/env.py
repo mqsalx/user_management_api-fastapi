@@ -16,7 +16,7 @@ from src.data.models.role import RoleModel
 from src.data.models.user import UserModel
 
 # Dynamically load models
-models_package = "src.infrastructure.models"
+models_package = "src.data.models"
 
 try:
     models_path = os.path.dirname(
@@ -101,7 +101,7 @@ def run_migrations_online() -> None:
 
     from sqlalchemy import inspect
 
-    engine = DatabaseConfiguration._engine
+    engine = DatabaseConfig._engine
     inspector = inspect(engine)
 
     # Validate and create permissions
