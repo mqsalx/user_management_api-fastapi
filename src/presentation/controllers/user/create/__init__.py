@@ -16,9 +16,11 @@ from src.data.models import UserModel
 from src.data.repositories import UserRepository
 
 # Domain
-from src.domain.dtos.request.body.user import CreateUserReqBodyDTO
-from src.domain.dtos.response.user import UserResponseDTO
-from src.domain.use_cases.user import CreateUserUseCase
+from src.domain.dtos import (
+    CreateUserReqBodyDTO,
+    UserResponseDTO
+)
+from src.domain.use_cases import CreateUserUseCase
 
 # Utils
 from src.utils import ResponseUtil

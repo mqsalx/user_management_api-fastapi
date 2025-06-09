@@ -1,8 +1,8 @@
-# /src/presentation/routes/user/create/__init__.py
+# /src/presentation/routes/auth/login/__init__.py
 
 # flake8: noqa: E501
 
-from fastapi import APIRouter, BackgroundTasks, Depends
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -10,13 +10,13 @@ from sqlalchemy.orm import Session
 from src.core.configurations import DatabaseConfig
 
 # Domain
-from src.domain.dtos import CreateUserReqBodyDTO
+from src.domain.dtos import LoginRequestDTO
 
 # Presentation
-from src.presentation.controllers import CreateUserController
+from src.presentation.controllers import LoginController
 
 
-class CreateUserRouter:
+class LoginRouter:
     """
     """
     def __init__(self, user_router: APIRouter) -> None:
@@ -25,16 +25,14 @@ class CreateUserRouter:
         self.__router: APIRouter = user_router
 
         self.__router.post(
-            path="",
-            description="",
-            response_model=None
+            path="/login",
+            description=""
         )(self.__call__)
 
     def __call__(
         self,
         session_db: Session = Depends(DatabaseConfig().get_db),
-        body: CreateUserReqBodyDTO = None,
-        background_tasks: BackgroundTasks = None
+        body: LoginRequestDTO = None
     ) -> JSONResponse:
         """
         Endpoint that handles user creation.
@@ -42,5 +40,5 @@ class CreateUserRouter:
         This method processes user registration requests and returns
             a confirmation message upon successful user creation.
         """
-        controller = CreateUserController(session_db)
-        return controller(body, background_tasks)
+        controller = LoginController(session_db=session_db)
+        return controller(body)

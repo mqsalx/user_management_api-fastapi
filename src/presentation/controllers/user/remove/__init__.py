@@ -13,8 +13,8 @@ from src.data.models import UserModel
 from src.data.repositories import UserRepository
 
 # Domain
-from src.domain.dtos.request import RemoveUserByUserIdReqPathDTO
-from src.domain.use_cases.user import RemoveUserUseCase
+from src.domain.dtos import RemoveUserByUserIdReqPathDTO
+from src.domain.use_cases import RemoveUserUseCase
 
 # Utils
 from src.utils import ResponseUtil
@@ -51,7 +51,7 @@ class RemoveUserController:
     def __call__(
         self,
         path: RemoveUserByUserIdReqPathDTO
-    ):
+    ) -> JSONResponse | None:
         """
         Public method that deletes a user.
 

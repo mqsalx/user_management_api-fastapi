@@ -10,13 +10,13 @@ from sqlalchemy.orm import Session
 from src.core.configurations import DatabaseConfig
 
 # Domain
-from src.domain.dtos.request import (
+from src.domain.dtos import (
     UpdateUserReqBodyDTO,
     UpdateUserReqPathDTO
 )
 
 # Presentation
-from src.presentation.controllers.user.update import UpdateUserController
+from src.presentation.controllers import UpdateUserController
 
 
 class UpdateUserRouter:
@@ -29,6 +29,7 @@ class UpdateUserRouter:
 
         self.__router.patch(
             path="/{user_id}",
+            response_model=None
         )(self.__call__)
 
     def __call__(

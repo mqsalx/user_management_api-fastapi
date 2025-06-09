@@ -10,16 +10,17 @@ from sqlalchemy.orm import Session
 from src.core.configurations import DatabaseConfig
 
 # Domain
-from src.domain.dtos.request.query.user import FindUserByUserIdQueryDTO
+from src.domain.dtos import FindUserByUserIdQueryDTO
 
 # Presentation
-from src.presentation.controllers.user.find import FindUserController
+from src.presentation.controllers import FindUserController
 
 class GetUserRouter:
     def __init__(self, user_router: APIRouter) -> None:
         self.__router: APIRouter = user_router
         self.__router.get(
-            ""
+            path="",
+            response_model=None
         )(self.__call__)
 
     def __call__(
