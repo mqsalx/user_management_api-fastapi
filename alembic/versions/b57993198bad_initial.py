@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: a25c14cfe408
+Revision ID: b57993198bad
 Revises: 
-Create Date: 2025-06-07 13:33:56.416772
+Create Date: 2025-06-23 20:22:00.847411
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'a25c14cfe408'
+revision: str = 'b57993198bad'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -27,6 +27,14 @@ def upgrade() -> None:
     op.create_table('roles',
     sa.Column('role_id', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('role_id')
+    )
+    op.create_table('tokens',
+    sa.Column('token_id', sa.String(), nullable=False),
+    sa.Column('access_token', sa.String(), nullable=False),
+    sa.Column('created_at', sa.String(), nullable=False),
+    sa.Column('updated_at', sa.String(), nullable=False),
+    sa.PrimaryKeyConstraint('token_id'),
+    sa.UniqueConstraint('access_token')
     )
     op.create_table('role_permissions',
     sa.Column('role_id', sa.String(), nullable=False),
@@ -49,18 +57,17 @@ def upgrade() -> None:
     sa.UniqueConstraint('email')
     )
     op.create_table('sessions_auth',
-    sa.Column('session_auth_id', sa.String(), nullable=False),
-    sa.Column('jti', sa.String(), nullable=False),
+    sa.Column('session_id', sa.String(), nullable=False),
+    sa.Column('token_id', sa.String(), nullable=False),
     sa.Column('user_id', sa.String(), nullable=False),
-    sa.Column('access_token', sa.String(), nullable=False),
+    sa.Column('login_at', sa.String(), nullable=True),
+    sa.Column('logout_at', sa.DateTime(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.String(), nullable=False),
     sa.Column('updated_at', sa.String(), nullable=False),
-    sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('logout_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['token_id'], ['tokens.token_id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
-    sa.PrimaryKeyConstraint('session_auth_id'),
-    sa.UniqueConstraint('access_token'),
-    sa.UniqueConstraint('jti')
+    sa.PrimaryKeyConstraint('session_id')
     )
     # ### end Alembic commands ###
 
@@ -70,6 +77,7 @@ def downgrade() -> None:
     op.drop_table('sessions_auth')
     op.drop_table('users')
     op.drop_table('role_permissions')
+    op.drop_table('tokens')
     op.drop_table('roles')
     op.drop_table('permissions')
     # ### end Alembic commands ###
