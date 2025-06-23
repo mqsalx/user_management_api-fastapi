@@ -75,11 +75,10 @@ class AuthMiddleware(BaseHTTPMiddleware):
             access_token = auth_header.split(" ")[1]
             payload = AuthUtil.verify_token(access_token)
 
-            jti = dict(payload).get("jti")
-            if not jti:
+            session_id = dict(payload).get("session_id")
+ 
+            if not session_id:
                 raise InvalidTokenException("Invalid token structure!")
-
-            AuthUtil.validate_session(jti)
 
             request.state.access_token = access_token
             try:

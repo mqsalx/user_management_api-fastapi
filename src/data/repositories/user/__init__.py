@@ -20,7 +20,6 @@ class UserRepository:
 
     def __init__(
         self,
-        model: UserModel,
         session_db: Session
     ) -> None:
         """
@@ -32,7 +31,7 @@ class UserRepository:
             session_db (Session): The database session used to execute queries.
         """
 
-        self.__model: UserModel = model
+        self.__model: UserModel = UserModel
         self.__session_db: Session = session_db
 
     def create_user(self, **kwargs) -> UserModel:

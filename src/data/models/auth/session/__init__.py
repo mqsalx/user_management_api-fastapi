@@ -25,14 +25,24 @@ class SessionAuthModel(Base):
     """
     __tablename__ = "sessions_auth"
 
-    session_auth_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    jti = Column(String, nullable=False, unique=True)
+    session_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    token_id = Column(
+        String,
+        ForeignKey("tokens.token_id"),
+        nullable=False
+    )
     user_id = Column(
         String,
         ForeignKey("users.user_id"),
         nullable=False
     )
-    access_token = Column(String, nullable=False, unique=True)
+    login_at = Column(
+        String,
+        nullable=True,
+        default=GenUtil.generate_formatted_datetime
+    )
+    logout_at = Column(DateTime, nullable=True)
+    is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(
         String,
         nullable=False,
@@ -44,5 +54,3 @@ class SessionAuthModel(Base):
         default=GenUtil.generate_formatted_datetime,
         onupdate=GenUtil.generate_formatted_datetime,
     )
-    is_active = Column(Boolean, default=True, nullable=False)
-    logout_at = Column(DateTime, nullable=True)

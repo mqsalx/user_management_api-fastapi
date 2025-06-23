@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 # Data
 from src.data.models import SessionAuthModel
-from src.data.repositories import AuthRepository
+from src.data.repositories import SessionAuthRepository
 
 # Domain
 from src.domain.use_cases import LogoutUseCase
@@ -21,11 +21,11 @@ class LogoutController:
     ):
         """
         """
-        self.__auth_repository = AuthRepository(
+        self.__session_auth_repository = SessionAuthRepository(
             SessionAuthModel,
             session_db
         )
-        self.__use_case = LogoutUseCase(self.__auth_repository)
+        self.__use_case = LogoutUseCase(self.__session_auth_repository)
 
     def __call__(self, request: str) -> JSONResponse:
         """

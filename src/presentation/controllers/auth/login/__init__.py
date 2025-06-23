@@ -7,16 +7,6 @@ from fastapi import status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-# Data
-from src.data.models import (
-    SessionAuthModel,
-    UserModel
-)
-from src.data.repositories import (
-    AuthRepository,
-    UserRepository
-)
-
 # Domain
 from src.domain.dtos import (
     LoginRequestDTO,
@@ -50,19 +40,7 @@ class LoginController:
             session_db (Session): Database session dependency,
                 injected via FastAPI's Depends.
         """
-        self.__session_db: Session = session_db
-        self.__auth_repository = AuthRepository(
-            SessionAuthModel,
-            self.__session_db
-        )
-        self.__user_repository = UserRepository(
-            UserModel,
-            self.__session_db
-        )
-        self.__use_case = LoginUseCase(
-            self.__auth_repository,
-            self.__user_repository,
-        )
+        self.__use_case = LoginUseCase(session_db)
 
     def __call__(self, body: LoginRequestDTO) -> JSONResponse:
         """

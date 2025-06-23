@@ -6,6 +6,7 @@
 import uuid
 
 from datetime import datetime
+from sqlalchemy.orm import Session
 from typing import Dict
 
 # Core
@@ -18,9 +19,13 @@ from src.core.exceptions import (
 from src.domain.dtos import LoginRequestDTO
 
 # Data
-from src.data.models import UserModel
+from src.data.models import (
+    TokenModel,
+    UserModel
+)
 from src.data.repositories import (
-    AuthRepository,
+    SessionAuthRepository,
+    TokenRepository,
     UserRepository
 )
 
@@ -39,13 +44,12 @@ class LoginUseCase:
     and generating JWT tokens.
 
     Class Args:
-        repository (AuthenticationRepository): The repository responsible for querying user data.
+        session_db (Session): The database session used for executing queries.
     """
 
     def __init__(
         self,
-        auth_repository: AuthRepository,
-        user_repository: UserRepository
+        session_db: Session
     ) -> None:
         """
         Constructor method for LoginUseCase.
@@ -53,11 +57,10 @@ class LoginUseCase:
         Initializes the use case with a repository instance.
 
         Args:
-            repository (AuthenticationRepository): The repository instance for user authentication.
+            session_db (Session): The database session used for executing queries.
         """
-
-        self.__auth_repository: AuthRepository = auth_repository
-        self.__user_repository: UserRepository = user_repository
+        self.__session_db = session_db
+        self.__user_repository = UserRepository(self.__session_db)
 
     def __call__(self, body: LoginRequestDTO):
         """
@@ -78,47 +81,58 @@ class LoginUseCase:
         """
 
         try:
+            with self.__session_db.begin():
 
-            user = self.__verify_email(body.email)
+                _token_repository = TokenRepository(self.__session_db)
+                _session_auth_repository = SessionAuthRepository(self.__session_db)
 
-            if not user:
-                log.info(f"User with email {body.email} not found!")
-                raise InvalidCredentialsException("Invalid credentials!")
+                verified_user = self.__verify_email(body.email)
 
-            password = self.__verify_password(
-                body.password, str(user.password)
-            )
+                if not verified_user:
+                    log.info(f"User with email {body.email} not found!")
+                    raise InvalidCredentialsException("Invalid credentials!")
 
-            if not password:
-                log.info(
-                    f"Invalid password for user with email {body.email}!"
+                password = self.__verify_password(
+                    body.password, str(verified_user.password)
                 )
-                raise InvalidCredentialsException("Invalid credentials!")
 
-            active_sessions = self.__auth_repository.find_active_sessions_by_user_id(user.user_id)
+                if not password:
+                    log.info(
+                        f"Invalid password for user with email {body.email}!"
+                    )
+                    raise InvalidCredentialsException("Invalid credentials!")
 
-            if active_sessions:
-                update_data = {
-                    "is_active": False,
-                    "logout_at": datetime.now(),
-                }
+                active_sessions = _session_auth_repository.find_active_sessions_by_user_id(verified_user.user_id)
 
-                for session in active_sessions:
-                    self.__auth_repository.deactivate_session(session, update_data)
+                if active_sessions:
+                    update_data = {
+                        "is_active": False,
+                        "logout_at": datetime.now(),
+                    }
 
-            jti = str(uuid.uuid4())
+                    for session in active_sessions:
+                        _session_auth_repository.deactivate_session(session, update_data)
 
-            token_data = self.__prepare_token_data(user, jti)
+                session_id = str(uuid.uuid4())
 
-            access_token = AuthUtil.create_token(token_data)
+                token_data = self.__prepare_token_data(verified_user, session_id)
 
-            self.__auth_repository.create_session(
-                user_id=user.user_id,
-                jti=jti,
-                access_token=access_token,
-            )
+                access_token = AuthUtil.create_token(token_data)
 
-            return self.__response(access_token)
+                token_id = str(uuid.uuid4())
+
+                created_token: TokenModel = _token_repository.create_token(
+                    token_id=token_id,
+                    access_token=access_token,
+                )
+
+                _session_auth_repository.create_session(
+                    session_id=session_id,
+                    user_id=verified_user.user_id,
+                    token_id=created_token.token_id,
+                )
+
+                return self.__response(access_token)
 
         except BaseHTTPException as error:
             log.error(f"Error authenticating user: {error}")
@@ -173,7 +187,7 @@ class LoginUseCase:
             "token_type": "bearer",
         }
 
-    def __prepare_token_data(self, user: UserModel, jti: str):
+    def __prepare_token_data(self, user: UserModel, session_id: str):
         """
         Private method responsible for preparing the token data.
 
@@ -185,8 +199,8 @@ class LoginUseCase:
         """
 
         return {
+            "session_id": session_id,
             "user_id": str(user.user_id),
             "email": user.email,
             "role": user.role.role_id,
-            "jti": jti
         }

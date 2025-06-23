@@ -97,7 +97,16 @@ class AuthUtil:
                 algorithms=JWT_ALGORITHM
             )
 
-            return payload
+            session_id = payload.get("session_id")
+
+            validated_session = cls.validate_session(session_id)
+
+            if validated_session:
+                return payload
+
+            log.warning(f"Session with session_id {session_id} is inactive or does not exist!")
+            raise UnauthorizedTokenException("Token expired or invalid!")
+
         except ExpiredSignatureError:
             try:
                 payload = jwt.decode(
@@ -106,10 +115,12 @@ class AuthUtil:
                     algorithms=[JWT_ALGORITHM],
                     options={"verify_exp": False}
                 )
-                jti = payload.get("jti")
-                if jti:
-                    cls.validate_session(jti)
-                    log.warning(f"Expired token with jti {jti} added to inactive session!")
+                session_id = payload.get("session_id")
+                if session_id:
+                    invalidated_session = cls.invalidate_session(session_id)
+
+                    if invalidated_session:
+                        log.warning(f"Expired token with session_id {session_id} added to inactive session!")
             except Exception as decode_error:
                 log.error(f"Error decoding expired token for blacklist: {decode_error}")
             raise UnauthorizedTokenException("Token expired!")
@@ -119,10 +130,11 @@ class AuthUtil:
             raise UnauthorizedTokenException("Invalid signing key!")
         except Exception as error:
             log.error(f"Unexpected error in verify_token: {error}")
-            raise HTTPException(
-                status_code=500,
-                detail=f"JWT decoding error: {str(error)}"
-            )
+            raise
+            # raise HTTPException(
+            #     status_code=500,
+            #     detail=f"JWT decoding error: {str(error)}"
+            # )
 
     @staticmethod
     def check_password_hash(
@@ -163,27 +175,80 @@ class AuthUtil:
         )
 
     @classmethod
-    def validate_session(cls, jti: str) -> None:
+    def validate_session(cls, session_id: str) -> bool:
         """
-        Validates if a session with the given JTI exists and is active.
+        Validate if a session with the given session_id exists and is active.
 
         Args:
-            jti (str): The JWT ID extracted from the token.
+            session_id (str): The Session ID extracted from the token.
 
         Raises:
             UnauthorizedTokenException: If the session does not exist or is inactive.
         """
         session_db = next(DatabaseConfig().get_db())
         try:
-            from src.data.models import SessionAuthModel
-            from src.data.repositories import AuthRepository
-            __repository = AuthRepository(SessionAuthModel, session_db)
-            session = __repository.find_session_by_jti(jti)
-            if session or (session.is_active is True):
+
+            from src.data.repositories import SessionAuthRepository
+
+            __repository = SessionAuthRepository(session_db)
+
+            session = __repository.find_session_by_session_id(session_id)
+
+            if not session:
+                return False
+
+            if (
+                session and
+                (session.is_active is not True) and
+                (session.logout_at is not True)
+            ):
+
+                update_data = {
+                    "logout_at": datetime.now(),
+                }
+                __repository.deactivate_session(session, update_data)
+                session_db.commit()
+                return False
+
+            return True
+
+        finally:
+            session_db.close()
+
+    @classmethod
+    def invalidate_session(cls, session_id: str) -> bool:
+        """
+        Invalidate if a session with the given session_id exists and is active.
+
+        Args:
+            session_id (str): The Session ID extracted from the token.
+
+        Raises:
+            UnauthorizedTokenException: If the session does not exist or is inactive.
+        """
+        session_db = next(DatabaseConfig().get_db())
+        try:
+
+            from src.data.repositories import SessionAuthRepository
+
+            __repository = SessionAuthRepository(session_db)
+
+            session = __repository.find_session_by_session_id(session_id)
+
+            if session and (session.is_active is True):
+
                 update_data = {
                     "is_active": False,
                     "logout_at": datetime.now(),
                 }
+
                 __repository.deactivate_session(session, update_data)
+
+                session_db.commit()
+
+                return True
+
+            return False
+        
         finally:
             session_db.close()

@@ -12,7 +12,7 @@ from src.data.models import SessionAuthModel
 from src.utils import log
 
 
-class AuthRepository:
+class SessionAuthRepository:
     """
     Class responsible for handling database operations related to user authentication.
 
@@ -25,7 +25,6 @@ class AuthRepository:
 
     def __init__(
         self,
-        model: SessionAuthModel,
         session_db: Session
     ):
         """
@@ -37,7 +36,7 @@ class AuthRepository:
             session_db (Session): The database session used to execute queries.
         """
 
-        self.__model: SessionAuthModel = model
+        self.__model: SessionAuthModel = SessionAuthModel
         self.__session_db: Session = session_db
 
 
@@ -58,27 +57,22 @@ class AuthRepository:
             Exception: If an error occurs while inserting the user into the database.
         """
 
-        try:
+        user = self.__model(**kwargs)
 
-            user = self.__model(**kwargs)
+        self.__session_db.add(user)
 
-            self.__session_db.add(user)
+        self.__session_db.flush()
 
-            self.__session_db.commit()
+        self.__session_db.refresh(user)
 
-            self.__session_db.refresh(user)
+        return user
 
-            return user
 
-        except Exception as error:
-            self.__session_db.rollback()
-            log.error(f"Error creating session: {error}")
-            raise
 
-    def find_session_by_jti(self, jti: str) -> SessionAuthModel | None:
+    def find_session_by_session_id(self, session_id: str) -> SessionAuthModel | None:
         """
         """
-        return self.__session_db.query(SessionAuthModel).filter_by(jti=jti).first()
+        return self.__session_db.query(SessionAuthModel).filter_by(session_id=session_id).first()
 
     def find_active_sessions_by_user_id(self, user_id: str) -> list[SessionAuthModel]:
         """
@@ -97,4 +91,4 @@ class AuthRepository:
                 setattr(session, field, value)
 
         self.__session_db.add(session)
-        self.__session_db.commit()
+        self.__session_db.flush()

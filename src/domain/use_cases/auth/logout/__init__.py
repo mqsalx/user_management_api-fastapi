@@ -13,7 +13,7 @@ from src.core.exceptions import (
 )
 
 # Data
-from src.data.repositories import AuthRepository
+from src.data.repositories import SessionAuthRepository
 
 # Utils
 from src.utils import (
@@ -27,9 +27,9 @@ class LogoutUseCase:
     """
     def __init__(
         self,
-        auth_repository: AuthRepository
+        session_auth_repository: SessionAuthRepository
     ):
-        self.__auth_repository: AuthRepository = auth_repository
+        self.__session_auth_repository: SessionAuthRepository = session_auth_repository
 
     def __call__(
         self,
@@ -43,22 +43,23 @@ class LogoutUseCase:
 
             payload = AuthUtil.verify_token(access_token)
 
-            jwt_id = payload.get("jti")
-            if not jwt_id:
-                raise UnauthorizedTokenException("Missing JWT ID in token.")
+            session_id = payload.get("session_id")
+            if not session_id:
+                raise UnauthorizedTokenException("Missing Session ID in token!")
 
-            session = self.__auth_repository.find_session_by_jti(jwt_id)
+            session = self.__session_auth_repository.find_session_by_session_id(session_id)
 
             if not session or not (session.is_active is True):
-                raise UnauthorizedTokenException("Session already inactive or not found.")
+                raise UnauthorizedTokenException("Session already inactive or not found!")
 
             update_data = {
                 "is_active": False,
                 "logout_at": datetime.now(),
             }
-            self.__auth_repository.deactivate_session(session, update_data)
 
-            return {"detail": "Logout successful."}
+            self.__session_auth_repository.deactivate_session(session, update_data)
+
+            return {"detail": "Logout successful!"}
 
         except (
             Exception,
