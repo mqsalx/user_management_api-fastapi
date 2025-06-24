@@ -74,6 +74,15 @@ class SessionAuthRepository:
         """
         return self.__session_db.query(SessionAuthModel).filter_by(session_id=session_id).first()
 
+    def find_active_session_by_session_id(self, session_id: str) -> list[SessionAuthModel]:
+        """
+        """
+
+        return self.__session_db.query(SessionAuthModel).filter_by(
+            session_id=session_id,
+            is_active=True
+        ).first()
+
     def find_active_sessions_by_user_id(self, user_id: str) -> list[SessionAuthModel]:
         """
         """
@@ -83,7 +92,7 @@ class SessionAuthRepository:
             is_active=True
         ).all()
 
-    def deactivate_session(self, session: SessionAuthModel, update_data: dict) -> None:
+    def deactivate_session(self, session: SessionAuthModel, update_data: dict) -> SessionAuthModel:
         """
         """
         for field, value in update_data.items():
@@ -92,3 +101,5 @@ class SessionAuthRepository:
 
         self.__session_db.add(session)
         self.__session_db.flush()
+
+        return session

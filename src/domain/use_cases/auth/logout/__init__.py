@@ -5,6 +5,7 @@
 # PY
 from datetime import datetime
 from fastapi import Request
+from sqlalchemy.orm import Session
 
 # Core
 from src.core.exceptions import (
@@ -27,9 +28,9 @@ class LogoutUseCase:
     """
     def __init__(
         self,
-        session_auth_repository: SessionAuthRepository
+        sessio_db: Session
     ):
-        self.__session_auth_repository: SessionAuthRepository = session_auth_repository
+        self.__session_db = sessio_db
 
     def __call__(
         self,
@@ -38,28 +39,35 @@ class LogoutUseCase:
         """
         """
         try:
+            with self.__session_db.begin():
 
-            access_token = getattr(request.state, "access_token")
+                session_auth_repository = SessionAuthRepository(self.__session_db)
 
-            payload = AuthUtil.verify_token(access_token)
+                access_token = getattr(request.state, "access_token")
 
-            session_id = payload.get("session_id")
-            if not session_id:
-                raise UnauthorizedTokenException("Missing Session ID in token!")
+                payload = AuthUtil.verify_token(access_token)
 
-            session = self.__session_auth_repository.find_session_by_session_id(session_id)
+                session_id = payload.get("session_id")
 
-            if not session or not (session.is_active is True):
-                raise UnauthorizedTokenException("Session already inactive or not found!")
+                if not session_id:
+                    raise UnauthorizedTokenException("Missing Session ID in token!")
 
-            update_data = {
-                "is_active": False,
-                "logout_at": datetime.now(),
-            }
+                session = session_auth_repository.find_session_by_session_id(session_id)
 
-            self.__session_auth_repository.deactivate_session(session, update_data)
+                if not session:
+                    raise UnauthorizedTokenException("Session already inactive or not found!")
 
-            return {"detail": "Logout successful!"}
+                update_data = {
+                    "is_active": False,
+                    "logout_at": datetime.now(),
+                }
+
+                updated_session = session_auth_repository.deactivate_session(session, update_data)
+
+                session = session_auth_repository.find_active_session_by_session_id(updated_session.session_id)
+
+                if not session:
+                    return "Logout successful!"
 
         except (
             Exception,

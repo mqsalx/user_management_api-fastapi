@@ -1,16 +1,16 @@
 # /src/presentation/controllers/auth/logout/__init__.py
 
 # PY
+from typing import Literal
+from fastapi import status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-
-# Data
-from src.data.models import SessionAuthModel
-from src.data.repositories import SessionAuthRepository
 
 # Domain
 from src.domain.use_cases import LogoutUseCase
 
+# Utils
+from src.utils import json_response
 
 class LogoutController:
     """
@@ -21,18 +21,22 @@ class LogoutController:
     ):
         """
         """
-        self.__session_auth_repository = SessionAuthRepository(
-            SessionAuthModel,
-            session_db
-        )
-        self.__use_case = LogoutUseCase(self.__session_auth_repository)
+        self.__use_case = LogoutUseCase(session_db)
 
     def __call__(self, request: str) -> JSONResponse:
         """
         """
 
+        use_case_response: Literal['Logout successful!'] = self.__use_case(request)
 
-        use_case_response = self.__use_case(request)
+        status_code = status.HTTP_400_BAD_REQUEST
+        message = use_case_response
 
+        if use_case_response:
+            status_code = status.HTTP_200_OK
+            message = use_case_response
 
-        return JSONResponse(content={"message": "Logout realizado com sucesso"}, status_code=200)
+        return json_response(
+            status_code=status_code,
+            message=message
+        )
