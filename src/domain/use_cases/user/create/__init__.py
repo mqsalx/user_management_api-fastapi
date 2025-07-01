@@ -74,9 +74,9 @@ class CreateUserUseCase:
         """
 
         try:
-            time.sleep(60)
-            print("OK")
-            print("Creating..")
+            # time.sleep(60)
+            # print("OK")
+            # print("Creating..")
             self.__check_user_email(body.email)
 
             user = self.__repository.create_user(
@@ -89,7 +89,7 @@ class CreateUserUseCase:
             return self.__response(user)
 
         except (Exception, BaseHTTPException) as error:
-            self.__repository.database.rollback()
+            # self.__repository.database.rollback()
             log.error(f"Error during the user creation process: {error}")
             raise error
 
@@ -106,7 +106,7 @@ class CreateUserUseCase:
             EmailAlreadyExistsException: If the email is already registered.
         """
 
-        if self.__repository.find_user_email(user_email):
+        if self.__repository.find_user_by_email(user_email):
             raise EmailAlreadyExistsException(
                 f"User with email {user_email} already exists!"
             )

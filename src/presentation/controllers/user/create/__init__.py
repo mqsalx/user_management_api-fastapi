@@ -48,10 +48,7 @@ class CreateUserController:
         Args:
             session_db (Session): The database session used for executing queries.
         """
-        self.__repository = UserRepository(
-            UserModel,
-            session_db,
-        )
+        self.__repository = UserRepository(session_db)
         self.__use_case = CreateUserUseCase(self.__repository)
 
     def __call__(
@@ -69,20 +66,21 @@ class CreateUserController:
         Returns:
             JSONResponse: A JSON response containing the created user's data.
         """
+        use_case_response = self.__use_case(body)
 
-        background_tasks.add_task(self.__use_case, body)
+        # background_tasks.add_task(self.__use_case, body)
 
         # asyncio.create_task(self.__use_case(body))
 
-        message = "Creating user!"
-        # message = "User created!"
+        # message = "Creating user!"
+        message = "User created!"
 
-        return response_json(
-            status_code=status.HTTP_202_ACCEPTED,
-            message=message
-        )
         # return response_json(
-        #     status_code=status.HTTP_201_CREATED,
-        #     message=message,
-        #     data=UserResponseDTO(root=use_case_response).model_dump(),
+        #     status_code=status.HTTP_202_ACCEPTED,
+        #     message=message
         # )
+        return response_json(
+            status_code=status.HTTP_201_CREATED,
+            message=message,
+            data=UserResponseDTO(root=use_case_response).model_dump(),
+        )
