@@ -13,12 +13,12 @@ from src.data.models import UserModel
 from src.data.repositories import UserRepository
 
 # Domain
-from src.domain.dtos.request import (
+from src.domain.dtos import (
     UpdateUserReqBodyDTO,
-    UpdateUserReqPathDTO
+    UpdateUserReqPathDTO,
+    UserResponseDTO
 )
-from src.domain.dtos.response.user import UserResponseDTO
-from src.domain.use_cases.user import UpdateUserUseCase
+from src.domain.use_cases import UpdateUserUseCase
 
 # Utils
 from src.utils import ResponseUtil

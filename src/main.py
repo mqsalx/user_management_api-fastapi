@@ -106,4 +106,6 @@ if __name__ == "__main__":
         app,
         host=API_HOST,
         port=API_PORT,
+        log_level=None,
+        access_log=False,
     )

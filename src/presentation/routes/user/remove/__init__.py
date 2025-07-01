@@ -10,10 +10,10 @@ from sqlalchemy.orm import Session
 from src.core.configurations import DatabaseConfig
 
 # Domain
-from src.domain.dtos.request.path.user import RemoveUserByUserIdReqPathDTO
+from src.domain.dtos import RemoveUserByUserIdReqPathDTO
 
 # Presentation
-from src.presentation.controllers.user.remove import RemoveUserController
+from src.presentation.controllers import RemoveUserController
 
 
 class RemoveUserRouter:
@@ -26,13 +26,14 @@ class RemoveUserRouter:
 
         self.__router.delete(
             path="/{user_id}",
+            response_model=None
         )(self.__call__)
 
     def __call__(
         self,
         path: RemoveUserByUserIdReqPathDTO = Depends(),
         session_db: Session = Depends(DatabaseConfig().get_db),
-    ):
+    )  -> JSONResponse | None:
         """
         Endpoint that handles user creation.
 

@@ -10,10 +10,10 @@ from sqlalchemy.orm import Session
 from src.core.configurations import DatabaseConfig
 
 # Domain
-from src.domain.dtos.request.body.user import CreateUserReqBodyDTO
+from src.domain.dtos import CreateUserReqBodyDTO
 
 # Presentation
-from src.presentation.controllers.user.create import CreateUserController
+from src.presentation.controllers import CreateUserController
 
 
 class CreateUserRouter:
@@ -26,7 +26,8 @@ class CreateUserRouter:
 
         self.__router.post(
             path="",
-            description=""
+            description="",
+            response_model=None
         )(self.__call__)
 
     def __call__(

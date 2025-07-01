@@ -4,10 +4,10 @@
 
 from fastapi import status
 
-from src.core.exceptions.base import BaseException
+from src.core.exceptions.base import BaseHTTPException
 
 
-class OnlyAcceptsValuesException(BaseException):
+class OnlyAcceptsValuesException(BaseHTTPException):
     """
     Class responsible for handling exceptions when a field only accepts specific values.
 
@@ -37,7 +37,7 @@ class OnlyAcceptsValuesException(BaseException):
         super().__init__(message, status_code)
 
 
-class InvalidExtraFieldsException(BaseException):
+class InvalidExtraFieldsException(BaseHTTPException):
     """
     Class responsible for handling exceptions when extra fields are provided.
 
@@ -67,7 +67,7 @@ class InvalidExtraFieldsException(BaseException):
         super().__init__(message, status_code)
 
 
-class MissingRequiredFieldsException(BaseException):
+class MissingRequiredFieldsException(BaseHTTPException):
     """
     Class responsible for handling exceptions when required fields are missing.
 
@@ -97,7 +97,7 @@ class MissingRequiredFieldsException(BaseException):
         super().__init__(message, status_code)
 
 
-class InvalidValueInFieldException(BaseException):
+class InvalidValueInFieldException(BaseHTTPException):
     """
     Class responsible for handling exceptions when a field is present but contains an invalid value.
 

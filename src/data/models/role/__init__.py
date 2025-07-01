@@ -2,19 +2,25 @@
 
 # flake8: noqa: E501
 
+# PY
+import uuid
+
 from sqlalchemy import Column, String
 from sqlalchemy.orm import Session, relationship
 
+# Core
 from src.core.configurations import (
     EnvConfig,
     DatabaseConfig
 )
+
+# Data
 from src.data.models import PermissionModel
 from src.data.models.role_permission import role_permission
-from src.utils import (
-    GenUtil,
-    log
-)
+
+# Utils
+from src.utils.generator import GenUtil
+from src.utils.logger import log
 
 
 Base = DatabaseConfig.base()
@@ -38,9 +44,12 @@ class RoleModel(Base):
 
     _unique_id = GenUtil.generate_unique_id()
 
-    id = Column(String, nullable=False)
-
-    role_id = Column(String, primary_key=True, nullable=False)
+    role_id = Column(
+        String,
+        primary_key=True,
+        nullable=False,
+        default=lambda: str(uuid.uuid4())
+    )
 
     permissions = relationship(
         PermissionModel, secondary=role_permission, back_populates="roles"
@@ -72,7 +81,7 @@ class RoleModel(Base):
             existing_roles = {role.role_id for role in db.query(cls).all()}
 
             new_roles = [
-                cls(id=GenUtil.generate_unique_id(), role_id=role)
+                cls(role_id=role)
                 for role in __roles
                 if role not in existing_roles
             ]

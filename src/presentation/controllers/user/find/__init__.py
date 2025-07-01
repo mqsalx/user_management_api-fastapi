@@ -13,9 +13,11 @@ from src.data.models import UserModel
 from src.data.repositories import UserRepository
 
 # Domain
-from src.domain.dtos.request import FindUserByUserIdQueryDTO
-from src.domain.dtos.response.user import UserResponseDTO
-from src.domain.use_cases.user import FindUserUseCase
+from src.domain.dtos import (
+    FindUserByUserIdQueryDTO,
+    UserResponseDTO
+)
+from src.domain.use_cases import FindUserUseCase
 
 # Utils
 from src.utils import ResponseUtil

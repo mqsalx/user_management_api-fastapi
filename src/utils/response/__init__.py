@@ -3,7 +3,7 @@
 # flake8: noqa: E501
 
 from http import HTTPStatus
-from typing import Dict, Union
+from typing import Callable, Dict, Union
 
 from fastapi.responses import JSONResponse
 
@@ -52,3 +52,5 @@ class ResponseUtil:
             response_content["data"] = data
 
         return JSONResponse(status_code=status_code, content=response_content)
+
+json_response: Callable[..., JSONResponse] = ResponseUtil().json_response

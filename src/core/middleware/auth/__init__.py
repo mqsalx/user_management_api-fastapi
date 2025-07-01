@@ -2,21 +2,23 @@
 
 # flake8: noqa: E501
 
+# PY
 from fastapi import HTTPException, Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
+# Core
 from src.core.configurations.environment import EnvConfig
+from src.core.exceptions import InvalidTokenException
+
+# Utils
 from src.utils import (
     AuthUtil,
     log,
-    ResponseUtil
+    json_response
 )
 
 # Env variables Setup
 API_VERSION: str = EnvConfig().api_version
-
-# Utils Setup
-json_response = ResponseUtil().json_response
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -56,8 +58,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
             PUBLIC_PATHS = [
                 "/api",
-                f"/api/{API_VERSION}/auth",
-                f"/api/{API_VERSION}/register",
+                f"/api/{API_VERSION}/auth/login",
                 "/docs",
                 "/openapi.json",
             ]
@@ -69,20 +70,21 @@ class AuthMiddleware(BaseHTTPMiddleware):
             auth_header = request.headers.get("Authorization")
 
             if not auth_header or not auth_header.startswith("Bearer "):
-                raise HTTPException(
-                    status_code=401, detail="Token not provided!"
-                )
+                raise InvalidTokenException("Token not provided!")
 
-            token = auth_header.split(" ")[1]
+            access_token = auth_header.split(" ")[1]
+            payload = AuthUtil.verify_token(access_token)
 
-            AuthUtil.verify_token(token)
+            session_id = dict(payload).get("session_id")
+ 
+            if not session_id:
+                raise InvalidTokenException("Invalid token structure!")
 
-            request.state.token = token
-
+            request.state.access_token = access_token
             try:
                 return await call_next(request)
-            except Exception as e:
-                log.error(f"Error in downstream handler: {str(e)}")
+            except Exception as error:
+                log.error(f"Error in downstream handler: {str(error)}")
                 return json_response(500, "Internal Server Error")
 
         except HTTPException as error:

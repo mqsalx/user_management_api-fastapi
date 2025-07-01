@@ -1,4 +1,4 @@
-# /src/data/repository/auth/__init__.py
+# /src/data/repository/auth/login/__init__.py
 
 # flake8: noqa: E501
 
@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from src.data.models import UserModel
 
 
-class AuthRepository:
+class LoginRepository:
     """
     Class responsible for handling database operations related to user authentication.
 
@@ -18,7 +18,7 @@ class AuthRepository:
         session_db (Session): The database session used for executing queries.
     """
 
-    def __init__(self, session_db: Session):
+    def __init__(self, session_db: Session) -> None:
         """
         Constructor method for AuthRepository.
 

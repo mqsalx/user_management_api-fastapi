@@ -20,7 +20,6 @@ class UserRepository:
 
     def __init__(
         self,
-        model: UserModel,
         session_db: Session
     ) -> None:
         """
@@ -32,7 +31,7 @@ class UserRepository:
             session_db (Session): The database session used to execute queries.
         """
 
-        self.__model: UserModel = model
+        self.__model: UserModel = UserModel
         self.__session_db: Session = session_db
 
     def create_user(self, **kwargs) -> UserModel:
@@ -105,7 +104,7 @@ class UserRepository:
         """
 
         return (
-            self.database.query(UserModel)
+            self.__session_db.query(UserModel)
             .filter(UserModel.role_id != UserRoleEnum.SUPER_ADMINISTRATOR)
             .all()
         )
@@ -134,7 +133,7 @@ class UserRepository:
             log.error(f"Error removing user: {error}")
             raise
 
-    def find_user_email(self, email: str) -> UserModel:
+    def find_user_by_email(self, email: str) -> UserModel:
         """
         Public method responsible for retrieving a user by their email.
 
@@ -152,19 +151,3 @@ class UserRepository:
             .filter(UserModel.email == email)
             .first()
         )
-
-    @property
-    def database(self) -> Session:
-        """
-        Property method responsible for returning the database session.
-
-        This property provides access to the database session used in repository operations.
-
-        Args:
-            None
-
-        Returns:
-            Session: The database session instance.
-        """
-
-        return self.__session_db

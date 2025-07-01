@@ -2,8 +2,10 @@
 
 # flake8: noqa: E501
 
+# PY
 from sqlalchemy import Column, ForeignKey, String, Table
 
+# Core
 from src.core.configurations import DatabaseConfig
 
 Base = DatabaseConfig.base()
