@@ -74,7 +74,7 @@ class SessionAuthRepository:
         """
         return self.__session_db.query(SessionAuthModel).filter_by(session_id=session_id).first()
 
-    def find_active_session_by_session_id(self, session_id: str) -> list[SessionAuthModel]:
+    def find_active_session_by_session_id(self, session_id: str) -> SessionAuthModel | None:
         """
         """
 
