@@ -94,7 +94,7 @@ class AuthUtil:
             payload: Any = jwt.decode(
                 jwt=access_token,
                 key=JWT_SECRET_KEY,
-                algorithms=JWT_ALGORITHM
+                algorithms=[JWT_ALGORITHM]
             )
 
             session_id = payload.get("session_id")
