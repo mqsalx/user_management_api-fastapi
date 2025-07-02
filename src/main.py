@@ -72,11 +72,12 @@ my_scheduler_task = SchedulerConfig()
 
 # my_scheduler_task.init(my_function, 5)
 
+app.add_middleware(LoggerMiddleware)
+app.add_middleware(AuthMiddleware)
+
 app.add_exception_handler(HTTPException, ExceptionHandler.http_exception_handler)  # type: ignore
 app.add_exception_handler(RequestValidationError, ExceptionHandler.json_decode_error_handler)  # type: ignore
 
-app.add_middleware(LoggerMiddleware)
-app.add_middleware(AuthMiddleware)
 
 api_router: APIRouter = ApiRouter().router
 
