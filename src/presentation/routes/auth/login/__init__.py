@@ -13,10 +13,13 @@ from src.core.configurations import DatabaseConfig
 from src.domain.dtos import LoginRequestDTO
 
 # Presentation
-from src.presentation.controllers import LoginController
+from src.presentation.controllers import (
+    ILoginController,
+    LoginControllerImpl
+)
 
 
-class LoginRouter:
+class LoginRouter():
     """
     """
     def __init__(self, user_router: APIRouter) -> None:
@@ -40,5 +43,5 @@ class LoginRouter:
         This method processes user registration requests and returns
             a confirmation message upon successful user creation.
         """
-        controller = LoginController(session_db=session_db)
+        controller: ILoginController  = LoginControllerImpl(session_db=session_db)
         return controller(body)

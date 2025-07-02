@@ -3,7 +3,7 @@
 # flake8: noqa: E501, F401
 
 # Auth
-from src.presentation.controllers.auth.login import LoginController
+from src.presentation.controllers.auth.login import *
 from src.presentation.controllers.auth.logout import LogoutController
 from src.presentation.controllers.auth.validate import ValidateController
 
