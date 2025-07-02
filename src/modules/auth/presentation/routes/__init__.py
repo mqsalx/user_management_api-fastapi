@@ -6,7 +6,7 @@
 from fastapi import APIRouter
 
 # Presentation
-from src.presentation.routes.auth.login import LoginRouter
+from presentation.routes.auth.login import LoginRouter
 from src.presentation.routes.auth.logout import LogoutRouter
 from src.presentation.routes.auth.validate import ValidateRouter
 
