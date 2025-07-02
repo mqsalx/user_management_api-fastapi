@@ -40,7 +40,7 @@ class EnvConfig:
         )
         self.__api_host: str = str(os.getenv("API_HOST", "127.0.0.1"))
         self.__api_port: int = int(os.getenv("API_PORT", 5000))
-        self.__api_version: str = str(os.getenv("API_VERSION", "v1"))
+        self.__api_version: str = str(os.getenv("API_VERSION"))
         self.__api_log_level: str = str(os.getenv("API_LOG_LEVEL", "DEBUG"))
         self.__api_user_administrator: str = str(
             os.getenv("API_USER_ADMINISTRATOR")

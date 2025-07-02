@@ -62,7 +62,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 "/docs",
                 "/openapi.json",
             ]
-
+            print(API_VERSION)
+            print(request.url.path)
             if request.url.path in PUBLIC_PATHS:
                 response = await call_next(request)
                 return response
@@ -76,7 +77,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             payload = AuthUtil.verify_token(access_token)
 
             session_id = dict(payload).get("session_id")
- 
+
             if not session_id:
                 raise InvalidTokenException("Invalid token structure!")
 
