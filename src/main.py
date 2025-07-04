@@ -18,10 +18,7 @@ from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 
 # Core
-from src.core.configurations import (
-    EnvConfig,
-    SchedulerConfig
-)
+from src.core.configurations import env_config
 from src.core.handlers.exception import ExceptionHandler
 from src.core.middleware import (
     AuthMiddleware,
@@ -40,10 +37,10 @@ from src.utils import (
 )
 
 # Env variables Setup
-API_HOST = EnvConfig().api_host
-API_NAME = EnvConfig().api_name
-API_PORT = EnvConfig().api_port
-API_VERSION = EnvConfig().api_version
+API_HOST: str = env_config.api_host
+API_NAME: str = env_config.api_name
+API_PORT: int = env_config.api_port
+API_VERSION: str = env_config.api_version
 
 app = FastAPI(
     title=API_NAME,
@@ -68,7 +65,7 @@ def my_function():
     log.info(f"Testing... {time.strftime("%Y-%m-%d %H:%M:%S")}")
 
 
-my_scheduler_task = SchedulerConfig()
+# my_scheduler_task = SchedulerConfig()
 
 # my_scheduler_task.init(my_function, 5)
 
@@ -104,7 +101,7 @@ if __name__ == "__main__":
     border = "=" * width
 
     uvicorn.run(
-        app,
+        app=app,
         host=API_HOST,
         port=API_PORT,
         log_level=None,
