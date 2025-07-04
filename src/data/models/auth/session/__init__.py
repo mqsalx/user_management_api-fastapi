@@ -32,7 +32,7 @@ class SessionAuthModel(Base):
     )
     user_id = Column(
         String,
-        ForeignKey("users.user_id"),
+        ForeignKey(column="users.user_id"),
         nullable=False
     )
     login_at = Column(

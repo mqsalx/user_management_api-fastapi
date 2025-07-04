@@ -76,7 +76,8 @@ class UserModel(BaseModel):
     status: Column[str] = Column(
         Enum(UserStatusEnum),
         default=UserStatusEnum.ACTIVE,
-        nullable=False
+        nullable=False,
+        create_type=False
     )
     role_id = Column(
         String,
@@ -87,13 +88,13 @@ class UserModel(BaseModel):
 
     # Relationships
     role = relationship(
-        RoleModel,
-        backref="user"
+        argument=RoleModel,
+        backref="users"
     )
 
     sessions_auth = relationship(
-        SessionAuthModel,
-        backref="user",
+        argument=SessionAuthModel,
+        backref="users",
         cascade="all, delete-orphan"
     )
 
