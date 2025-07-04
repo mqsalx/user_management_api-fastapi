@@ -12,7 +12,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 
 # Core
-from src.core.configurations import DatabaseConfig
+from src.core.configurations import db_config
 
 # Data
 from src.data.models import SessionAuthModel
@@ -20,7 +20,7 @@ from src.data.models import SessionAuthModel
 # Utils
 from src.utils.generator import GenUtil
 
-Base = DatabaseConfig.base()
+Base = db_config.base()
 
 
 class TokenModel(Base):

@@ -2,7 +2,7 @@
 
 # flake8: noqa: E501
 
-from src.core.configurations import LoggerConfig
+from src.core.configurations import log_config
 
 
 class LoggerUtil:
@@ -25,7 +25,7 @@ class LoggerUtil:
         Args:
             None
         """
-        self.__logger = LoggerConfig().logger
+        self.__logger = log_config.logger
 
     def info(self, message: str) -> None:
         """

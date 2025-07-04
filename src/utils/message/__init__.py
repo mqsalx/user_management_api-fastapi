@@ -2,7 +2,7 @@
 
 # flake8: noqa: E501
 
-from src.core.configurations import EnvConfig
+from src.core.configurations import env_config
 
 
 class MessageUtil:
@@ -26,10 +26,10 @@ class MessageUtil:
             None
         """
 
-        self.__api_name = EnvConfig().api_name
-        self.__api_host = EnvConfig().api_host
-        self.__api_port = EnvConfig().api_port
-        self.__api_version = EnvConfig().api_version
+        self.__api_name = env_config.api_name
+        self.__api_host = env_config.api_host
+        self.__api_port = env_config.api_port
+        self.__api_version = env_config.api_version
 
     def on_startup(self) -> None:
         """

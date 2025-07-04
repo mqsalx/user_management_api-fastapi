@@ -10,8 +10,8 @@ from sqlalchemy.orm import Session, relationship
 
 # Core
 from src.core.configurations import (
-    EnvConfig,
-    DatabaseConfig
+    env_config,
+    db_config
 )
 
 # Domain
@@ -30,8 +30,7 @@ from src.utils.generator import GenUtil
 from src.utils.logger import log
 
 
-
-Base = DatabaseConfig.base()
+Base = db_config.base()
 
 
 class UserModel(Base):
@@ -42,10 +41,10 @@ class UserModel(Base):
     and data operations.
     """
 
-    __api_name = EnvConfig().api_name
-    __api_user_administrator = EnvConfig().api_user_administrator
+    __api_name = env_config.api_name
+    __api_user_administrator = env_config.api_user_administrator
     __api_password_administrator = (
-        EnvConfig().api_password_administrator
+        env_config.api_password_administrator
     )
 
     __tablename__ = "users"
@@ -117,7 +116,7 @@ class UserModel(Base):
 
         from src.data.models import RoleModel
 
-        db: Session = next(DatabaseConfig.get_db())
+        db: Session = next(db_config.get_db())
 
         try:
 

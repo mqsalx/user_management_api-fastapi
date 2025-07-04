@@ -10,8 +10,8 @@ from sqlalchemy.orm import Session, relationship
 
 # Core
 from src.core.configurations import (
-    EnvConfig,
-    DatabaseConfig
+    env_config,
+    db_config
 )
 
 # Data
@@ -23,7 +23,7 @@ from src.utils.generator import GenUtil
 from src.utils.logger import log
 
 
-Base = DatabaseConfig.base()
+Base = db_config.base()
 
 
 class RoleModel(Base):
@@ -70,8 +70,8 @@ class RoleModel(Base):
             Exception: If an error occurs during database operations.
         """
 
-        db: Session = next(DatabaseConfig.get_db())
-        __roles = EnvConfig().api_user_roles
+        db: Session = next(db_config.get_db())
+        __roles = env_config.api_user_roles
 
         try:
 
@@ -117,7 +117,7 @@ class RoleModel(Base):
             Exception: If an unexpected error occurs while assigning permissions.
         """
 
-        db: Session = next(DatabaseConfig.get_db())
+        db: Session = next(db_config.get_db())
         try:
             administrator_role = (
                 db.query(cls).filter_by(role_id="administrator").first()

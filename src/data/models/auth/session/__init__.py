@@ -13,12 +13,12 @@ from sqlalchemy import (
 )
 
 # Core
-from src.core.configurations import DatabaseConfig
+from src.core.configurations import db_config
 
 # Utils
 from src.utils.generator import GenUtil
 
-Base = DatabaseConfig.base()
+Base = db_config.base()
 
 class SessionAuthModel(Base):
     """

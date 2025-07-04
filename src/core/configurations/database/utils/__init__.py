@@ -115,3 +115,5 @@ class DatabaseConfigUtil:
         }
 
         return _db_identifier_config.get(db_type, "SQLite")
+
+db_config_util = DatabaseConfigUtil()

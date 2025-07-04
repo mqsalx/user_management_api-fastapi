@@ -7,7 +7,7 @@ import os
 
 from colorlog import ColoredFormatter
 
-from src.core.configurations import EnvConfig
+from src.core.configurations.environment import env_config
 
 
 class FlushingStreamHandler(logging.StreamHandler):
@@ -51,8 +51,8 @@ class LoggerConfig:
             None
         """
 
-        self.__api_name: str = EnvConfig().api_name
-        self.__api_log_level: str = EnvConfig().api_log_level
+        self.__api_name: str = env_config.api_name
+        self.__api_log_level: str = env_config.api_log_level
 
         self.__valid_log_levels = [
             "DEBUG",
@@ -170,3 +170,5 @@ class LoggerConfig:
             logging.Logger: The logger instance associated with the current class.
         """
         return self.__logger
+
+log_config = LoggerConfig()

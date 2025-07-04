@@ -1,37 +1,38 @@
 # /src/core/configurations/database/__init__.py
 
-# flake8: noqa: E501, F401
-
 from typing import Any, Generator
 
-from sqlalchemy import create_engine
+from sqlalchemy import Engine, create_engine, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (
     Session,
     sessionmaker
 )
 
+from src.core.configurations.environment import env_config
 from src.core.configurations.database.utils import DatabaseConfigUtil
 
 
 class DatabaseConfig:
     """
-    Class responsible for configuring and providing access to the database connection.
+    Class responsible for configuring and providing access
+        to the database connection.
 
-    This class initializes the database engine, session factory, and declarative base
-    for defining database models. It also provides methods for retrieving database
-    sessions and managing table creation.
-
-    Class Args:
-        None
+    This class initializes the database engine, session factory,
+        and declarative base for defining database models.
+    It also provides methods for retrieving database
+        sessions and managing table creation.
     """
 
-    _db_url = DatabaseConfigUtil().get_url()
-    _engine = create_engine(_db_url)
-    _session_local = sessionmaker(
-        autocommit=False, autoflush=False, bind=_engine
+    _db_url: str = DatabaseConfigUtil().get_url()
+    _engine: Engine = create_engine(_db_url)
+    _session_local: sessionmaker[Session] = sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        bind=_engine
     )
-    _base = declarative_base()
+    _schema: str = env_config.database_schema
+    _base = declarative_base(metadata=MetaData(schema=_schema))
 
     @classmethod
     def get_db(cls) -> Generator[Session, None, None]:
@@ -89,3 +90,5 @@ class DatabaseConfig:
         """
 
         return cls._base
+
+db_config = DatabaseConfig()

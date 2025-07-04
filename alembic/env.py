@@ -1,34 +1,61 @@
+
+# flake8: noqa: E501
+
+# PY
+import glob
 import importlib
+import importlib.util
 import os
 import pkgutil
-from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, pool
 from alembic import context
-from src.core.configurations.database import (
-    DatabaseConfig,
-)
+from logging.config import fileConfig
+from sqlalchemy import engine_from_config, pool, text
+
+# Core
+from src.core.configurations.database import DatabaseConfig
 from src.core.configurations.database.utils import (
     DatabaseConfigUtil,
 )
+
+# Data
 from src.data.models.permission import PermissionModel
 from src.data.models.role import RoleModel
-from src.data.models.user import UserModel
 
 # Dynamically load models
-models_package = "src.data.models"
+models_package = "src.modules.models"
 
+    # models_path = os.path.dirname(
+    #     importlib.import_module(models_package).__file__  # type: ignore
+    # )
 try:
-    models_path = os.path.dirname(
-        importlib.import_module(models_package).__file__  # type: ignore
-    )
-except AttributeError:
+    base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src", "modules"))
+    print(f"Base path for models: {base_path}")
+
+    # for root, dirs, files in os.walk(base_path):
+    #     for file in files:
+    #         if file.endswith(".py"):
+    #             full_path = os.path.join(root, file)
+    #             print(f"📄 Encontrado: {full_path}")
+
+    pattern = os.path.join(base_path, "*", "infrastructure", "model", "*.py")
+    print(f"Pattern for model files: {pattern}")
+    model_paths = glob.glob(pattern)
+    print(f"Found model files: {model_paths}")
+    # for model_file in model_paths:
+    #     module_name = model_file.replace("/", ".").replace("\\", ".").rstrip(".py")
+    #     print(f"Importing model file: {model_file} as module: {module_name}")
+    #     spec = importlib.util.spec_from_file_location(module_name, model_file)
+    #     module = importlib.util.module_from_spec(spec)
+    #     if spec.loader:
+    #         spec.loader.exec_module(module)
+except Exception as error:
     raise ImportError(
-        f"Could not find the package {models_package}. Ensure the 'models' folder contains an '__init__.py' file."
+        f"Error importing model files: {error}"
     )
 
-for _, module_name, _ in pkgutil.iter_modules([models_path]):
-    importlib.import_module(f"{models_package}.{module_name}")
+# for _, module_name, _ in pkgutil.iter_modules([models_path]): # type: ignore
+#     importlib.import_module(f"{models_package}.{module_name}")
 
 # Define the database URL
 DATABASE_URL = DatabaseConfigUtil().get_url()
@@ -55,12 +82,16 @@ def run_migrations_offline() -> None:
     Returns:
         None
     """
-    url = config.get_main_option("sqlalchemy.url")
+    from src.core.configurations.environment import env_config
+    _schema = env_config.database_schema
+    _url = config.get_main_option("sqlalchemy.url")
+
     context.configure(
-        url=url,
+        url=_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        version_table_schema=_schema,
     )
 
     with context.begin_transaction():
@@ -83,13 +114,23 @@ def run_migrations_online() -> None:
     Raises:
         Exception: If an error occurs during migration or table creation.
     """
+    from src.core.configurations.environment import env_config
+
+    _schema = env_config.database_schema
+
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration=config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:
+
+        if _schema:
+            connection.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{_schema}"'))
+            connection.execute(text(f'SET search_path TO "{_schema}"'))
+            connection.commit()
+
         context.configure(
             connection=connection, target_metadata=target_metadata
         )
@@ -140,6 +181,8 @@ def run_migrations_online() -> None:
         print(
             f"Skipping roles creation. {RoleModel.__tablename__} table does not exist."
         )
+
+    from src.modules.user.infrastructure.model import UserModel
 
     # Validate and create admin user
     if UserModel.__tablename__ in inspector.get_table_names():

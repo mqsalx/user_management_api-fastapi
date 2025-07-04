@@ -6,9 +6,9 @@
 from sqlalchemy import Column, ForeignKey, String, Table
 
 # Core
-from src.core.configurations import DatabaseConfig
+from src.core.configurations import db_config
 
-Base = DatabaseConfig.base()
+Base = db_config.base()
 
 
 """

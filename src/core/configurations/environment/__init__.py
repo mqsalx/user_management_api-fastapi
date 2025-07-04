@@ -66,6 +66,7 @@ class EnvConfig:
         # Database Setup
         self.__database_type: str = str(os.getenv("DATABASE_TYPE"))
         self.__database_name: str = str(os.getenv("DATABASE_NAME"))
+        self.__database_schema: str = str(os.getenv("DATABASE_SCHEMA"))
         self.__database_host: str = str(os.getenv("DATABASE_HOST"))
         self.__database_port: int = int(os.getenv("DATABASE_PORT"))  # type: ignore
         self.__database_user: str = str(os.getenv("DATABASE_USER"))
@@ -235,6 +236,20 @@ class EnvConfig:
         return self.__database_name
 
     @property
+    def database_schema(self) -> str:
+        """
+        Property method responsible for returning the database name schema.
+
+        Args:
+            None
+
+        Returns:
+            str: Database name schema.
+        """
+
+        return self.__database_schema
+
+    @property
     def database_host(self) -> str:
         """
         Property method responsible for returning the database host address.
@@ -332,3 +347,5 @@ class EnvConfig:
         """
 
         return self.__jwt_access_token_expire_minutes
+
+env_config = EnvConfig()

@@ -10,8 +10,8 @@ from sqlalchemy.orm import Session, relationship
 
 # core
 from src.core.configurations import (
-    EnvConfig,
-    DatabaseConfig
+    env_config,
+    db_config
 )
 
 # data
@@ -22,7 +22,7 @@ from src.utils.generator import GenUtil
 from src.utils.logger import log
 
 
-Base = DatabaseConfig.base()
+Base = db_config.base()
 
 
 class PermissionModel(Base):
@@ -69,9 +69,9 @@ class PermissionModel(Base):
             Exception: If an error occurs during database operations.
         """
 
-        db: Session = next(DatabaseConfig.get_db())
+        db: Session = next(db_config.get_db())
 
-        __permissions = EnvConfig().api_role_permissions
+        __permissions = env_config.api_role_permissions
 
         try:
 

@@ -6,8 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
 from src.core.configurations import (
-    DatabaseConfigUtil,
-    EnvConfig
+    db_config_util,
+    env_config
 )
 
 
@@ -33,8 +33,8 @@ class DatabaseUtil:
             None
         """
 
-        _db_url = DatabaseConfigUtil().get_url()
-        self.__database_type = EnvConfig().database_type
+        _db_url = db_config_util.get_url()
+        self.__database_type = env_config.database_type
         self.__engine = create_engine(_db_url)
 
     def check_connection(self) -> None:
@@ -52,7 +52,7 @@ class DatabaseUtil:
         """
 
         checked_database_type = (
-            DatabaseConfigUtil().check_database_type(
+            db_config_util.check_database_type(
                 self.__database_type
             )
         )
