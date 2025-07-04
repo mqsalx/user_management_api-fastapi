@@ -92,3 +92,5 @@ class DatabaseConfig:
         return cls._base
 
 db_config = DatabaseConfig()
+
+Base = db_config.base()
