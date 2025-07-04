@@ -21,6 +21,7 @@ from src.core.configurations.database.utils import (
 # Data
 from src.data.models.permission import PermissionModel
 from src.data.models.role import RoleModel
+from src.modules.user.infrastructure.model import UserModel
 
 # Dynamically load models
 models_package = "src.modules.models"
@@ -132,7 +133,8 @@ def run_migrations_online() -> None:
             connection.commit()
 
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata
         )
 
         with context.begin_transaction():
@@ -181,8 +183,6 @@ def run_migrations_online() -> None:
         print(
             f"Skipping roles creation. {RoleModel.__tablename__} table does not exist."
         )
-
-    from src.modules.user.infrastructure.model import UserModel
 
     # Validate and create admin user
     if UserModel.__tablename__ in inspector.get_table_names():
