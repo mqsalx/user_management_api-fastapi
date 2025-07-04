@@ -6,4 +6,4 @@ from src.data.models.auth.session import SessionAuthModel
 from src.data.models.auth.token import TokenModel
 from src.data.models.permission import PermissionModel
 from src.data.models.role import RoleModel
-from src.data.models.user import UserModel
+# from src.data.models.user import UserModel
