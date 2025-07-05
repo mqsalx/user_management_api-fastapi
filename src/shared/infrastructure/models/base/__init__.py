@@ -1,14 +1,16 @@
 # /src/shared/infrastructure/models/base/__init__.py
 
-import uuid
-
 from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, String
 from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import Mapped, mapped_column
 from typing import Any, ClassVar
-from src.core.configurations import db_config
+
+from src.core.configurations import (
+    db_config,
+    env_config
+)
 
 Base = db_config.base()
 
@@ -56,34 +58,34 @@ class BaseModel(Base):
         return {"eager_defaults": True}
 
     @declared_attr
-    def id_column_name(cls) -> ClassVar[str]:
-        return f"{cls.__name__.replace('Model', '').lower()}_id"
-
-    @declared_attr
-    def entity_id(cls) -> Mapped[str]:
+    def __table_args__(cls):
         """
-        Declares a UUID primary key column with a dynamic name.
+        Provides table-level arguments for SQLAlchemy models.
 
-        The column:
-        - Uses PostgreSQL UUID type.
-        - Automatically generates a UUID using `uuid.uuid4`.
-        - Is non-nullable and acts as the primary key.
+        Sets the schema dynamically based on the class attribute `__schema__`,
+        or defaults to the configured schema from the environment. Also sets
+        `extend_existing=True` to allow redefinition during metadata reflection.
 
         Returns:
-            sqlalchemy.orm.Column: The configured UUID primary key column.
+            dict: A dictionary of SQLAlchemy table arguments.
         """
-        return mapped_column(
-            __name_pos=String,
-            name=cls.id_column_name,
-            primary_key=True,
-            default=lambda: str(uuid.uuid4),
-            nullable=False
-        )
+        return {
+            "schema": getattr(
+                cls, "__schema__",
+                env_config.database_schema
+            ),
+            "extend_existing": True,
+        }
 
     @declared_attr
     def is_active(cls) -> Mapped[bool]:
         """
+        Declares a boolean column to indicate whether the record is active.
 
+        This is useful for soft-deletion or status-based filtering.
+
+        Returns:
+            Mapped[bool]: A boolean column with default True.
         """
         return mapped_column(
             Boolean,
@@ -102,7 +104,7 @@ class BaseModel(Base):
             sqlalchemy.orm.mapped_column: The created_at timestamp column.
         """
         return mapped_column(
-            DateTime(timezone=True),
+            DateTime,
             default=func.now(),
             nullable=False
         )
@@ -118,7 +120,8 @@ class BaseModel(Base):
             sqlalchemy.orm.mapped_column: The updated_at timestamp column.
         """
         return mapped_column(
-            DateTime(timezone=True),
+            DateTime,
+            default=func.now(),
             onupdate=func.now(),
             nullable=True
         )
