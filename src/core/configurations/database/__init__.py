@@ -32,7 +32,7 @@ class DatabaseConfig:
         bind=_engine
     )
     _schema: str = env_config.database_schema
-    _base = declarative_base(metadata=MetaData(schema=_schema))
+    _base = declarative_base(metadata=MetaData(schema=str(_schema)))
 
     @classmethod
     def get_db(cls) -> Generator[Session, None, None]:
@@ -91,6 +91,16 @@ class DatabaseConfig:
 
         return cls._base
 
-db_config = DatabaseConfig()
+    @classmethod
+    def engine(cls) -> Any:
+        """
+        Class method responsible for returning the database engine.
 
-Base = db_config.base()
+        This method provides access to the SQLAlchemy engine used for
+        connecting to the database.
+        """
+
+        return cls._engine
+
+
+db_config = DatabaseConfig()
