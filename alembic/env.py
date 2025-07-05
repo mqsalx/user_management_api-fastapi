@@ -1,5 +1,6 @@
 
 # flake8: noqa: E501
+# type: ignore
 
 # PY
 
@@ -14,6 +15,7 @@ from sqlalchemy import (
     pool,
     text
 )
+from sqlalchemy.orm import registry
 
 # Core
 from src.core.configurations.database import db_config
@@ -152,11 +154,15 @@ def run_migrations_online() -> None:
             compare_type=True,
         )
 
+        print("All mappers in registry:")
+        for mapper in registry().mappers:
+            print(f" - {mapper.class_.__name__} -> {mapper.class_.__module__}")
+
         with context.begin_transaction():
             context.run_migrations()
 
-        # from src.core.seeder import create_initial_data
-        # create_initial_data(schema=target_metadata.schema)
+        from src.core.seeds import create_initial_data
+        create_initial_data(schema=target_metadata.schema)
 
     print("Migrations completed successfully!")
 
