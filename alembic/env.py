@@ -3,18 +3,17 @@
 
 # PY
 
-from pathlib import Path
 import importlib.util
-import sys
-import glob
 import importlib
-import importlib.util
-import os
-import pkgutil
 
 from alembic import context
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config, inspect, pool, text
+from pathlib import Path
+from sqlalchemy import (
+    engine_from_config,
+    pool,
+    text
+)
 
 # Core
 from src.core.configurations.database import db_config
@@ -28,25 +27,35 @@ Base = db_config.base()
 
 try:
     base_path = Path(__file__).resolve().parent.parent / "src"
+
     print(f"Base path for models: {base_path}")
 
-    with_modules_path = base_path / "modules"
-    without_modules_path = base_path / "infrastructure" / "models"
+    # Main search directories
+    modules_models_path = base_path / "modules"
+    infrastructure_models_path = base_path / "infrastructure" / "models"
 
-    model_paths = list(with_modules_path.rglob("*/infrastructure/models/*.py"))
-    model_paths += list(with_modules_path.glob("*/infrastructure/models/*.py"))
-    model_paths += list(without_modules_path.rglob("*.py"))
-    model_paths += list(without_modules_path.glob("*.py"))
+    model_paths = set()
+
+    # Look for __init__.py files inside module-level models directories
+    model_paths.update(modules_models_path.glob("*/infrastructure/models/__init__.py"))
+    model_paths.update(modules_models_path.glob("*/*/infrastructure/models/__init__.py"))
+
+    # Look for __init__.py files in shared infrastructure models
+    model_paths.update(infrastructure_models_path.glob("*/__init__.py"))
+
+    model_paths = list(model_paths)
 
     if not model_paths:
-        print("No model files found in the expected directories.")
+        print("No model files found.")
     else:
         print("Model files found:")
         for p in model_paths:
             print(f" - {p}")
 
     for model_file in model_paths:
-        module_name = f"{model_file.stem}_{model_file.parent.name}"
+        # Build a unique and consistent module name from path parts
+        relative_path = model_file.relative_to(base_path).with_suffix("")
+        module_name = "_".join(relative_path.parts)
         print(f"Importing module: {module_name} from {model_file}")
 
         spec = importlib.util.spec_from_file_location(module_name, str(model_file))
@@ -56,7 +65,7 @@ try:
 
 except Exception as error:
     raise ImportError(
-        f"Failed to import models from the specified directories: {error}"
+        f"Failed to import model modules dynamically: {error}"
     ) from error
 
 # Define the database URL
@@ -73,6 +82,10 @@ config.set_main_option("sqlalchemy.url", DATABASE_URL)
 target_metadata = Base.metadata
 
 print("Target metadata schema:", target_metadata.schema)
+
+print("Tabelas registradas no metadata:")
+for table in target_metadata.tables:
+    print(f" - {table}")
 
 def include_name_filter(name: str, type_: str, parent_names: dict | None) -> bool:
     """
@@ -141,6 +154,9 @@ def run_migrations_online() -> None:
 
         with context.begin_transaction():
             context.run_migrations()
+
+        # from src.core.seeder import create_initial_data
+        # create_initial_data(schema=target_metadata.schema)
 
     print("Migrations completed successfully!")
 
