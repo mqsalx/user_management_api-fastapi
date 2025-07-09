@@ -1,18 +1,19 @@
 # /src/modules/user/infrastructure/mappers/__init__.py
 
-from src.modules.user.domain.entities.user import User
+from src.modules.user.domain.entities import UserEntity
 from src.modules.user.domain.value_objects import Email, UserId
-from src.modules.user.enums import UserStatusEnum, UserRoleEnum
-from src.modules.user.infrastructure.models.user_model import UserModel
+from src.modules.user.enums import UserRoleEnum, UserStatusEnum
+from src.modules.user.infrastructure.models.user import UserModel
+from src.shared.infrastructure.mappers.base import BaseMapper
 
 
-class UserMapper:
+class UserMapper(BaseMapper[UserEntity, UserModel]):
     """
     Class responsible for mapping between the domain entity `User`
     and the ORM model `UserModel`.
     """
 
-    def to_entity(self, model: UserModel) -> User:
+    def to_entity(self, model: UserModel) -> UserEntity:
         """
         Convert ORM model to domain entity.
 
@@ -22,7 +23,7 @@ class UserMapper:
         Returns:
             User: Domain entity.
         """
-        return User(
+        return UserEntity(
             user_id=UserId(model.user_id),
             name=model.name,
             email=Email(model.email),
@@ -33,7 +34,7 @@ class UserMapper:
             updated_at=model.updated_at,
         )
 
-    def to_model(self, entity: User) -> UserModel:
+    def to_model(self, entity: UserEntity) -> UserModel:
         """
         Convert domain entity to ORM model.
 
@@ -44,12 +45,19 @@ class UserMapper:
             UserModel: SQLAlchemy model.
         """
         return UserModel(
-            user_id=entity.user_id.value,
+            user_id=entity.entity_id,
             name=entity.name,
-            email=str(entity.email),
+            email=entity.email,
             password=entity.password,
             status=entity.status,
-            role_id=entity.role.value,
             created_at=entity.created_at,
             updated_at=entity.updated_at,
         )
+
+    def update_model(self, model: UserModel, entity: UserEntity) -> UserModel:
+        model.name = entity.name
+        model.email = entity.email
+        model.password = entity.password
+        model.status = entity.status
+        model.updated_at = entity.updated_at
+        return model
