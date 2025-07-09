@@ -20,7 +20,7 @@ class BaseEntity:
         self._updated_at: datetime = updated_at or datetime.now()
 
     @property
-    def id(self) -> str:
+    def entity_id(self) -> str:
         return self._entity_id
 
     @property

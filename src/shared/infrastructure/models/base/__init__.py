@@ -1,16 +1,16 @@
 # /src/shared/infrastructure/models/base/__init__.py
 
+# PY
 from datetime import datetime
-from sqlalchemy import Boolean, Column, DateTime, String
-from sqlalchemy.sql import func
+from typing import Any
+
+from sqlalchemy import Boolean, DateTime
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import Mapped, mapped_column
-from typing import Any, ClassVar
+from sqlalchemy.sql import func
 
-from src.core.configurations import (
-    db_config,
-    env_config
-)
+# Core
+from src.core.configurations import db_config, env_config
 
 Base = db_config.base()
 
@@ -26,10 +26,11 @@ class BaseModel(Base):
 
     Intended to be inherited by concrete SQLAlchemy models.
     """
+
     __abstract__ = True
 
     @declared_attr
-    def __tablename__(cls) -> str:
+    def __tablename__(cls) -> Any:
         """
         Generates the table name dynamically from the class name by:
         - Removing the 'Model' suffix.
@@ -46,11 +47,12 @@ class BaseModel(Base):
         return cls.__name__.replace("Model", "").lower() + "s"
 
     @declared_attr
-    def __mapper_args__(cls):
+    def __mapper_args__(cls) -> Any:
         """
         Optional SQLAlchemy mapper configuration.
 
-        Enables eager loading of default values (e.g., UUID, timestamps) after inserts.
+        Enables eager loading of default values
+            (e.g., UUID, timestamps) after inserts.
 
         Returns:
             dict: Mapper configuration dictionary.
@@ -58,20 +60,22 @@ class BaseModel(Base):
         return {"eager_defaults": True}
 
     @declared_attr
-    def __table_args__(cls):
+    def __table_args__(cls) -> Any:
         """
         Provides table-level arguments for SQLAlchemy models.
 
         Sets the schema dynamically based on the class attribute `__schema__`,
-        or defaults to the configured schema from the environment. Also sets
-        `extend_existing=True` to allow redefinition during metadata reflection.
+            or defaults to the configured schema from the environment.
+            Also sets `extend_existing=True` to allow
+            redefinition during metadata reflection.
 
         Returns:
             dict: A dictionary of SQLAlchemy table arguments.
         """
         return {
             "schema": getattr(
-                cls, "__schema__",
+                cls,
+                "__schema__",
                 env_config.database_schema
             ),
             "extend_existing": True,
@@ -87,11 +91,7 @@ class BaseModel(Base):
         Returns:
             Mapped[bool]: A boolean column with default True.
         """
-        return mapped_column(
-            Boolean,
-            default=True,
-            nullable=False
-        )
+        return mapped_column(Boolean, default=True, nullable=False)
 
     @declared_attr
     def created_at(cls) -> Mapped[datetime]:
@@ -125,3 +125,19 @@ class BaseModel(Base):
             onupdate=func.now(),
             nullable=True
         )
+
+    @classmethod
+    def id_name(cls) -> str:
+        """
+        Returns the name of the primary key column dynamically.
+
+        Useful for generic repositories that need to filter by primary key
+        without knowing its name ahead of time.
+
+        Returns:
+            str: Name of the primary key column (e.g., 'user_id')
+        """
+        for column in cls.__table__.columns:
+            if column.primary_key:
+                return column.name
+        raise RuntimeError(f"No primary key defined for model {cls.__name__}")
