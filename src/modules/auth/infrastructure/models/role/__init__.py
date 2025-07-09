@@ -12,7 +12,7 @@ from src.modules.auth.infrastructure.models.role_permission \
     import role_permission
 
 # Shared
-from src.shared.infrastructure.models.base import BaseModel
+from shared.infrastructure.models.base import BaseModel
 
 
 class RoleModel(BaseModel):

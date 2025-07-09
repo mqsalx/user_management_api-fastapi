@@ -14,7 +14,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 # Shared
-from src.shared.infrastructure.models.base import BaseModel
+from shared.infrastructure.models.base import BaseModel
 
 
 class SessionModel(BaseModel):
