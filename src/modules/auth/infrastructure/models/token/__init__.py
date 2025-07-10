@@ -13,7 +13,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 
 # Shared
-from shared.infrastructure.models.base import BaseModel
+from src.shared.infrastructure.models.base import BaseModel
 
 
 class TokenModel(BaseModel):
