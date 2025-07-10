@@ -185,10 +185,10 @@ class AuthUtil:
         Raises:
             UnauthorizedTokenException: If the session does not exist or is inactive.
         """
-        session_db = next(DatabaseConfig().get_db())
+        session_db = next(DatabaseConfig().get_sync_db())
         try:
 
-            from src.data.repositories import SessionAuthRepository
+            from src.infrastructure_tmp.repositories.auth.session import SessionAuthRepository
 
             __repository = SessionAuthRepository(session_db)
 
@@ -249,6 +249,6 @@ class AuthUtil:
                 return True
 
             return False
-        
+
         finally:
             session_db.close()

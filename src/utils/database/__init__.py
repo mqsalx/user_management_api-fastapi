@@ -2,7 +2,7 @@
 
 # flake8: noqa: E501
 
-from sqlalchemy import create_engine
+from sqlalchemy import Engine, create_engine
 from sqlalchemy.exc import OperationalError
 
 from src.core.configurations import (
@@ -22,7 +22,7 @@ class DatabaseUtil:
         None
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Constructor method for DatabaseUtil.
 
@@ -33,9 +33,9 @@ class DatabaseUtil:
             None
         """
 
-        _db_url = db_config_util.get_url()
-        self.__database_type = env_config.database_type
-        self.__engine = create_engine(_db_url)
+        _db_url: str = db_config_util.get_url()
+        self.__database_type: str = env_config.database_type
+        self.__engine: Engine = create_engine(_db_url)
 
     def check_connection(self) -> None:
         """
@@ -53,7 +53,7 @@ class DatabaseUtil:
 
         checked_database_type = (
             db_config_util.check_database_type(
-                self.__database_type
+                db_type=self.__database_type
             )
         )
 
