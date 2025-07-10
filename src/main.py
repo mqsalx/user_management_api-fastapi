@@ -1,18 +1,17 @@
 # /src/main.py
 
-# flake8: noqa: E501
-
 """
 Main module responsible for initializing and running the FastAPI application.
 
-This module sets up the API, middleware, exception handlers, and scheduled tasks.
-It also checks environment variables and the database connection before starting
-the server.
+This module sets up the API, middleware, exception handlers,
+    and scheduled tasks.
+It also checks environment variables and the database
+    connection before starting
+    the server.
 """
 
 # PY
 import time
-
 import uvicorn
 from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
@@ -26,7 +25,7 @@ from src.core.middleware import (
 )
 
 # Presentation
-from src.presentation.routes import ApiRouter
+from src.api.router import ApiRouter
 
 # Utils
 from src.utils import (
@@ -70,10 +69,10 @@ def my_function():
 # my_scheduler_task.init(my_function, 5)
 
 app.add_middleware(LoggerMiddleware)
-app.add_middleware(AuthMiddleware)
+# app.add_middleware(AuthMiddleware)
 
-app.add_exception_handler(HTTPException, ExceptionHandler.http_exception_handler)  # type: ignore
-app.add_exception_handler(RequestValidationError, ExceptionHandler.json_decode_error_handler)  # type: ignore
+app.add_exception_handler(HTTPException, ExceptionHandler.http_exception_handler)  # type: ignore  # noqa: E501
+app.add_exception_handler(RequestValidationError, ExceptionHandler.json_decode_error_handler)  # type: ignore  # noqa: E501
 
 
 api_router: APIRouter = ApiRouter().router
@@ -87,6 +86,10 @@ if __name__ == "__main__":
     This section ensures that essential configurations are checked before
     running the FastAPI server.
     """
+
+    from src.shared.infrastructure.models import configure_all_mappers
+
+    configure_all_mappers()
 
     # On Startup Message
     MessageUtil().on_startup()
