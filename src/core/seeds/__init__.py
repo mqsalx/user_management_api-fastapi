@@ -3,7 +3,7 @@
 # PY
 from sqlalchemy import inspect
 
-from src.core.configurations.database import DatabaseConfig
+from core.configurations.database import DatabaseConfig
 
 from src.core.seeds.user import create_administrator_user
 from src.core.seeds.permission import create_permissions
@@ -28,7 +28,7 @@ def create_initial_data(schema: str) -> None:
         schema (str): Schema to inspect
     """
 
-    engine = DatabaseConfig.engine()
+    engine = DatabaseConfig.sync_engine()
     inspector = inspect(engine)
 
     existing_tables = inspector.get_table_names(schema=schema)

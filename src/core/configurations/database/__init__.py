@@ -1,106 +1,98 @@
 # /src/core/configurations/database/__init__.py
 
-from typing import Any, Generator
+# PY
+from typing import Any, AsyncGenerator, Generator
 
-from sqlalchemy import Engine, create_engine, MetaData
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import (
-    Session,
-    sessionmaker
+# Sync
+from sqlalchemy import Engine, MetaData, create_engine
+
+# Async
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
 )
+from sqlalchemy.ext.asyncio.engine import AsyncEngine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Session, sessionmaker
 
-from src.core.configurations.environment import env_config
+# Config
 from src.core.configurations.database.utils import DatabaseConfigUtil
+from src.core.configurations.environment import env_config
 
 
 class DatabaseConfig:
-    """
-    Class responsible for configuring and providing access
-        to the database connection.
+    """ """
 
-    This class initializes the database engine, session factory,
-        and declarative base for defining database models.
-    It also provides methods for retrieving database
-        sessions and managing table creation.
-    """
-
-    _db_url: str = DatabaseConfigUtil().get_url()
-    _engine: Engine = create_engine(_db_url)
-    _session_local: sessionmaker[Session] = sessionmaker(
-        autocommit=False,
-        autoflush=False,
-        bind=_engine
-    )
+    # Config
     _schema: str = env_config.database_schema
-    _base = declarative_base(metadata=MetaData(schema=str(_schema)))
+    _metadata: MetaData = MetaData(schema=_schema)
+
+    # Sync
+    _sync_db_url: str = DatabaseConfigUtil().get_url()
+    _sync_engine: Engine = create_engine(_sync_db_url)
+    _sync_session_local: sessionmaker[Session] = sessionmaker(
+        autocommit=False, autoflush=False, bind=_sync_engine
+    )
+
+    # Async
+    _async_db_url: str = DatabaseConfigUtil().get_async_url()
+    _async_engine: AsyncEngine = create_async_engine(
+        url=_async_db_url, echo=False, future=True
+    )
+    _async_session_local: async_sessionmaker[AsyncSession] = (
+        async_sessionmaker(
+            bind=_async_engine,
+            expire_on_commit=False,
+            class_=AsyncSession,
+            autoflush=False,
+            autocommit=False,
+        )
+    )
+
+    # Base
+    _base = declarative_base(metadata=_metadata)
+
+    # Methods Async
+    @classmethod
+    async def get_async_db(cls) -> AsyncGenerator[AsyncSession, None]:
+        async with cls._async_session_local() as session:
+            yield session
 
     @classmethod
-    def get_db(cls) -> Generator[Session, None, None]:
-        """
-        Class method responsible for providing a database session.
+    async def create_all_async(cls) -> None:
+        async with cls._async_engine.begin() as conn:
+            await conn.run_sync(cls._base.metadata.create_all)
 
-        This method creates a new database session, yields it for use,
-        and ensures proper cleanup by closing the session afterward.
+    @classmethod
+    def async_engine(cls) -> AsyncEngine:
+        return cls._async_engine
 
-        Args:
-            None
+    # End Methods Async
 
-        Yields:
-            Generator[Session, None, None]: A database session.
-
-        Raises:
-            Exception: If an error occurs while managing the session.
-        """
-
-        db: Session = cls._session_local()
+    # Methods Sync
+    @classmethod
+    def get_sync_db(cls) -> Generator[Session, None, None]:
+        db: Session = cls._sync_session_local()
         try:
             yield db
         finally:
             db.close()
 
     @classmethod
-    def create_all(cls) -> None:
-        """
-        Class method responsible for creating all database tables.
+    def create_all_sync(cls) -> None:
+        cls._base.metadata.create_all(bind=cls._sync_engine)
 
-        This method initializes the database schema based on the defined models.
+    @classmethod
+    def sync_engine(cls) -> Engine:
+        return cls._sync_engine
 
-        Args:
-            None
+    # End Methods Sync
 
-        Returns:
-            None
-        """
-
-        cls._base.metadata.create_all(bind=cls._engine)
-
+    # Base
     @classmethod
     def base(cls) -> Any:
-        """
-        Class method responsible for returning the declarative base.
-
-        This method provides access to the declarative base used for defining
-        database models.
-
-        Args:
-            None
-
-        Returns:
-            Any: The declarative base instance.
-        """
-
         return cls._base
-
-    @classmethod
-    def engine(cls) -> Any:
-        """
-        Class method responsible for returning the database engine.
-
-        This method provides access to the SQLAlchemy engine used for
-        connecting to the database.
-        """
-
-        return cls._engine
 
 
 db_config = DatabaseConfig()
