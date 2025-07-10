@@ -1,11 +1,12 @@
 # /src/modules/user/application/services/create/__init__.py
 
+from src.modules.user.domain import IUserRepository
 from src.modules.user.domain.exceptions import (
     EmailAlreadyExistsException,
     UserNotFoundException,
 )
-from src.modules.user.domain import IUserRepository
 from src.modules.user.infrastructure.models import UserModel
+from src.modules.user.domain.entities import UserEntity
 from src.utils import AuthUtil
 
 
@@ -23,11 +24,18 @@ class UserService:
 
         hashed_password = AuthUtil.generate_password_hash(password)
 
-        return await self._repository.create(
-            name=name, email=email, password=hashed_password, status=status
+        entity = UserEntity(
+            name=name,
+            email=email,
+            password=hashed_password,
+            status=status
         )
 
-    async def update_user(self, user_id: str, name: str, email: str, status: str):
+        return await self._repository.create(entity)
+
+    async def update_user(
+        self, user_id: str, name: str, email: str, status: str
+    ):
         user = await self._repository.get_by_id(user_id)
         if not user:
             raise UserNotFoundException(f"User {user_id} not found.")

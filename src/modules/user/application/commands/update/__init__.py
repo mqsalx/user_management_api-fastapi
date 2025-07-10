@@ -5,6 +5,8 @@ from dataclasses import dataclass
 
 @dataclass
 class UpdateUserCommand:
+    """
+    """
     user_id: str
     name: str
     email: str

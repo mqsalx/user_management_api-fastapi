@@ -1,8 +1,7 @@
 # /src/modules/user/application/handlers/create/__init__.py
 
 from typing import Dict
-from modules.user.domain.entities import UserEntity
-from modules.user.infrastructure.models.user import UserModel
+from src.modules.user.domain.entities import UserEntity
 from src.modules.user.application.commands import (
     CreateUserCommand,
     UpdateUserCommand,
@@ -28,8 +27,8 @@ class UserHandler:
 
             return {
                 "user_id": str(object=entity.user_id),
-                "name": entity.name,
-                "email": entity.email,
+                "name": str(entity.name),
+                "email": str(entity.email),
             }
 
         except (Exception, BaseHTTPException) as error:

@@ -2,7 +2,7 @@
 
 from src.modules.user.domain.entities import UserEntity
 from src.modules.user.domain.value_objects import Email, UserId
-from src.modules.user.enums import UserRoleEnum, UserStatusEnum
+from src.modules.user.domain.enums import UserRoleEnum, UserStatusEnum
 from src.modules.user.infrastructure.models.user import UserModel
 from src.shared.infrastructure.mappers.base import BaseMapper
 
@@ -29,7 +29,7 @@ class UserMapper(BaseMapper[UserEntity, UserModel]):
             email=Email(model.email),
             password=model.password,
             status=UserStatusEnum(model.status),
-            role=UserRoleEnum(model.role_id),
+            role_id=UserRoleEnum(model.role_id),
             created_at=model.created_at,
             updated_at=model.updated_at,
         )

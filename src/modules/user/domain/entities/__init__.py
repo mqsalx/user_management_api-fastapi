@@ -25,6 +25,7 @@ class UserEntity(BaseEntity):
         password: str,
         status: str,
         user_id: str | None = None,
+        role_id: str | None = None,
         created_at: datetime | None = None,
         updated_at: datetime | None = None,
     ) -> None:
@@ -35,6 +36,8 @@ class UserEntity(BaseEntity):
         self.email = email
         self.password = password
         self.status = status
+        self.user_id: str | None = user_id
+        self.role_id: str | None = role_id
 
     @staticmethod
     def create(

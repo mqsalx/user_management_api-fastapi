@@ -17,3 +17,6 @@ class Email:
 
     def __eq__(self, other) -> bool:
         return isinstance(other, Email) and self.value == other.value
+
+    def __repr__(self) -> str:
+        return self.value
