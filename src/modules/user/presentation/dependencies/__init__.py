@@ -11,18 +11,64 @@ from src.core.configurations.database import db_config
 from src.modules.user.domain.repositories import IUserRepository
 from src.modules.user.infrastructure.repositories import UserRepositoryImpl
 
+# Shared
+from src.shared.domain.unit_of_work import IAsyncUnitOfWork
+from src.shared.infrastructure.unit_of_work import AsyncUnitOfWorkImpl
+
 
 class Dependencies:
-    """ """
+    """
+    Static dependency providers for user-related components.
+
+    This class centralizes the dependency injection logic for FastAPI, allowing
+        services like the user repository and unit of work
+        to be injected into routes  and controllers using FastAPI's `Depends`.
+
+    The dependencies rely on an asynchronous database session
+        provided by the application.
+    """
 
     @staticmethod
     async def get_user_repository(
-        async_db_session: AsyncSession = Depends(
+        async_session_db: AsyncSession = Depends(
             dependency=db_config.get_async_db
         ),
     ) -> IUserRepository:
-        """ """
-        return UserRepositoryImpl(async_db_session=async_db_session)
+        """
+        Provides an instance of IUserRepository with an async database session.
+
+        This method is intended to be used with FastAPI's dependency
+            injection system.
+
+        Args:
+            async_session_db (AsyncSession): The asynchronous
+                SQLAlchemy session.
+
+        Returns:
+            IUserRepository: An instance of the user repository implementation.
+        """
+        return UserRepositoryImpl(async_session_db=async_session_db)
+
+    @staticmethod
+    async def get_user_unit_of_work(
+        async_session_db: AsyncSession = Depends(
+            dependency=db_config.get_async_db
+        ),
+    ) -> IAsyncUnitOfWork:
+        """
+        Provides an instance of AsyncUnitOfWork for managing transactions.
+
+        This method is intended to be used with FastAPI's
+            dependency injection system.
+
+        Args:
+            async_session_db (AsyncSession): The asynchronous
+                SQLAlchemy session.
+
+        Returns:
+            AsyncUnitOfWork: An instance of the async unit of work.
+        """
+        return AsyncUnitOfWorkImpl(async_session_db=async_session_db)
 
 
 dependencies = Dependencies()

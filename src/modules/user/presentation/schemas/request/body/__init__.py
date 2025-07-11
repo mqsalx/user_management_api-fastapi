@@ -45,16 +45,6 @@ class CreateUserReqBodySchema(BaseDTO):
         """
         return cls.validate_enum(value, info, UserStatusEnum)
 
-    def to_command(self) -> CreateUserCommand:
-        """
-        """
-        return CreateUserCommand(
-            name=self.name,
-            email=self.email,
-            password=self.password,
-            status=self.status.value
-        )
-
 
 class UpdateUserReqBodySchema(BaseDTO):
     """

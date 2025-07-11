@@ -7,19 +7,16 @@ from sqlalchemy import Result, Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Modules
-from src.modules.user.domain import (
-    IUserRepository,
-    UserEntity
-)
+from src.modules.user.domain import IUserRepository, UserEntity
 from src.modules.user.infrastructure.mappers import UserMapper
 from src.modules.user.infrastructure.models.user import UserModel
 
 # Shared
-from src.shared.infrastructure.repositories.base import BaseAsyncSQLRepository
+from src.shared.infrastructure.repositories.base import BaseAsyncRepositoryImpl
 
 
 class UserRepositoryImpl(
-    BaseAsyncSQLRepository[UserEntity, UserModel], IUserRepository
+    BaseAsyncRepositoryImpl[UserEntity, UserModel], IUserRepository
 ):
     """
     Class responsible for handling database operations
@@ -29,20 +26,22 @@ class UserRepositoryImpl(
         retrieving, and deleting users.
 
     Class Args:
-        session_db (Session): The database session used for executing queries.
+        async_session_db (AsyncSession): The database async session
+            used for executing queries.
     """
 
-    def __init__(self, async_db_session: AsyncSession) -> None:
+    def __init__(self, async_session_db: AsyncSession) -> None:
         """
         Constructor method for UserRepository.
 
         Initializes the repository with a database session.
 
         Args:
-            session_db (Session): The database session used to execute queries.
+            async_session_db (AsyncSession): The database async session
+                used for executing queries.
         """
         super().__init__(
-            async_session_db=async_db_session,
+            async_session_db=async_session_db,
             model=UserModel,
             mapper=UserMapper(),
         )

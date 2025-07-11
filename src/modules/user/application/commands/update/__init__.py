@@ -3,9 +3,13 @@
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(frozen=True)
 class UpdateUserCommand:
     """
+    Command object representing the data required to update an existing user.
+
+    This command is used in the application layer to encapsulate all fields
+    necessary for performing a user update operation.
     """
     user_id: str
     name: str
