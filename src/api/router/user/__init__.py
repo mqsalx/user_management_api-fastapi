@@ -2,10 +2,9 @@
 
 # PY
 from fastapi import APIRouter
+from src.modules.user.presentation.routes import UserRouter
 
-# Presentation
-from src.modules.user.presentation.routes import CreateUserRouter
 
 user_router = APIRouter()
 
-CreateUserRouter(user_router=user_router)
+UserRouter(router=user_router)
