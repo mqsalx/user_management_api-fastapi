@@ -3,15 +3,15 @@
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
-DomainEntity = TypeVar("DomainEntity")
-DatabaseModel = TypeVar("DatabaseModel")
+Entity = TypeVar("Entity")
+Model = TypeVar("Model")
 
 
-class BaseMapper(ABC, Generic[DomainEntity, DatabaseModel]):
+class BaseMapper(ABC, Generic[Entity, Model]):
     @abstractmethod
-    def to_entity(self, model: DatabaseModel) -> DomainEntity:
+    def to_entity(self, model: Model) -> Entity:
         pass
 
     @abstractmethod
-    def to_model(self, entity: DomainEntity) -> DatabaseModel:
+    def to_model(self, entity: Entity) -> Model:
         pass

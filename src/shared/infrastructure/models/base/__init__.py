@@ -12,7 +12,7 @@ from sqlalchemy.sql import func
 # Core
 from src.core.configurations import db_config, env_config
 
-Base = db_config.base()
+Base: Any = db_config.base()
 
 
 class BaseModel(Base):
