@@ -12,7 +12,7 @@ def create_roles() -> None:
     """
     Creates roles based on environment configuration.
     """
-    db: Session = next(db_config.get_db())
+    db: Session = next(db_config.get_sync_db())
     __roles = env_config.api_user_roles
 
     try:

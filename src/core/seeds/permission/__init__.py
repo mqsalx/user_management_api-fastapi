@@ -4,12 +4,9 @@
 from sqlalchemy.orm import Session
 
 # Core
-from src.core.configurations import (
-    db_config,
-    env_config
-)
-
+from src.core.configurations import db_config, env_config
 from src.modules.auth.infrastructure.models import PermissionModel
+
 # Utils
 from src.utils.logger import log
 
@@ -18,16 +15,17 @@ def create_permissions() -> None:
     """
     Function responsible for creating permissions in the database.
 
-    It reads predefined permission IDs from the environment configuration and inserts
-    only the ones that don't already exist in the database.
+    It reads predefined permission IDs from the environment
+        configuration and inserts only the ones that
+        don't already exist in the database.
 
     Returns:
         None
     """
 
-    db: Session = next(db_config.get_db())
+    db: Session = next(db_config.get_sync_db())
 
-    __permissions = env_config.api_role_permissions  # Expects list[str]
+    __permissions = env_config.api_role_permissions
 
     try:
         if not __permissions:
@@ -35,7 +33,8 @@ def create_permissions() -> None:
 
         # Fetch existing permission IDs
         existing_permissions = {
-            permission.permission_id for permission in db.query(PermissionModel).all()
+            permission.permission_id
+            for permission in db.query(PermissionModel).all()
         }
 
         # Filter new permissions to insert

@@ -2,8 +2,11 @@
 
 from typing import LiteralString
 
+# Core
 from src.core.configurations.environment import env_config
-from src.domain.enums import DatabaseTypeEnum
+
+# Shared
+from src.shared.domain.enums import DatabaseTypeEnum
 
 
 class DatabaseConfigUtil:

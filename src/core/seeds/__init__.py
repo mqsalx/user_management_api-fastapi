@@ -3,7 +3,7 @@
 # PY
 from sqlalchemy import inspect
 
-from core.configurations.database import DatabaseConfig
+from src.core.configurations.database import DatabaseConfig
 
 from src.core.seeds.user import create_administrator_user
 from src.core.seeds.permission import create_permissions
@@ -32,7 +32,6 @@ def create_initial_data(schema: str) -> None:
     inspector = inspect(engine)
 
     existing_tables = inspector.get_table_names(schema=schema)
-
 
     # Validate and create permissions
     if PermissionModel.__tablename__ in existing_tables:

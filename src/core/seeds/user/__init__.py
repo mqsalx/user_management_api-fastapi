@@ -21,7 +21,7 @@ def create_administrator_user() -> None:
     Returns:
         None
     """
-    db: Session = next(db_config.get_db())
+    db: Session = next(db_config.get_sync_db())
 
     try:
         admin_name = env_config.api_user_administrator
