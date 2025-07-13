@@ -27,10 +27,9 @@ class IBaseAsyncRepository(ABC, Generic[T]):
             T: The newly created entity, possibly with
                 updated fields (e.g., generated ID).
         """
-        pass
 
     @abstractmethod
-    async def find_by_id(self, entity_id: str) -> Optional[T]:
+    async def find_by_entity_id(self, entity_id: str) -> Optional[T]:
         """
         Retrieves an entity by its unique identifier.
 
@@ -40,17 +39,21 @@ class IBaseAsyncRepository(ABC, Generic[T]):
         Returns:
             Optional[T]: The found entity, or None if not found.
         """
-        pass
 
     @abstractmethod
-    async def find_all(self) -> List[T]:
+    async def find_all(
+        self,
+        total_count: bool = False,
+        offset: int | None = None,
+        limit: int | None = None,
+        order: str | None = None,
+    ) -> int | List[T]:
         """
         Retrieves all entities of this type.
 
         Returns:
             List[T]: A list of all entities stored in the repository.
         """
-        pass
 
     @abstractmethod
     async def update(self, entity: T) -> T:
@@ -63,7 +66,6 @@ class IBaseAsyncRepository(ABC, Generic[T]):
         Returns:
             T: The updated entity after persistence.
         """
-        pass
 
     @abstractmethod
     async def remove(self, entity_id: str) -> bool:
@@ -76,4 +78,3 @@ class IBaseAsyncRepository(ABC, Generic[T]):
         Returns:
             bool: True if the entity was successfully deleted, False otherwise.
         """
-        pass

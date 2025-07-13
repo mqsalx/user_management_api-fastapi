@@ -4,10 +4,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 
-from src.shared.domain.unit_of_work import IAsyncUnitOfWork
 
-
-class AsyncUnitOfWorkImpl(IAsyncUnitOfWork):
+class AsyncUnitOfWork:
     """
     Asynchronous implementation of the Unit of Work pattern.
 
@@ -44,7 +42,7 @@ class AsyncUnitOfWorkImpl(IAsyncUnitOfWork):
         """
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:  # type: ignore  # noqa: E501
         """
         Exits the asynchronous context.
 

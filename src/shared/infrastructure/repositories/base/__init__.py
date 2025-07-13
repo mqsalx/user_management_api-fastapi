@@ -1,9 +1,8 @@
 # /src/shared/infrastructure/repository/base/__init__.py
 
-from abc import abstractmethod
 from typing import Generic, List, Optional, Sequence, Tuple, Type, TypeVar
 
-from sqlalchemy import Result, Select, select
+from sqlalchemy import Result, Select, asc, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Shared
@@ -46,7 +45,6 @@ class BaseAsyncRepositoryImpl(
         mapper: BaseMapper[Entity, Model],
         entity_id: Optional[str] = None,
     ) -> None:
-
         """
         Initializes the repository with a database session, model class,
             and mapper.
@@ -68,26 +66,6 @@ class BaseAsyncRepositoryImpl(
             entity_id or self._model.id_name()  # type: ignore
         )
 
-    @abstractmethod
-    def _update_model(
-        self, model: Model, entity: Entity
-    ) -> Model:
-        """
-        Abstract method to update a database model with data from
-            a domain entity.
-
-        This method must be implemented in subclasses to define how to copy
-        values from the entity into the SQLAlchemy model instance.
-
-        Args:
-            model (Model): The existing model instance from the database.
-            entity (Entity): The domain entity with updated values.
-
-        Returns:
-            Model: The modified model instance.
-        """
-        pass
-
     async def create(self, entity: Entity) -> Entity:
         """
         Creates a new entity in the database.
@@ -104,7 +82,42 @@ class BaseAsyncRepositoryImpl(
         await self._async_session_db.refresh(model)
         return self._mapper.to_entity(model=model)
 
-    async def find_by_id(self, entity_id: str) -> Entity | None:
+    async def find_all(
+        self,
+        total_count: bool = False,
+        offset: int | None = None,
+        limit: int | None = None,
+        order: str | None = None,
+    ) -> int | List[Entity]:
+        """
+        Retrieves all entities from the database.
+
+        Returns:
+            List[Entity]: A list of all stored entities.
+        """
+
+        if total_count:
+            count_stmt = select(func.count()).select_from(self._model)
+            result = await self._async_session_db.execute(count_stmt)
+            return result.scalar_one()
+
+        order_by = (
+            asc(getattr(self._model, self._entity_id))
+            if order.lower() == "asc"
+            else desc(getattr(self._model, self._entity_id))
+        )
+
+        stmt: Select = (
+            select(self._model).order_by(order_by).offset(offset).limit(limit)
+        )
+
+        result = await self._async_session_db.execute(stmt)
+
+        models: Sequence[Model] = result.scalars().all()
+
+        return [self._mapper.to_entity(model) for model in models]
+
+    async def find_by_entity_id(self, entity_id: str) -> Entity | None:
         """
         Finds an entity by its unique identifier.
 
@@ -118,25 +131,11 @@ class BaseAsyncRepositoryImpl(
         stmt: Select[Tuple[Model]] = select(self._model).where(
             getattr(self._model, self._entity_id) == entity_id
         )
-        result: Result[Tuple[Model]] = (
-            await self._async_session_db.execute(stmt)
+        result: Result[Tuple[Model]] = await self._async_session_db.execute(
+            stmt
         )
         model: Optional[Model] = result.scalars().first()
         return self._mapper.to_entity(model) if model else None
-
-    async def find_all(self) -> List[Entity]:
-        """
-        Retrieves all entities from the database.
-
-        Returns:
-            List[Entity]: A list of all stored entities.
-        """
-        stmt: Select[Tuple[Model]] = select(self._model)
-        result: Result[Tuple[Model]] = (
-            await self._async_session_db.execute(stmt)
-        )
-        models: Sequence[Model] = result.scalars().all()
-        return [self._mapper.to_entity(model) for model in models]
 
     async def update(self, entity: Entity) -> Entity:
         """
@@ -153,23 +152,31 @@ class BaseAsyncRepositoryImpl(
         """
         entity_id = getattr(entity, self._entity_id)
 
+        if hasattr(entity_id, "value"):
+            entity_id = entity_id.value
+
         stmt: Select[Tuple[Model]] = select(self._model).where(
             getattr(self._model, self._entity_id) == entity_id
         )
-        result: Result[Tuple[Model]] = (
-            await self._async_session_db.execute(stmt)
+
+        result: Result[Tuple[Model]] = await self._async_session_db.execute(
+            stmt
         )
+
         model: Optional[Model] = result.scalars().first()
 
         if not model:
-            raise ValueError(
-                f"Entity with {self._entity_id}={entity_id} not found"
-            )
+            raise ValueError(f"Entity with {entity_id} not found")
 
-        updated: Model = self._update_model(model, entity)
+        to_update: Model = self._mapper.update_model(
+            model=model, entity=entity
+        )
+
         await self._async_session_db.flush()
-        await self._async_session_db.refresh(updated)
-        return self._mapper.to_entity(updated)
+
+        await self._async_session_db.refresh(to_update)
+
+        return self._mapper.to_entity(to_update)
 
     async def remove(self, entity_id: str) -> bool:
         """
@@ -182,10 +189,10 @@ class BaseAsyncRepositoryImpl(
             bool: True if the entity was found and deleted, False otherwise.
         """
         stmt: Select[Tuple[Model]] = select(self._model).where(
-            getattr(self._model, self._entity_id) == entity_id
+            getattr(self._model, self._entity_id) == str(entity_id)
         )
-        result: Result[Tuple[Model]] = (
-            await self._async_session_db.execute(stmt)
+        result: Result[Tuple[Model]] = await self._async_session_db.execute(
+            stmt
         )
         model: Optional[Model] = result.scalars().first()
 

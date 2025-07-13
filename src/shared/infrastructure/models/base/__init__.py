@@ -104,7 +104,7 @@ class BaseModel(Base):
             sqlalchemy.orm.mapped_column: The created_at timestamp column.
         """
         return mapped_column(
-            DateTime,
+            DateTime(timezone=True),
             default=func.now(),
             nullable=False
         )
@@ -120,7 +120,7 @@ class BaseModel(Base):
             sqlalchemy.orm.mapped_column: The updated_at timestamp column.
         """
         return mapped_column(
-            DateTime,
+            DateTime(timezone=True),
             default=func.now(),
             onupdate=func.now(),
             nullable=True
