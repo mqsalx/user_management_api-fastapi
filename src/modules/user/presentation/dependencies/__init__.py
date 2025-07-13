@@ -12,11 +12,10 @@ from src.modules.user.domain.repositories import IUserRepository
 from src.modules.user.infrastructure.repositories import UserRepositoryImpl
 
 # Shared
-from src.shared.domain.unit_of_work import IAsyncUnitOfWork
-from src.shared.infrastructure.unit_of_work import AsyncUnitOfWorkImpl
+from src.shared.presentation.dependencies.base import BaseDependency
 
 
-class Dependencies:
+class UserDependency(BaseDependency):
     """
     Static dependency providers for user-related components.
 
@@ -48,27 +47,3 @@ class Dependencies:
             IUserRepository: An instance of the user repository implementation.
         """
         return UserRepositoryImpl(async_session_db=async_session_db)
-
-    @staticmethod
-    async def get_user_unit_of_work(
-        async_session_db: AsyncSession = Depends(
-            dependency=db_config.get_async_db
-        ),
-    ) -> IAsyncUnitOfWork:
-        """
-        Provides an instance of AsyncUnitOfWork for managing transactions.
-
-        This method is intended to be used with FastAPI's
-            dependency injection system.
-
-        Args:
-            async_session_db (AsyncSession): The asynchronous
-                SQLAlchemy session.
-
-        Returns:
-            AsyncUnitOfWork: An instance of the async unit of work.
-        """
-        return AsyncUnitOfWorkImpl(async_session_db=async_session_db)
-
-
-dependencies = Dependencies()

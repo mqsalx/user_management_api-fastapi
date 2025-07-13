@@ -2,16 +2,18 @@
 
 # PY
 import inspect
-
-from typing import Dict
+from typing import Dict, List
 
 # Commnands and Queries
 from src.modules.user.application.commands import (
     CreateUserCommand,
     RemoveUserCommand,
-    UpdateUserCommand
+    UpdateUserCommand,
 )
-from src.modules.user.application.queries import FindUserByUserIdQuery
+from src.modules.user.application.queries import (
+    FindAllUsersQuery,
+    FindUserByUserIdQuery,
+)
 
 # Services
 from src.modules.user.application.services import UserService
@@ -64,25 +66,24 @@ class UserHandler:
         """
         try:
             created_entity: UserEntity = await self._service.create_user(
-                name=command.name,
-                email=command.email,
-                password=command.password,
-                status=command.status,
+                command=command
             )
 
-            return {
-                "user_id": str(created_entity.user_id),
-                "name": str(created_entity.name),
-                "email": str(created_entity.email),
-            }
+            formatted_response: Dict[str, str] = self.__response(
+                created_entity
+            )
+
+            return formatted_response
 
         except (Exception, BaseHTTPException) as error:
             current_frame = inspect.currentframe()
             caller_frame = inspect.getouterframes(current_frame, 2)[0]
-            log.error(f"Error in {self.__class__.__name__}.{caller_frame.function}: {error}")  # noqa: E501
+            log.error(
+                f"Error in {self.__class__.__name__}.{caller_frame.function}: {error}"
+            )  # noqa: E501
             raise error
 
-    async def find_user_by_user_id(self, query: FindUserByUserIdQuery):
+    async def find_all_users(self, query: FindAllUsersQuery):
         """
         Handles the use case for retrieving a user by ID.
 
@@ -98,22 +99,52 @@ class UserHandler:
         """
         try:
 
-            print(query.user_id)
-            found_entity: UserEntity = await self._service.find_user_by_id(
-                user_id=query.user_id
+            found_entities, pagination = await self._service.find_all_users(
+                query
             )
 
-            return {
-                "user_id": found_entity.user_id,
-                "name": found_entity.name,
-                "email": found_entity.email,
-                "status": found_entity.status,
-            }
+            return self.__response_list(found_entities), pagination
 
         except (Exception, BaseHTTPException) as error:
             current_frame = inspect.currentframe()
             caller_frame = inspect.getouterframes(current_frame, 2)[0]
-            log.error(f"Error in {self.__class__.__name__}.{caller_frame.function}: {error}")
+            log.error(
+                f"Error in {self.__class__.__name__}.{caller_frame.function}: {error}"
+            )
+            raise error
+
+    async def find_user_by_user_id(
+        self, query: FindUserByUserIdQuery
+    ) -> Dict[str, str]:
+        """
+        Handles the use case for retrieving a user by ID.
+
+        Args:
+            query (FindUserByUserIdQuery): The query containing the user ID.
+
+        Returns:
+            dict: A dictionary with the found user's information.
+
+        Raises:
+            BaseHTTPException | Exception: If the user is not found
+                or another error occurs.
+        """
+        try:
+
+            found_entity: UserEntity = (
+                await self._service.find_user_by_user_id(user_id=query.user_id)
+            )
+
+            formatted_response: Dict[str, str] = self.__response(found_entity)
+
+            return formatted_response
+
+        except (Exception, BaseHTTPException) as error:
+            current_frame = inspect.currentframe()
+            caller_frame = inspect.getouterframes(current_frame, 2)[0]
+            log.error(
+                f"Error in {self.__class__.__name__}.{caller_frame.function}: {error}"  # noqa: E501
+            )
             raise error
 
     async def update_user(self, command: UpdateUserCommand):
@@ -133,22 +164,21 @@ class UserHandler:
         """
         try:
             updated_entity: UserEntity = await self._service.update_user(
-                user_id=command.user_id,
-                name=command.name,
-                email=command.email,
-                status=command.status,
+                command=command
             )
-            return {
-                "user_id": updated_entity.user_id,
-                "name": updated_entity.name,
-                "email": updated_entity.email,
-                "status": updated_entity.status,
-            }
+
+            formatted_response: Dict[str, str] = self.__response(
+                updated_entity
+            )
+
+            return formatted_response
 
         except (Exception, BaseHTTPException) as error:
             current_frame = inspect.currentframe()
             caller_frame = inspect.getouterframes(current_frame, 2)[0]
-            log.error(f"Error in {self.__class__.__name__}.{caller_frame.function}: {error}")
+            log.error(
+                f"Error in {self.__class__.__name__}.{caller_frame.function}: {error}"
+            )
             raise error
 
     async def remove_user(self, command: RemoveUserCommand):
@@ -165,19 +195,47 @@ class UserHandler:
             BaseHTTPException | Exception: If the operation fails or the user still exists afterward.
         """
         try:
+
             await self._service.remove_user(user_id=command.user_id)
-
-            entity: UserEntity | None = await self._service.find_user_by_id(
-                user_id=command.user_id
-            )
-
-            if not entity:
-                return {"message": "User removed successfully"}
-
-            raise
 
         except (Exception, BaseHTTPException) as error:
             current_frame = inspect.currentframe()
             caller_frame = inspect.getouterframes(current_frame, 2)[0]
-            log.error(f"Error in {self.__class__.__name__}.{caller_frame.function}: {error}")
+            log.error(
+                f"Error in {self.__class__.__name__}.{caller_frame.function}: {error}"
+            )
             raise error
+
+    def __response(self, entity: UserEntity) -> Dict[str, str]:
+        """
+        Private method responsible for formatting a single user response.
+
+        Args:
+            user (UserModel): The user instance to format.
+
+        Returns:
+            Dict[str, str]: A dictionary containing user details.
+        """
+
+        return {
+            "user_id": str(entity.user_id),
+            "name": str(entity.name),
+            "email": str(entity.email),
+            "status": str(entity.status.value),
+        }
+
+    def __response_list(
+        self, entities: List[UserEntity]
+    ) -> List[Dict[str, str]]:
+        """
+        Private method responsible for formatting a list of users.
+
+        Args:
+            entities (List[UserModel]): A list of user instances to format.
+
+        Returns:
+            List[Dict[str, str]]: A list of dictionaries
+                containing user details.
+        """
+
+        return [self.__response(entity=entity) for entity in entities]

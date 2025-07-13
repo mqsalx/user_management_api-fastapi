@@ -12,6 +12,8 @@ class UpdateUserCommand:
     necessary for performing a user update operation.
     """
     user_id: str
-    name: str
-    email: str
-    status: str
+    name: str | None = None
+    email: str | None = None
+    status: str | None = None
+    password: str | None = None
+    role_id: str | None = None

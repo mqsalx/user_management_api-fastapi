@@ -1,22 +1,19 @@
 # /src/modules/user/presentation/schemas/request/query/__init__.py
 
-# Domain
-from src.domain.dtos.base import BaseDTO
+# Shared
+from src.shared.presentation.schemas.base import BaseSchema
+from src.shared.presentation.schemas.request.query.paginated import (
+    PaginatedQuerySchema,
+)
 
 
-class FindUserByUserIdQuerySchema(BaseDTO):
-    """
-    Class responsible for the Data Transfer Object
-        (DTO) for retrieving a user by user_id.
+class FindAllUsersQuerySchema(PaginatedQuerySchema):
+    """ """
 
-    This class validates and structures query parameters
-        used to fetch a specific user,
-        ensuring that the required identifier
-        is provided for user-related lookup operations.
 
-    Validation mode: 'query'.
-    """
+class FindUserByUserIdQuerySchema(BaseSchema):
+    """ """
 
     __validation_mode__ = "query"
 
-    user_id: str | None = None
+    user_id: str

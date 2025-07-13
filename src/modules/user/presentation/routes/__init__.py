@@ -1,19 +1,23 @@
 # /src/modules/user/presentation/routes/__init__.py
 
 # PY
+
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 # Modules
-from src.modules.user.presentation.dependencies import dependencies
+from src.modules.user.domain.repositories import IUserRepository
 from src.modules.user.presentation.controllers import UserController
+from src.modules.user.presentation.dependencies import UserDependency
 from src.modules.user.presentation.schemas import (
     CreateUserReqBodySchema,
-    FindUserByUserIdQuerySchema,
+    FindAllUsersQuerySchema,
+    FindUserByUserIdPathSchema,
     RemoveUserByUserIdReqPathSchema,
     UpdateUserReqBodySchema,
     UpdateUserReqPathSchema,
 )
+from src.shared.infrastructure.unit_of_work import AsyncUnitOfWork
 
 
 class UserRouter:
@@ -32,10 +36,7 @@ class UserRouter:
             transactions (injected).
     """
 
-    def __init__(
-        self,
-        router: APIRouter
-    ) -> None:
+    def __init__(self, router: APIRouter) -> None:
         """
         Initializes the UserRouter with dependencies and registers HTTP routes.
 
@@ -48,20 +49,21 @@ class UserRouter:
         """
         self._router: APIRouter = router
 
-        self._controller = UserController(
-            repository=Depends(dependencies.get_user_repository),
-            async_unit_of_work=Depends(dependencies.get_user_unit_of_work),
-
-        )
-
-        self._router.post("")(self.create_user)
-        self._router.get("")(self.find_user)
-        self._router.put("/{user_id}")(self.update_user)
-        self._router.delete("/{user_id}")(self.remove_user)
+        self._router.post(path="")(self.create_user)
+        self._router.get(path="")(self.find_all_users)
+        self._router.get(path="/{user_id}")(self.find_user_by_user_id)
+        self._router.patch(path="/{user_id}")(self.update_user)
+        self._router.delete(path="/{user_id}")(self.remove_user)
 
     async def create_user(
         self,
         request_body: CreateUserReqBodySchema,
+        repository: IUserRepository = Depends(
+            UserDependency.get_user_repository
+        ),
+        async_unit_of_work: AsyncUnitOfWork = Depends(
+            UserDependency.get_async_unit_of_work
+        ),
     ) -> JSONResponse:
         """
         Handles the POST / route for creating a new user.
@@ -74,30 +76,106 @@ class UserRouter:
             JSONResponse: A response containing the result of the
                 creation operation.
         """
-        return await self._controller.create_user(request_body=request_body)
+        controller = UserController(
+            repository=repository, async_unit_of_work=async_unit_of_work
+        )
 
-    async def find_user(
+        return await controller.create_user(request_body=request_body)
+
+    async def find_all_users(
         self,
-        request_query: FindUserByUserIdQuerySchema = Depends(),
+        request_query: FindAllUsersQuerySchema = Depends(),
+        repository: IUserRepository = Depends(
+            UserDependency.get_user_repository
+        ),
+        async_unit_of_work: AsyncUnitOfWork = Depends(
+            UserDependency.get_async_unit_of_work
+        ),
     ) -> JSONResponse:
         """
         Handles the GET / route to retrieve a user by ID.
 
         Args:
-            request_query (FindUserByUserIdQuerySchema): The query
+            request_query (FindAllUsersQuerySchema): The query
+                parameters containing filters.
+
+        Returns:
+            JSONResponse: A response containing the user data
+                or a not-found message.
+        """
+        controller = UserController(
+            repository=repository, async_unit_of_work=async_unit_of_work
+        )
+        return await controller.find_all_users(request_query=request_query)
+
+    async def find_user_by_user_id(
+        self,
+        request_path: FindUserByUserIdPathSchema = Depends(),
+        repository: IUserRepository = Depends(
+            UserDependency.get_user_repository
+        ),
+        async_unit_of_work: AsyncUnitOfWork = Depends(
+            UserDependency.get_async_unit_of_work
+        ),
+    ) -> JSONResponse:
+        """
+        Handles the GET / route to retrieve a user by ID.
+
+        Args:
+            request_path (FindUserByUserIdQuerySchema): The query
                 parameters containing the user ID.
 
         Returns:
             JSONResponse: A response containing the user data
                 or a not-found message.
         """
-        return await self._controller.find_user(
-            request_query=request_query
+        controller = UserController(
+            repository=repository, async_unit_of_work=async_unit_of_work
+        )
+        return await controller.find_user_by_user_id(request_path=request_path)
+
+    async def update_user(
+        self,
+        request_path: UpdateUserReqPathSchema = Depends(
+            UpdateUserReqPathSchema.validate_path
+        ),
+        request_body: UpdateUserReqBodySchema = None,
+        repository: IUserRepository = Depends(
+            UserDependency.get_user_repository
+        ),
+        async_unit_of_work: AsyncUnitOfWork = Depends(
+            UserDependency.get_async_unit_of_work
+        ),
+    ) -> JSONResponse:
+        """
+        Handles the PUT /{user_id} route to update a user's information.
+
+        Args:
+            request_path (UpdateUserReqPathSchema): The path parameters
+                containing the user ID.
+            request_body (UpdateUserReqBodySchema): The request payload
+                with updated user data.
+
+        Returns:
+            JSONResponse: A response with the updated user information
+                or error details.
+        """
+        controller = UserController(
+            repository=repository, async_unit_of_work=async_unit_of_work
+        )
+        return await controller.update_user(
+            request_path=request_path, request_body=request_body
         )
 
     async def remove_user(
         self,
         request_path: RemoveUserByUserIdReqPathSchema = Depends(),
+        repository: IUserRepository = Depends(
+            UserDependency.get_user_repository
+        ),
+        async_unit_of_work: AsyncUnitOfWork = Depends(
+            UserDependency.get_async_unit_of_work
+        ),
     ) -> JSONResponse:
         """
         Handles the DELETE /{user_id} route to remove a user.
@@ -110,27 +188,7 @@ class UserRouter:
             JSONResponse: A response indicating the result
                 of the delete operation.
         """
-        return await self._controller.remove_user(request_path=request_path)
-
-    async def update_user(
-        self,
-        request_path: UpdateUserReqPathSchema = Depends(
-            UpdateUserReqPathSchema.validate_path
-        ),
-        request_body: UpdateUserReqBodySchema = None,
-    ) -> JSONResponse:
-        """
-        Handles the PUT /{user_id} route to update a user's information.
-
-        Args:
-            request_path (UpdateUserReqPathSchema): The path parameters
-                containing the user ID.
-            request_body (UpdateUserReqBodySchema): The request payload
-                with updated user data.
-
-        Returns:
-            JSONResponse: A response with the updated user information or error details.
-        """
-        return await self._controller.update_user(
-            request_path=request_path, request_body=request_body
+        controller = UserController(
+            repository=repository, async_unit_of_work=async_unit_of_work
         )
+        return await controller.remove_user(request_path=request_path)

@@ -1,6 +1,7 @@
 # /src/modules/user/domain/value_objects/status/__init__.py
 
-from src.domain.enums import UserStatusEnum
+# Modules
+from src.modules.user.domain.enums import UserStatusEnum
 
 
 class Status:

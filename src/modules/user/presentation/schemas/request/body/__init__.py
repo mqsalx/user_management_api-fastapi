@@ -3,15 +3,14 @@
 # PY
 from pydantic import field_validator
 
-# Domain
-from src.domain.dtos.base import BaseDTO
-from src.domain.enums import UserStatusEnum
-
 # Modules
-from src.modules.user.application.commands import CreateUserCommand
+from src.modules.user.domain.enums import UserStatusEnum
+
+# Shared
+from src.shared.presentation.schemas.base import BaseSchema
 
 
-class CreateUserReqBodySchema(BaseDTO):
+class CreateUserReqBodySchema(BaseSchema):
     """
     Class responsible for the Data Transfer Object (DTO) for user creation.
 
@@ -46,7 +45,7 @@ class CreateUserReqBodySchema(BaseDTO):
         return cls.validate_enum(value, info, UserStatusEnum)
 
 
-class UpdateUserReqBodySchema(BaseDTO):
+class UpdateUserReqBodySchema(BaseSchema):
     """
     Class responsible for the Data Transfer Object (DTO) for user update.
 
@@ -64,6 +63,7 @@ class UpdateUserReqBodySchema(BaseDTO):
     email: str | None = None
     status: UserStatusEnum | None = None
     password: str | None = None
+    role_id: str | None = None
 
     @field_validator("status", mode="before")
     @classmethod

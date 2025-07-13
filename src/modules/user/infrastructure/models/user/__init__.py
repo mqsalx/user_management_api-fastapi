@@ -6,8 +6,8 @@ import uuid
 from sqlalchemy import Column, Enum, ForeignKey, String
 from sqlalchemy.orm import relationship
 
-# Domain
-from src.domain.enums import (
+# Modules
+from src.modules.user.domain.enums import (
     UserRoleEnum,
     UserStatusEnum
 )
