@@ -22,7 +22,7 @@ class ApiRouter:
         self.__api_version: str = EnvConfig().api_version
 
         routers = [
-            (user_router, "/users")
+            (user_router, "/user")
         ]
 
         for router, prefix in routers:
