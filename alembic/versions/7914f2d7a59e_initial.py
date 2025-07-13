@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 2d559bf0be54
+Revision ID: 7914f2d7a59e
 Revises: 
-Create Date: 2025-07-05 19:56:34.146424
+Create Date: 2025-07-13 17:08:51.255908
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '2d559bf0be54'
+revision: str = '7914f2d7a59e'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -23,8 +23,8 @@ def upgrade() -> None:
     op.create_table('permissions',
     sa.Column('permission_id', sa.String(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('permission_id'),
     sa.UniqueConstraint('permission_id'),
     schema='test'
@@ -32,8 +32,8 @@ def upgrade() -> None:
     op.create_table('roles',
     sa.Column('role_id', sa.String(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('role_id'),
     sa.UniqueConstraint('role_id'),
     schema='test'
@@ -42,8 +42,8 @@ def upgrade() -> None:
     sa.Column('token_id', sa.String(), nullable=False),
     sa.Column('access_token', sa.String(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('token_id'),
     sa.UniqueConstraint('token_id'),
     schema='test'
@@ -64,8 +64,8 @@ def upgrade() -> None:
     sa.Column('status', sa.Enum('ACTIVE', 'INACTIVE', 'SUSPENDED', name='userstatusenum'), nullable=False),
     sa.Column('role_id', sa.String(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['role_id'], ['test.roles.role_id'], ),
     sa.PrimaryKeyConstraint('user_id'),
     sa.UniqueConstraint('email'),
@@ -78,8 +78,8 @@ def upgrade() -> None:
     sa.Column('login_at', sa.DateTime(), nullable=True),
     sa.Column('logout_at', sa.DateTime(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['token_id'], ['test.tokens.token_id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['test.users.user_id'], ),
     sa.PrimaryKeyConstraint('session_id'),
