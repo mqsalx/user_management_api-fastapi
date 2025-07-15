@@ -30,9 +30,11 @@ class UserMapper(BaseMapper[UserEntity, UserModel]):
             User: Domain entity.
         """
         return UserEntity(
-            user_id=UserId(model.user_id),
+            user_id=str(model.user_id),
+            # user_id=UserId(model.user_id),
             name=model.name,
-            email=Email(model.email),
+            email=str(model.email),
+            # email=Email(model.email),
             password=model.password,
             status=UserStatusEnum(model.status),
             role_id=UserRoleEnum(model.role_id),
