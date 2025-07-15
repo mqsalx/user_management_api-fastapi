@@ -83,7 +83,7 @@ class UserUsecase:
 
                 await self._uow.commit()
 
-                return CreateUserOutput.from_entity(entity=created_entity)
+                return CreateUserOutput.format(entity=created_entity)
 
         except (Exception, BaseHTTPException) as error:
             current_frame = inspect.currentframe()

@@ -12,17 +12,15 @@ class CreateUserOutput:
     user_id: str
     name: str
     email: str
-    password: str
     status: str
     role_id: str
 
     @classmethod
-    def from_entity(cls, entity: UserEntity) -> "CreateUserOutput":
+    def format(cls, entity: UserEntity) -> "CreateUserOutput":
         return cls(
             user_id=entity.user_id,
             name=entity.name,
             email=entity.email,
             status=entity.status,
-            password=entity.password,
             role_id=entity.role_id,
         )
