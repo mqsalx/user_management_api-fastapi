@@ -7,11 +7,11 @@ from src.shared.presentation.schemas.request.query.paginated import (
 )
 
 
-class FindAllUsersQuerySchema(PaginatedQuerySchema):
+class FindAllUsersQueryReq(PaginatedQuerySchema):
     """ """
 
 
-class FindUserByUserIdQuerySchema(BaseSchema):
+class FindUserByUserIdQueryReq(BaseSchema):
     """ """
 
     __validation_mode__ = "query"

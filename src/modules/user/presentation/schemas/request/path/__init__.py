@@ -7,7 +7,7 @@ from fastapi import Path
 from src.shared.presentation.schemas.base import BaseSchema
 
 
-class RemoveUserByUserIdReqPathSchema(BaseSchema):
+class RemoveUserByUserIdReqPathReq(BaseSchema):
     """
     Class responsible for the Data Transfer Object (DTO) for user creation.
 
@@ -18,7 +18,7 @@ class RemoveUserByUserIdReqPathSchema(BaseSchema):
     user_id: str
 
 
-class UpdateUserReqPathSchema(BaseSchema):
+class UpdateUserReqPathReq(BaseSchema):
     """
     Class responsible for the Data Transfer Object (DTO) for user update.
 
@@ -29,9 +29,9 @@ class UpdateUserReqPathSchema(BaseSchema):
     user_id: str
 
     @staticmethod
-    def validate_path(user_id: str = Path(...)) -> "UpdateUserReqPathSchema":
+    def validate_path(user_id: str = Path(...)) -> "UpdateUserReqPathReq":
         """
-        Static method to create an instance of UpdateUserReqPathSchema
+        Static method to create an instance of UpdateUserReqPathReq
             from a FastAPI path parameter.
 
         Args:
@@ -41,10 +41,10 @@ class UpdateUserReqPathSchema(BaseSchema):
             RemoveUserByUserIdReqPathDTO: A validated DTO instance
                 containing the user_id.
         """
-        return UpdateUserReqPathSchema(user_id=user_id)
+        return UpdateUserReqPathReq(user_id=user_id)
 
 
-class FindUserByUserIdPathSchema(BaseSchema):
+class FindUserByUserIdPathReq(BaseSchema):
     """ """
 
     user_id: str
@@ -52,6 +52,6 @@ class FindUserByUserIdPathSchema(BaseSchema):
     @staticmethod
     def validate_path(
         user_id: str = Path(...),
-    ) -> "FindUserByUserIdPathSchema":
+    ) -> "FindUserByUserIdPathReq":
         """ """
-        return FindUserByUserIdPathSchema(user_id=user_id)
+        return FindUserByUserIdPathReq(user_id=user_id)

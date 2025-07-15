@@ -10,7 +10,7 @@ from src.modules.user.domain.enums import UserStatusEnum
 from src.shared.presentation.schemas.base import BaseSchema
 
 
-class CreateUserReqBodySchema(BaseSchema):
+class CreateUserReqBodyReq(BaseSchema):
     """
     Class responsible for the Data Transfer Object (DTO) for user creation.
 
@@ -45,7 +45,7 @@ class CreateUserReqBodySchema(BaseSchema):
         return cls.validate_enum(value, info, UserStatusEnum)
 
 
-class UpdateUserReqBodySchema(BaseSchema):
+class UpdateUserReqBodyReq(BaseSchema):
     """
     Class responsible for the Data Transfer Object (DTO) for user update.
 
