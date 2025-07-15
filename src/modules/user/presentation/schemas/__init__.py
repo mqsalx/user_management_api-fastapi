@@ -2,29 +2,43 @@
 
 # Request
 from src.modules.user.presentation.schemas.request.body import (
-    CreateUserReqBodySchema,
-    UpdateUserReqBodySchema,
+    CreateUserReqBodyReq,
+    UpdateUserReqBodyReq,
 )
 from src.modules.user.presentation.schemas.request.path import (
-    FindUserByUserIdPathSchema,
-    RemoveUserByUserIdReqPathSchema,
-    UpdateUserReqPathSchema,
+    FindUserByUserIdPathReq,
+    RemoveUserByUserIdReqPathReq,
+    UpdateUserReqPathReq,
 )
 from src.modules.user.presentation.schemas.request.query import (
-    FindAllUsersQuerySchema,
-    FindUserByUserIdQuerySchema,
+    FindAllUsersQueryReq,
+    FindUserByUserIdQueryReq,
 )
 
 # Response
-from src.modules.user.presentation.schemas.response import UserResponseSchema
+from src.modules.user.presentation.schemas.response.create import (
+    CreateUserResponse,
+)
+from src.modules.user.presentation.schemas.response.find.all import (
+    FindAllUsersResponse,
+)
+from src.modules.user.presentation.schemas.response.find.by_user_id import (
+    FindUserByUserIdResponse,
+)
+from src.modules.user.presentation.schemas.response.update import (
+    UpdateUserResponse,
+)
 
 __all__: list[str] = [
-    "CreateUserReqBodySchema",
-    "UpdateUserReqBodySchema",
-    "FindAllUsersQuerySchema",
-    "FindUserByUserIdPathSchema",
-    "FindUserByUserIdQuerySchema",
-    "RemoveUserByUserIdReqPathSchema",
-    "UpdateUserReqPathSchema",
-    "UserResponseSchema",
+    "CreateUserReqBodyReq",
+    "CreateUserResponse",
+    "UpdateUserReqBodyReq",
+    "FindAllUsersQueryReq",
+    "FindUserByUserIdPathReq",
+    "FindUserByUserIdQueryReq",
+    "FindAllUsersResponse",
+    "FindUserByUserIdResponse",
+    "RemoveUserByUserIdReqPathReq",
+    "UpdateUserReqPathReq",
+    "UpdateUserResponse",
 ]
