@@ -4,6 +4,8 @@ import uuid
 
 
 class UserId:
+    """
+    """
     def __init__(self, value: str):
         try:
             self._value = str(uuid.UUID(value))
