@@ -6,29 +6,19 @@ from typing import Dict
 from fastapi import status
 from fastapi.responses import JSONResponse
 
-# Commands
-from src.modules.user.application.commands import (
-    CreateUserCommand,
-    RemoveUserCommand,
-    UpdateUserCommand,
+# Modules
+from src.modules.user.application.dtos import (
+    CreateUserInput,
+    FindAllUsersInput,
+    FindUserByUserIdInput,
+    RemoveUserInput,
+    UpdateUserInput
 )
-
-# Handlers
-from src.modules.user.application.handlers import UserHandler
-
-# Queries
-from src.modules.user.application.queries import (
-    FindAllUsersQuery,
-    FindUserByUserIdQuery,
-)
-
-# Services
-from src.modules.user.application.services import UserService
-
-# Repositories
+from src.modules.user.application.use_cases import UserUsecase
 from src.modules.user.domain.repositories import IUserRepository
+from src.modules.user.domain.services import UserService
 
-# Schemas
+# Presentation
 from src.modules.user.presentation.schemas import (
     CreateUserReqBodySchema,
     FindAllUsersQuerySchema,
@@ -51,10 +41,10 @@ class UserController:
         self, repository: IUserRepository, async_unit_of_work: AsyncUnitOfWork
     ) -> None:
         """ """
-        self._handler = UserHandler(
-            service=UserService(
-                repository=repository, async_unit_of_work=async_unit_of_work
-            )
+        self._use_case = UserUsecase(
+            async_unit_of_work=async_unit_of_work,
+            repository=repository,
+            service=UserService(),
         )
 
     async def create_user(
@@ -62,20 +52,18 @@ class UserController:
     ) -> JSONResponse:
         """ """
 
-        command = CreateUserCommand(
+        input = CreateUserInput(
             name=request_body.name,
             email=request_body.email,
             password=request_body.password,
             status=request_body.status,
         )
 
-        handler_response: Dict[str, str] = await self._handler.create_user(
-            command=command
+        handler_response: Dict[str, str] = await self._use_case.create_user(
+            input=input
         )
 
-        controller_response = UserResponseSchema(
-            **handler_response
-        ).model_dump()
+        controller_response = UserResponseSchema(**handler_response)
 
         return json_response(
             status_code=201,
@@ -87,40 +75,30 @@ class UserController:
         self, request_query: FindAllUsersQuerySchema
     ) -> JSONResponse:
 
-        query = FindAllUsersQuery(
+        input = FindAllUsersInput(
             page=request_query.page,
             limit=request_query.limit,
             order=request_query.order,
         )
 
-        entities, pagination = (
-            await self._handler.find_all_users(query=query)
-        )
+        handler_response = await self._use_case.find_all_users(input=input)
 
         message = "User retrieved!"
-
-        data = {
-            "items": [
-                UserResponseSchema.model_validate(entity).model_dump()
-                for entity in entities
-            ],
-            **pagination
-        }
 
         return json_response(
             status_code=status.HTTP_200_OK,
             message=message,
-            data=data,
+            data=handler_response,
         )
 
     async def find_user_by_user_id(
         self, request_path: FindUserByUserIdPathSchema
     ) -> JSONResponse:
 
-        query = FindUserByUserIdQuery(user_id=request_path.user_id)
+        input = FindUserByUserIdInput(user_id=request_path.user_id)
 
         handler_response: Dict[str, str] = (
-            await self._handler.find_user_by_user_id(query=query)
+            await self._use_case.find_user_by_user_id(input=input)
         )
 
         message = "User retrieved!"
@@ -128,7 +106,7 @@ class UserController:
         return json_response(
             status_code=status.HTTP_200_OK,
             message=message,
-            data=UserResponseSchema(**handler_response).model_dump(),
+            data=UserResponseSchema(**handler_response),
         )
 
     async def update_user(
@@ -136,7 +114,7 @@ class UserController:
         request_path: UpdateUserReqPathSchema,
         request_body: UpdateUserReqBodySchema,
     ) -> JSONResponse:
-        command = UpdateUserCommand(
+        input = UpdateUserInput(
             user_id=request_path.user_id,
             name=request_body.name,
             email=request_body.email,
@@ -144,7 +122,7 @@ class UserController:
             password=request_body.password,
         )
 
-        handler_response = await self._handler.update_user(command=command)
+        handler_response = await self._use_case.update_user(input=input)
 
         user_data: UserResponseSchema = UserResponseSchema.model_validate(
             handler_response
@@ -160,9 +138,9 @@ class UserController:
         self, request_path: RemoveUserByUserIdReqPathSchema
     ) -> JSONResponse:
 
-        command = RemoveUserCommand(user_id=request_path.user_id)
+        input = RemoveUserInput(user_id=request_path.user_id)
 
-        await self._handler.remove_user(command=command)
+        await self._use_case.remove_user(input=input)
 
         return json_response(
             status_code=200,
