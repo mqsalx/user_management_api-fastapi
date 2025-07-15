@@ -10,12 +10,12 @@ from src.modules.user.domain.repositories import IUserRepository
 from src.modules.user.presentation.controllers import UserController
 from src.modules.user.presentation.dependencies import UserDependency
 from src.modules.user.presentation.schemas import (
-    CreateUserReqBodySchema,
-    FindAllUsersQuerySchema,
-    FindUserByUserIdPathSchema,
-    RemoveUserByUserIdReqPathSchema,
-    UpdateUserReqBodySchema,
-    UpdateUserReqPathSchema,
+    CreateUserReqBodyReq,
+    FindAllUsersQueryReq,
+    FindUserByUserIdPathReq,
+    RemoveUserByUserIdReqPathReq,
+    UpdateUserReqBodyReq,
+    UpdateUserReqPathReq,
 )
 from src.shared.infrastructure.unit_of_work import AsyncUnitOfWork
 
@@ -57,7 +57,7 @@ class UserRouter:
 
     async def create_user(
         self,
-        request_body: CreateUserReqBodySchema,
+        request_body: CreateUserReqBodyReq,
         repository: IUserRepository = Depends(
             UserDependency.get_user_repository
         ),
@@ -84,7 +84,7 @@ class UserRouter:
 
     async def find_all_users(
         self,
-        request_query: FindAllUsersQuerySchema = Depends(),
+        request_query: FindAllUsersQueryReq = Depends(),
         repository: IUserRepository = Depends(
             UserDependency.get_user_repository
         ),
@@ -110,7 +110,7 @@ class UserRouter:
 
     async def find_user_by_user_id(
         self,
-        request_path: FindUserByUserIdPathSchema = Depends(),
+        request_path: FindUserByUserIdPathReq = Depends(),
         repository: IUserRepository = Depends(
             UserDependency.get_user_repository
         ),
@@ -136,10 +136,10 @@ class UserRouter:
 
     async def update_user(
         self,
-        request_path: UpdateUserReqPathSchema = Depends(
-            UpdateUserReqPathSchema.validate_path
+        request_path: UpdateUserReqPathReq = Depends(
+            UpdateUserReqPathReq.validate_path
         ),
-        request_body: UpdateUserReqBodySchema = None,
+        request_body: UpdateUserReqBodyReq = None,
         repository: IUserRepository = Depends(
             UserDependency.get_user_repository
         ),
@@ -169,7 +169,7 @@ class UserRouter:
 
     async def remove_user(
         self,
-        request_path: RemoveUserByUserIdReqPathSchema = Depends(),
+        request_path: RemoveUserByUserIdReqPathReq = Depends(),
         repository: IUserRepository = Depends(
             UserDependency.get_user_repository
         ),
