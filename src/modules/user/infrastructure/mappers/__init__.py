@@ -8,7 +8,7 @@ from enum import Enum
 # Modules
 from src.modules.user.domain.entities import UserEntity
 from src.modules.user.domain.enums import UserRoleEnum, UserStatusEnum
-from src.modules.user.domain.value_objects import Email, UserId
+from src.modules.user.domain.value_objects import Email, ID
 from src.modules.user.infrastructure.models.user import UserModel
 from src.shared.infrastructure.mappers.base import BaseMapper
 
@@ -53,7 +53,7 @@ class UserMapper(BaseMapper[UserEntity, UserModel]):
             UserModel: SQLAlchemy model.
         """
         return UserModel(
-            user_id=entity.entity_id,
+            user_id=entity.user_id,
             name=entity.name,
             email=entity.email,
             password=entity.password,

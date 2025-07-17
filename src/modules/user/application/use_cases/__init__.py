@@ -4,7 +4,7 @@
 import inspect
 from dataclasses import fields, replace
 from math import ceil
-from typing import List, NoReturn
+from typing import List
 
 # Modules
 from src.modules.user.application.dtos import (
@@ -37,11 +37,13 @@ from src.utils import log
 
 class UserUsecase:
     """
-    Application service responsible for user-related business operations.
+    Class that coordinates high-level user operations
+        within the application layer.
 
-    This service coordinates domain logic, repository access, and unit-of-work
-    management to perform use cases such as creating, retrieving, updating, and
-    removing users.
+    This class acts as an entry point for executing user-related
+        use cases such as creating, updating, finding, and removing users.
+    It delegates domain logic to the service layer while managing
+        transactional integrity through the unit of work.
     """
 
     def __init__(
@@ -51,13 +53,41 @@ class UserUsecase:
         service: UserService,
     ) -> None:
         """
+        Constructor method that initializes the UserUsecase
+            with required dependencies.
+
+        Args:
+            async_unit_of_work (AsyncUnitOfWork): The unit of work used
+                to manage transactions.
+            repository (IUserRepository): The user repository used
+                for data access.
+            service (UserService): The user service containing core
+                business logic.
         """
         self._uow: AsyncUnitOfWork = async_unit_of_work
         self._repository: IUserRepository = repository
         self._service: UserService = service
 
     async def create_user(self, input: CreateUserInput) -> CreateUserOutput:
-        """ """
+        """
+        Public method that handles the user creation use case.
+
+        This method checks if the email is already in use, hashes the password,
+        creates a new UserEntity, persists it to the database, and returns
+        the created user as an output DTO.
+
+        Args:
+            input (CreateUserInput): The input data required
+                to create the user.
+
+        Returns:
+            CreateUserOutput: The newly created user's data.
+
+        Raises:
+            EmailAlreadyExistsException: If a user with the given
+                email already exists.
+            BaseHTTPException | Exception: If an unexpected error occurs.
+        """
         try:
             async with self._uow:
 
@@ -97,11 +127,29 @@ class UserUsecase:
         self, input: FindAllUsersInput
     ) -> FindAllUsersOutput:
         """
+        Public method that retrieves a paginated list of users
+            from the repository.
+
+        This method calculates pagination metadata, queries users based on the
+        requested page, limit, and order, and returns the result along with
+        pagination information.
+
+        Args:
+            input (FindAllUsersInput): Parameters for pagination and sorting.
+
+        Returns:
+            FindAllUsersOutput: A paginated list of users.
+
+        Raises:
+            UserNotFoundException: If no users are found.
+            BaseHTTPException | Exception: If an unexpected error occurs.
         """
         try:
 
             page: int = input.page
+
             requested_limit: int = input.limit
+
             order: str = input.order
 
             total_items: int = await self._repository.find_all(total_count=True)  # type: ignore  # noqa: E501
@@ -119,7 +167,7 @@ class UserUsecase:
             )  # type: ignore
 
             if not found_entities:
-                raise UserNotFoundException(message="Users not found.")
+                raise UserNotFoundException(message="Users not found!")
 
             total_pages = ceil(total_items / true_limit)
 
@@ -149,6 +197,17 @@ class UserUsecase:
         self, input: FindUserByUserIdInput
     ) -> FindUserByUserIdOutput:
         """
+        Public method that retrieves a user by their unique identifier.
+
+        Args:
+            input (FindUserByUserIdInput): The input containing the user's ID.
+
+        Returns:
+            FindUserByUserIdOutput: The found user's data.
+
+        Raises:
+            UserNotFoundException: If no user is found with the given ID.
+            BaseHTTPException | Exception: If an unexpected error occurs.
         """
         try:
 
@@ -175,6 +234,23 @@ class UserUsecase:
 
     async def update_user(self, input: UpdateUserInput) -> UpdateUserOutput:
         """
+        Public method that updates a user's information based
+            on the provided input fields.
+
+        Only non-null fields from the input will be used
+            to update the user entity.
+
+        Args:
+            input (UpdateUserInput): Data containing the user ID
+                and fields to update.
+
+        Returns:
+            UpdateUserOutput: The updated user's data.
+
+        Raises:
+            UserNotFoundException: If the user with
+                the given ID does not exist.
+            BaseHTTPException | Exception: If an unexpected error occurs.
         """
         try:
             async with self._uow:
@@ -219,6 +295,20 @@ class UserUsecase:
 
     async def remove_user(self, input: RemoveUserInput) -> None:
         """
+        Public method that removes a user from the system by their unique ID.
+
+        After deletion, the method checks if the user still
+            exists to ensure proper removal.
+
+        Args:
+            input (RemoveUserInput): The input containing
+                the user ID to be removed.
+
+        Raises:
+            UserNotFoundException: If the user does not exist.
+            InvalidUserRemovalException: If the user still
+                exists after deletion.
+            BaseHTTPException | Exception: If an unexpected error occurs.
         """
         try:
             async with self._uow:

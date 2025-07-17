@@ -4,16 +4,16 @@ from src.modules.user.domain.entities import UserEntity
 from src.modules.user.domain.repositories import IUserRepository
 from src.modules.user.domain.value_objects import (
     Email,
+    ID,
     Password,
-    UserId,
     Status
 )
 
 __all__: list[str] = [
-    "UserEntity",
-    "IUserRepository",
     "Email",
+    "ID",
+    "IUserRepository",
     "Password",
-    "UserId",
-    "Status"
+    "Status",
+    "UserEntity"
 ]

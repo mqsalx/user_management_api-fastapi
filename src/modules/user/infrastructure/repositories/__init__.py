@@ -46,15 +46,6 @@ class UserRepositoryImpl(
             mapper=UserMapper(),
         )
 
-    def _update_model(self, model: UserModel, entity: UserEntity) -> UserModel:
-        """ """
-        model.name = entity.name
-        model.email = entity.email
-        model.password = entity.password
-        model.status = entity.status
-        model.updated_at = entity.updated_at
-        return model
-
     async def find_by_email(self, email: str) -> Optional[UserEntity]:
         """
         Public method responsible for retrieving a user by their email.
