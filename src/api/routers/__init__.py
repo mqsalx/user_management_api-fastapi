@@ -7,31 +7,25 @@ from typing import Any, List
 from fastapi import APIRouter, Request
 from fastapi.routing import APIRoute
 
-# Core
-from src.core.configurations.environment import EnvConfig
-
-# API
-from src.api.router.user import user_router
-
 
 class ApiRouter:
 
     def __init__(self) -> None:
+        from src.api.routers.user import UserRouter
+        from src.core.configurations import env_config
+        self._router = APIRouter()
 
-        self.__router = APIRouter()
-        self.__api_version: str = EnvConfig().api_version
+        self._router.get("", tags=["Api"])(self.__call__)
 
-        routers = [
-            (user_router, "/user")
+        routers: List[APIRouter] = [
+            UserRouter().router
         ]
 
-        for router, prefix in routers:
-            self.__router.include_router(
+        for router in routers:
+            self._router.include_router(
                 router=router,
-                prefix=f"/{self.__api_version}{prefix}"
+                prefix=f"/{env_config.api_version}"
             )
-
-        self.__router.get("", tags=["Api"])(self.__call__)
 
     def __call__(self, request: Request) -> List[Any]:
         """
@@ -54,4 +48,4 @@ class ApiRouter:
 
     @property
     def router(self) -> APIRouter:
-        return self.__router
+        return self._router
