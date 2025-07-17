@@ -59,16 +59,6 @@ class UserRouter:
         self._router.patch(path="/{user_id}")(self.update_user)
         self._router.delete(path="/{user_id}")(self.remove_user)
 
-    @property
-    def router(self) -> APIRouter:
-        """
-        Public method to retrieve the FastAPI router instance.
-
-        Returns:
-            APIRouter: The FastAPI router with registered user routes.
-        """
-        return self._router
-
     async def create_user(
         self,
         request: CreateUserReq,
@@ -252,3 +242,13 @@ class UserRouter:
             status_code=200,
             message="User deleted!",
         )
+
+    @property
+    def router(self) -> APIRouter:
+        """
+        Public method to retrieve the FastAPI router instance.
+
+        Returns:
+            APIRouter: The FastAPI router with registered user routes.
+        """
+        return self._router
