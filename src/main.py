@@ -11,29 +11,20 @@ It also checks environment variables and the database
 """
 
 # PY
-import time
 import uvicorn
 from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 
+# Api
+from src.api.routers import ApiRouter
+
 # Core
 from src.core.configurations import env_config
 from src.core.handlers.exception import ExceptionHandler
-from src.core.middleware import (
-    AuthMiddleware,
-    LoggerMiddleware
-)
-
-# Presentation
-from src.api.router import ApiRouter
+from src.core.middleware import LoggerMiddleware
 
 # Utils
-from src.utils import (
-    DatabaseUtil,
-    DotEnvUtil,
-    log,
-    MessageUtil
-)
+from src.utils import DatabaseUtil, DotEnvUtil, MessageUtil
 
 # Env variables Setup
 API_HOST: str = env_config.api_host
@@ -44,29 +35,9 @@ API_VERSION: str = env_config.api_version
 app = FastAPI(
     title=API_NAME,
     version=API_VERSION,
-    description=f"{API_NAME} API documentation!"
+    description=f"{API_NAME} API documentation!",
 )
 
-
-def my_function():
-    """
-    Standalone function responsible for testing scheduled tasks.
-
-    This function logs a test message with the current timestamp.
-
-    Args:
-        None
-
-    Returns:
-        None
-    """
-
-    log.info(f"Testing... {time.strftime("%Y-%m-%d %H:%M:%S")}")
-
-
-# my_scheduler_task = SchedulerConfig()
-
-# my_scheduler_task.init(my_function, 5)
 
 app.add_middleware(LoggerMiddleware)
 # app.add_middleware(AuthMiddleware)
@@ -77,7 +48,7 @@ app.add_exception_handler(RequestValidationError, ExceptionHandler.json_decode_e
 
 api_router: APIRouter = ApiRouter().router
 
-app.include_router(api_router, prefix=f"/api")
+app.include_router(router=api_router, prefix=f"/api")
 
 if __name__ == "__main__":
     """
