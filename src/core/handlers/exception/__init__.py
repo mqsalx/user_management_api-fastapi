@@ -92,6 +92,24 @@ class ExceptionHandler:
                 )
                 break
 
+            elif error_type == "enum":
+                allowed_values = error.get("ctx", {}).get("expected", [])
+                status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+                message = (
+                    f"The field '{field}' from '{source}' must be one of {allowed_values}. "
+                    f"Received: '{input_value}'."
+                )
+                break
+
+            elif error_type == "int_parsing":
+                status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+                message = (
+                    f"The field '{field}' from '{source}' must be an integer. "
+                    f"Received: '{input_value}' ({type(input_value).__name__})."
+                )
+                break
+            print(f"Unhandled error type: {error_type} for field '{field}' in {source}")
+
         # fallback for other errors not explicitly dealt with
         if not status_code:
             status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
