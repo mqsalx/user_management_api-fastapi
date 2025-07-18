@@ -2,10 +2,11 @@
 
 # flake8: noqa: E501
 
+from logging import Logger
 from src.core.configurations import log_config
 
 
-class LoggerUtil:
+class LogUtil:
     """
     Class responsible for configuring and managing the application logging.
 
@@ -16,7 +17,7 @@ class LoggerUtil:
         None
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Constructor method for LoggerUtil.
 
@@ -25,7 +26,7 @@ class LoggerUtil:
         Args:
             None
         """
-        self.__logger = log_config.logger
+        self.__logger: Logger = log_config.logger
 
     def info(self, message: str) -> None:
         """
@@ -79,4 +80,4 @@ class LoggerUtil:
 
         self.__logger.warning(message)
 
-log = LoggerUtil()
+log = LogUtil()

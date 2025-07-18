@@ -21,7 +21,7 @@ from src.core.exceptions import UnauthorizedTokenException
 
 
 # Utils
-from src.utils.logger import log
+from src.shared.utils.log import log
 
 # Env variables Setup
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = EnvConfig().jwt_access_token_expire_minutes
