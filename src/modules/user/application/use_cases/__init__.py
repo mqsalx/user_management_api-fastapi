@@ -32,7 +32,7 @@ from src.shared.domain.exceptions.base import BaseHTTPException
 from src.shared.infrastructure.unit_of_work import AsyncUnitOfWork
 
 # Utils
-from src.utils import log
+from src.shared.utils import log
 
 
 class UserUsecase:

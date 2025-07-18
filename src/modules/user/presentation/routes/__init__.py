@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
 # Api
-from src.api.dependencies.user import UserDependency
-from src.api.schemas.user import (
+from src.modules.user.presentation.dependencies import UserDependency
+from src.modules.user.presentation.schemas import (
     CreateUserReq,
     FindAllUsersReq,
     FindUserByUserIdReq,

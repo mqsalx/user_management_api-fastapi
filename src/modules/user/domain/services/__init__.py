@@ -1,6 +1,6 @@
 # /src/modules/user/domain/services/__init__.py
 
-from src import utils
+from src.shared import utils
 
 
 class UserService:

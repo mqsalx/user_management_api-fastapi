@@ -1,6 +1,6 @@
 # /src/api/schemas/user/response/__init__.py
 
-from src.api.schemas.base.response import BaseResponse
+from src.shared.presentation.schemas.response.base import BaseResponse
 
 
 class UserResponse(BaseResponse):
@@ -14,4 +14,3 @@ class UserResponse(BaseResponse):
     This class is typically used in controller or router layers
     to maintain consistency across user-related responses.
     """
-    pass

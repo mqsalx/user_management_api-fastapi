@@ -1,6 +1,6 @@
 # /src/modules/user/domain/value_objects/password/__init__.py
 
-from src.utils import AuthUtil
+from src.shared.utils import AuthUtil
 
 
 class Password:

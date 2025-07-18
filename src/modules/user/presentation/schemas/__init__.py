@@ -1,21 +1,21 @@
 # /src/api/schemas/__init__.py
 
 # Request
-from src.api.schemas.user.request.body import (
+from src.modules.user.presentation.schemas.request.body import (
     CreateUserReq,
     UpdateUserReq,
 )
-from src.api.schemas.user.request.path import (
+from src.modules.user.presentation.schemas.request.path import (
     FindUserByUserIdReq,
     RemoveUserReq,
 )
-from src.api.schemas.user.request.query import (
+from src.modules.user.presentation.schemas.request.query import (
     FindAllUsersReq,
     # FindUserByUserIdReq,
 )
 
 # Response
-from src.api.schemas.user.response import UserResponse
+from src.modules.user.presentation.schemas.response import UserResponse
 
 __all__: list[str] = [
     "CreateUserReq",
