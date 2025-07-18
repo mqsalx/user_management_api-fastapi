@@ -36,7 +36,7 @@ class ApiRouter:
         self._router.get("", tags=["Api"])(self.__call__)
 
         routers: List[APIRouter] = [
-            AuthRoutes().router,
+            # AuthRoutes().router,
             UserRoutes().router
         ]
 
