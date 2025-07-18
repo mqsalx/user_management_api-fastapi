@@ -1,34 +1,36 @@
 # /src/core/middleware/logger/__init__.py
 
-# flake8: noqa: E501
-
 import time
 from http import HTTPStatus
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
 
-from src.utils import log
+from src.shared.utils import log
 
-class LoggerMiddleware(BaseHTTPMiddleware):
+
+class LogMiddleware(BaseHTTPMiddleware):
     """
     Class responsible for handling request logging middleware.
 
-    This middleware logs all incoming requests, including details such as the client host,
-    HTTP method, request URL, status code, and response time.
+    This middleware logs all incoming requests,
+        including details such as the client host,
+        HTTP method, request URL, status code, and response time.
 
-    If an error occurs during request processing, the middleware logs the error details.
-
-    Class Args:
-        None
+    If an error occurs during request processing,
+        the middleware logs the error details.
     """
 
     async def dispatch(self, request, call_next) -> Response:
         """
-        Public asynchronous method responsible for logging HTTP requests and responses.
+        Public asynchronous method responsible for logging
+            HTTP requests and responses.
 
-        This method logs the details of each request, including the processing time and status code.
-        If an error occurs, it logs the error message before raising the exception.
+        This method logs the details of each request,
+            including the processing time and status code.
+
+        If an error occurs, it logs the error message
+            before raising the exception.
 
         Args:
             request (Request): The incoming HTTP request.
@@ -52,7 +54,7 @@ class LoggerMiddleware(BaseHTTPMiddleware):
             status_code = response.status_code
             status_name = HTTPStatus(status_code).phrase
 
-            log_message = f"{host} - {method} - {status_code} - {status_name} - {url} - {process_time:.2f}ms"
+            log_message = f"{host} - {method} - {status_code} - {status_name} - {url} - {process_time:.2f}ms"  # noqa: E501
 
             if status_code >= 400:
                 log.error(log_message)

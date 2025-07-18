@@ -11,7 +11,7 @@ from src.core.configurations.environment import EnvConfig
 from src.core.exceptions import InvalidTokenException
 
 # Utils
-from src.utils import (
+from src.shared.utils import (
     AuthUtil,
     log,
     json_response

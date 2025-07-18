@@ -3,7 +3,7 @@
 from src.core.configurations.environment import env_config
 from src.core.configurations.database import db_config
 from src.core.configurations.database.utils import db_config_util
-from src.core.configurations.logger import log_config
+from src.core.configurations.log import log_config
 from src.core.configurations.scheduler import scheduler_config
 
 

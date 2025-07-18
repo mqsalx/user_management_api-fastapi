@@ -1,7 +1,5 @@
 # /src/core/configurations/logger/__init__.py
 
-# flake8: noqa: E501
-
 import logging
 import os
 
@@ -19,7 +17,7 @@ class FlushingStreamHandler(logging.StreamHandler):
     It is especially useful in asynchronous or background task scenarios
     where log messages may not appear promptly without an explicit flush.
     """
-    def emit(self, record):
+    def emit(self, record) -> None:
         """
         Emit a log record and flush the output stream immediately.
 
@@ -30,15 +28,13 @@ class FlushingStreamHandler(logging.StreamHandler):
         self.flush()
 
 
-class LoggerConfig:
+class LogConfig:
     """
     Class responsible for configuring and managing the application logging.
 
-    This class sets up a logger that writes logs to both a console (with colors)
-    and a log file. The log level can be determined from an environment variable.
-
-    Class Args:
-        None
+    This class sets up a logger that writes logs to both
+        a console (with colors) and a log file.
+    The log level can be determined from an environment variable.
     """
 
     def __init__(self) -> None:
@@ -46,9 +42,6 @@ class LoggerConfig:
         Constructor method for LoggerUtil.
 
         Initializes and configures the logger with file and console handlers.
-
-        Args:
-            None
         """
 
         self.__api_name: str = env_config.api_name
@@ -121,7 +114,7 @@ class LoggerConfig:
 
     def __get_log_level_variable(self) -> str:
         """
-        Private method responsible for obtaining the log level from the configuration.
+        Private method responsible for obtaining the log level from the configuration.  # noqa: E501
 
         This method retrieves the log level from the `api_log_level` variable.
         If the value is missing or invalid, it defaults to 'INFO'.
@@ -142,18 +135,18 @@ class LoggerConfig:
 
         if not obtained_log_level:
             print(
-                f"{YELLOW}LOG_LEVEL -> Empty or invalid ‘LOG_LEVEL’ value found. Using default value '{default_level}'!{RESET}"
+                f"{YELLOW}LOG_LEVEL -> Empty or invalid ‘LOG_LEVEL’ value found. Using default value '{default_level}'!{RESET}"  # noqa: E501
             )
             return default_level
 
         if obtained_log_level not in self.__valid_log_levels:
             print(
-                f"{YELLOW}LOG_LEVEL -> Invalid value for 'LOG_LEVEL' found: {self.__api_log_level}! Using the default value '{default_level}!{RESET}"
+                f"{YELLOW}LOG_LEVEL -> Invalid value for 'LOG_LEVEL' found: {self.__api_log_level}! Using the default value '{default_level}!{RESET}"  # noqa: E501
             )
             return default_level
 
         print(
-            f"{MAGENTA}LOG_LEVEL -> Loaded from .env, setting to {obtained_log_level}.{RESET}"
+            f"{MAGENTA}LOG_LEVEL -> Loaded from .env, setting to {obtained_log_level}.{RESET}"  # noqa: E501
         )
 
         return obtained_log_level
@@ -167,8 +160,9 @@ class LoggerConfig:
         debug, info, warning, or error messages throughout the class.
 
         Returns:
-            logging.Logger: The logger instance associated with the current class.
+            logging.Logger: The logger instance associated with the current class.  # noqa: E501
         """
         return self.__logger
 
-log_config = LoggerConfig()
+
+log_config = LogConfig()
