@@ -16,7 +16,7 @@ from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 
 # Api
-from src.api.routers import ApiRouter
+from src.api.router import ApiRouter
 
 # Core
 from src.core.configurations import env_config
