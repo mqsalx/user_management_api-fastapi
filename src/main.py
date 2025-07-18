@@ -21,10 +21,10 @@ from src.api.router import ApiRouter
 # Core
 from src.core.configurations import env_config
 from src.core.handlers.exception import ExceptionHandler
-from src.core.middleware import LoggerMiddleware
+from src.core.middleware import LogMiddleware
 
 # Utils
-from src.utils import DatabaseUtil, DotEnvUtil, MessageUtil
+from src.shared.utils import DatabaseUtil, DotEnvUtil, MessageUtil
 
 # Env variables Setup
 API_HOST: str = env_config.api_host
@@ -39,7 +39,7 @@ app = FastAPI(
 )
 
 
-app.add_middleware(LoggerMiddleware)
+app.add_middleware(LogMiddleware)
 # app.add_middleware(AuthMiddleware)
 
 app.add_exception_handler(HTTPException, ExceptionHandler.http_exception_handler)  # type: ignore  # noqa: E501
