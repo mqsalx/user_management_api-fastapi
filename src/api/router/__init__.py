@@ -26,7 +26,7 @@ class ApiRouter:
         This method sets up the main router and includes all versioned routers
         for different application modules (e.g., user).
         """
-        from src.modules.auth.presentation.routes import AuthRoutes
+        # from src.modules.auth.presentation.routes import AuthRoutes
         from src.modules.user.presentation.routes import UserRoutes
 
         from src.core.configurations import env_config
